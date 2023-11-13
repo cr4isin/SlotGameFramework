@@ -88,7 +88,7 @@ void SymbolComboInfo::EvaluateSymbolCombos(int reel, double pay, int multiplier,
 			}
 		}
 		// Check if this is the final reel
-		if (reel < m_numReels)
+		if (reel + 1 < m_numReels)
 		{
 			EvaluateSymbolCombos(reel + 1, max_pay, mult, current_symbol_key, current_possible_symbols);
 		}
