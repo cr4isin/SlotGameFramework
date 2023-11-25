@@ -19,17 +19,8 @@ public:
 	MultiSymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType = PRODUCT);
 	~MultiSymbolComboInfo();
 
-	void GetComboInfo(size_t symbolkey, int reel, double& pay, bool& breaks)
-	{
-		symbolCombo thisSymbolCombo = m_combos[reel][symbolkey];
-		pay = thisSymbolCombo.pay;
-		breaks = thisSymbolCombo.breaks;
-		return;
-	}
-	size_t GetSymbolLocation(const int reel, const int symbol)
-	{
-		return m_combo_location[reel][symbol];
-	}
+	void GetComboInfo(size_t symbolkey, int reel, double& pay, bool& breaks);
+	size_t GetSymbolLocation(const int reel, const int symbol);
 
 private:
 	set<int> SetIntersect(set<int> seta, set<int> setb);
@@ -37,13 +28,8 @@ private:
 
 	struct symbolCombo
 	{
-		symbolCombo()
-		{
-			pay = 0;
-			breaks = false;
-		};
-		double pay;
-		bool breaks;
+		double pay = 0;
+		bool breaks = false;
 	};
 
 	int m_numReels;

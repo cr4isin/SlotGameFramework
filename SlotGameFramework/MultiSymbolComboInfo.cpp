@@ -53,6 +53,19 @@ MultiSymbolComboInfo::~MultiSymbolComboInfo()
 	m_combo_location.clear();
 }
 
+void MultiSymbolComboInfo::GetComboInfo(size_t symbolkey, int reel, double& pay, bool& breaks)
+{
+	symbolCombo thisSymbolCombo = m_combos[reel][symbolkey];
+	pay = thisSymbolCombo.pay;
+	breaks = thisSymbolCombo.breaks;
+	return;
+}
+
+size_t MultiSymbolComboInfo::GetSymbolLocation(const int reel, const int symbol)
+{
+	return m_combo_location[reel][symbol];
+}
+
 set<int> MultiSymbolComboInfo::SetIntersect(set<int> seta, set<int> setb)
 {
 	set<int> return_set;
@@ -104,13 +117,13 @@ void MultiSymbolComboInfo::EvaluateSymbolCombos(int reel, double pay, int multip
 			}
 			m_combos[reel][current_symbol_key].pay = max_pay * mult;
 			// Check if this is the final reel or the combo continues
-			if (reel + 1 >= m_numReels)
+			if (reel + 1 < m_numReels)
 			{
-				m_combos[reel][current_symbol_key].breaks = true;
+				EvaluateSymbolCombos(reel + 1, max_pay, mult, current_symbol_key, current_possible_symbols);
 			}
 			else
 			{
-				EvaluateSymbolCombos(reel + 1, max_pay, mult, current_symbol_key, current_possible_symbols);
+				m_combos[reel][current_symbol_key].breaks = true;
 			}
 		}
 	}

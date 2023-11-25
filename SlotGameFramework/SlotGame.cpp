@@ -1,6 +1,7 @@
 
 #include "SlotGame.h"
 
+// ============================== Constructor and Destructor ==============================
 SlotGame::SlotGame()
 {
 	// Create pointers here
@@ -18,28 +19,41 @@ SlotGame::~SlotGame()
 	delete multiSymbolComboInfo;
 	delete symbolComboInfo;
 }
-
+// ============================== Setup ==============================
 void SlotGame::SetupGame()
 {
-	baseGrid->SetTwoWayLines(CustomLines, 5);
+	baseGrid->SetLines(CustomLines, 5);
 	//baseReelSet->ReplaceSymbolOnReel(1, MM, SE);
 	//baseReelSet->ReplaceSymbolOnReel(2, MM, SE);
 	//baseReelSet->ReplaceSymbolOnReel(3, MM, BE);
 }
-
+// ============================== Game Functions ==============================
+double SlotGame::PlayGame()
+{
+	double score = 0;
+	return score;
+}
+double SlotGame::PlayBonus()
+{
+	double score = 0;
+	return score;
+}
+// ============================== Other Functions ==============================
 void SlotGame::DoSomething()
 {
-	vector<int> stops = { 6,7,6,6,9 };
+	// Blank function used for testing
+	vector<int> stops = { 0,1,2,3,4 };
 	vector<int> stops2 = stops;
 
 	baseGrid->FillGrid(stops, baseReelSet);
-	baseGrid->PrintGrid();
-	double score = baseGrid->EvaluateTwoWayGrid(multiSymbolComboInfo);
+	baseGrid->PrintGrid(symbolStrings);
+	double score = baseGrid->EvaluateGrid(multiSymbolComboInfo);
 	cout << "SCORE: " << score << endl;
 }
 
 void SlotGame::CycleStops()
 {
+	// Will cycle through all stops of a reel set and create a histogram of every possible score
 	map<double, size_t> hist;
 	vector<int> stops(numReels,0);
 	CycleStopsRecursive(hist, stops);
@@ -54,6 +68,8 @@ void SlotGame::CycleStops()
 
 void SlotGame::CycleStopsRecursive(map<double, size_t>& hist, vector<int>& stops, int currentReel)
 {
+	// Function used to run CycleStops()
+	// Might need to edit your grid, reels, and evaluation type being used
 	if (currentReel < stops.size())
 	{
 		for (int i = 0; i < baseReelSet->m_reelSizes[currentReel]; i++)
@@ -69,7 +85,7 @@ void SlotGame::CycleStopsRecursive(map<double, size_t>& hist, vector<int>& stops
 	}
 	else
 	{
-		double score = baseGrid->EvaluateTwoWayGrid(multiSymbolComboInfo);
+		double score = baseGrid->EvaluateGrid(multiSymbolComboInfo);
 		int combos = 1;
 		for (int i=0; i<stops.size(); i++)
 		{

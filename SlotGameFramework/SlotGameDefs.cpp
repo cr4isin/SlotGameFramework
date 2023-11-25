@@ -2,13 +2,12 @@
 #include "SlotGame.h"
 
 
-// Grid Dimensions
+// ==================================== Grid Dimensions ==================================== 
 int SlotGame::numReels = 5;
 int SlotGame::numRows = 3;
 
 
-
-// Reels
+// ==================================== Reels ==================================== 
 vector<vector<int>> SlotGame::baseReels =
 {
 	{BE, OR, BE, W7, BE, OR, BE, OR, PL, OR, BE, OR, BE, W7, BE, OR, BE, OR, CH, OR, BE, OR, BE, W7, OR},
@@ -28,8 +27,7 @@ vector<vector<int>> SlotGame::baseReelWeights =
 };
 
 
-
-// Symbol Combo Info
+// ==================================== Symbol Combo Info ==================================== 
 map<int, set<int>> SlotGame::symbolSubstitutions =
 { // Symbols not listed here will be set to only map to themselves: {X, {X}}
 	{BLANK, {}},
@@ -43,7 +41,6 @@ map<int, int> SlotGame::symbolMultipliers =
 
 map<int, vector<double>> SlotGame::paytable =
 { // Symbols not listed here will be set to have zero pays: {X, {0,0,0,0,0}}
-  // When evaluating lines both ways, set the full combo pay to half of its value since it will be counted twice
 	{SE, {0,0,20,100,750}},
 	{BE, {0,0,10,50,250}},
 	{PL, {0,0,5,25,125}},
@@ -51,9 +48,20 @@ map<int, vector<double>> SlotGame::paytable =
 	{CH, {0,0,2,10,50}},
 };
 
+vector<string> SlotGame::symbolStrings =
+{
+	"X ", // BLANK
+	"W7", // WILD
+	"SE", // AA
+	"BE", // BB
+	"PL", // CC
+	"OR", // DD
+	"CH", // EE
+	"MM", // BONUS
+};
 
 
-// Lines
+// ==================================== Lines ==================================== 
 vector<vector<int>> SlotGame::CustomLines =
 {
 	{1,1,1,1,1},

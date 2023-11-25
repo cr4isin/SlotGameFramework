@@ -42,6 +42,11 @@ SymbolComboInfo::~SymbolComboInfo()
 	m_combos.clear();
 }
 
+double SymbolComboInfo::GetComboInfo(size_t symbolkey)
+{
+	return m_combos[symbolkey];
+}
+
 set<int> SymbolComboInfo::SetIntersect(set<int> seta, set<int> setb)
 {
 	set<int> return_set;

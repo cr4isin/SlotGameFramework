@@ -2,7 +2,7 @@
 #include "SlotGrid.h"
 
 
-// ======= Standard Grid Functions ======= 
+// ===================== Standard Grid Functions ===================== 
 SlotGrid::SlotGrid(int numReels, int numRows)
 {
 	m_numReels = numReels;
@@ -42,19 +42,34 @@ void SlotGrid::PrintGrid()
 	cout << "\n";
 }
 
-// ======= Standard Left to Right Lines Grid Evaluation ======= 
+void SlotGrid::PrintGrid(vector<string> symbolStrings)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			cout << symbolStrings.at(m_grid[iReel][iRow]) << "\t";
+		}
+		cout << "\n";
+	}
+	cout << "\n";
+}
+
+// ===================== Grid Evaluation ===================== 
 void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 {
 	m_lines.clear();
+	m_lineElements.clear();
 	if (numLines <= 0)
 	{
 		numLines = lines.size();
 	}
 	for (int iLine = 0; iLine < numLines; iLine++)
 	{
+		m_lines.push_back(lines.at(iLine));
 		int row = lines.at(iLine).at(0);
 		bool found = false;
-		for (auto& line_element : m_lines)
+		for (auto& line_element : m_lineElements)
 		{
 			if (line_element.m_row == row)
 			{
@@ -65,8 +80,21 @@ void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 		}
 		if (!found)
 		{
-			m_lines.push_back(LineElement(0, row, m_numReels, lines.at(iLine)));
+			m_lineElements.push_back(LineElement(0, row, m_numReels, lines.at(iLine)));
 		}
+	}
+}
+
+SlotGrid::LineElement::LineElement(int reel, int row, int numReels, vector<int> line)
+{
+	m_line_count++;
+	m_reel = reel;
+	m_row = row;
+	m_numReels = numReels;
+	if (m_reel + 1 < m_numReels)
+	{
+		int next_row = line.at(m_reel + 1);
+		m_subLineElements.push_back(LineElement(m_reel + 1, next_row, m_numReels, line));
 	}
 }
 
@@ -78,7 +106,7 @@ void SlotGrid::LineElement::AddElement(vector<int>& line)
 	{
 		int next_row = line.at(m_reel + 1);
 		bool found = false;
-		for (auto& line_element : m_lines)
+		for (auto& line_element : m_subLineElements)
 		{
 			if (line_element.m_row == next_row)
 			{
@@ -89,7 +117,7 @@ void SlotGrid::LineElement::AddElement(vector<int>& line)
 		}
 		if (!found)
 		{
-			m_lines.push_back(LineElement(m_reel + 1, next_row, m_numReels, line));
+			m_subLineElements.push_back(LineElement(m_reel + 1, next_row, m_numReels, line));
 		}
 	}
 }
@@ -98,7 +126,7 @@ double SlotGrid::EvaluateGrid(MultiSymbolComboInfo* &currentSymbolCombos)
 {
 	double score = 0;
 	vector<vector<int>> grid = m_grid;
-	for (const auto& line_element : m_lines)
+	for (const auto& line_element : m_lineElements)
 	{
 		line_element.EvaluateElement(score, grid, currentSymbolCombos);
 	}
@@ -118,91 +146,14 @@ void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &
 	}
 	else
 	{
-		for (const auto& line_element : m_lines)
+		for (const auto& line_element : m_subLineElements)
 		{
 			line_element.EvaluateElement(score, grid, currentSymbolCombos, symbol_key);
 		}
 	}
 }
 
-void SlotGrid::PrintLines()
+double SlotGrid::EvaluateGrid(SymbolComboInfo*& currentSymbolCombos)
 {
-	for (auto& line_element : m_lines)
-	{
-		line_element.PrintLine();
-	}
-}
-
-void SlotGrid::LineElement::PrintLine()
-{
-	cout << string(m_reel, '\t') << m_row << string(m_numReels - m_reel, '\t') << m_line_count << "x\n";
-	for (auto& line_element : m_lines)
-	{
-		line_element.PrintLine();
-	}
-}
-
-// ======= Left to Right AND Right to Left Lines Grid Evaluation ======= 
-void SlotGrid::SetTwoWayLines(vector<vector<int>> lines, int numLines)
-{
-	m_leftLines.clear();
-	m_rightLines.clear();
-	if (numLines <= 0)
-	{
-		numLines = lines.size();
-	}
-	for (int iLine = 0; iLine < numLines; iLine++)
-	{
-		vector<int> currentLine = lines.at(iLine);
-		// Left Line
-		int row = currentLine.at(0);
-		bool found = false;
-		for (auto& line_element : m_leftLines)
-		{
-			if (line_element.m_row == row)
-			{
-				line_element.AddElement(currentLine);
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			m_leftLines.push_back(LineElement(0, row, m_numReels, currentLine));
-		}
-
-		reverse(currentLine.begin(), currentLine.end());
-		// Right Line
-		row = currentLine.at(0);
-		found = false;
-		for (auto& line_element : m_rightLines)
-		{
-			if (line_element.m_row == row)
-			{
-				line_element.AddElement(currentLine);
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			m_rightLines.push_back(LineElement(0, row, m_numReels, currentLine));
-		}
-	}
-}
-
-double SlotGrid::EvaluateTwoWayGrid(MultiSymbolComboInfo*& currentSymbolCombos)
-{
-	double score = 0;
-	vector<vector<int>> grid = m_grid;
-	for (const auto& line_element : m_leftLines)
-	{
-		line_element.EvaluateElement(score, grid, currentSymbolCombos);
-	}
-	reverse(grid.begin(), grid.end());
-	for (const auto& line_element : m_rightLines)
-	{
-		line_element.EvaluateElement(score, grid, currentSymbolCombos);
-	}
-	return score;
+	return 0.0;
 }

@@ -17,11 +17,7 @@ public:
 
 	SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType = PRODUCT);
 	~SymbolComboInfo();
-
-	double GetComboInfo(size_t symbolkey)
-	{
-		return m_combos[symbolkey];
-	}
+	double GetComboInfo(size_t symbolkey);
 
 private:
 	set<int> SetIntersect(set<int> seta, set<int> setb);
