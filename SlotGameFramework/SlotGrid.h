@@ -8,19 +8,22 @@ class SlotGrid
 {
 public:
 	SlotGrid(int numReels=5, int numRows=3);
-
+	
 	// Standard Grid Functions
-	int m_numReels = 1;
-	int m_numRows = 1;
 	void FillGrid(vector<int> &stops, SlotReels* &reels);
 	void FillGridColumn(vector<int> &stops, SlotReels* &reels, int colIndex);
 	void PrintGrid();
-	void PrintGrid(vector<string> symbolStrings);
 
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);
-	double EvaluateGrid(MultiSymbolComboInfo* &currentSymbolCombos);
-	double EvaluateGrid(SymbolComboInfo* &currentSymbolCombos);
+	void SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers);
+	void SetSymbolStrings(map<int, string> symbolStrings);
+	void SetPrintComboInfo(bool printComboInfo);
+	double EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos);
+	double EvaluateGridLines(SymbolComboInfo* &currentSymbolCombos);
+	double EvaluateGridWays();
+
+	string GetSymbolString(int symbol);
 
 private:
 	class LineElement
@@ -36,8 +39,15 @@ private:
 		void EvaluateElement(double& score, vector<vector<int>> &grid, MultiSymbolComboInfo* &currentSymbolCombos, size_t symbol_key = 0) const;
 	};
 
-	vector<vector<int>> m_grid;
-	vector<vector<int>> m_lines;
-	vector<LineElement> m_lineElements;
-
+	int m_numReels = 1; // Number of Reels in the Grid
+	int m_numRows = 1; // Number of Rows in the Grid
+	vector<vector<int>> m_grid; // 2D Vector (Reel, Row) that contains the symbols on the grid
+	vector<vector<int>> m_lines; // 2D Vector (Line, Row) that contains the current active lines
+	vector<LineElement> m_lineElements; // Root of the tree of line elements (used when evaluating lines with Multi-Symbol Combos)
+	int m_numSymbols = 1; // The number of symbols to evaluate (used for evaluating ways-pays)
+	map<int, set<int>> m_symbolSubstitutions; // The symbol substitutions mapping (used for evaluating ways-pays)
+	map<int, int> m_symbolMultipliers; // The symbol multipiers mapping (used for evaluating ways-pays)
+	map<int, vector<double>> m_paytable; // The symbol paytable mapping (used for evaluating ways-pays)
+	map<int, string> m_symbolStrings; // The symbol string mapping (used for printing the Grid and combo info)
+	bool m_printComboInfo = false; // Determines if combo info will be printed after Grid Evaluation
 };

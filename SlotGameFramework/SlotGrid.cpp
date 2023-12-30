@@ -35,20 +35,7 @@ void SlotGrid::PrintGrid()
 	{
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			cout << m_grid[iReel][iRow] << "\t";
-		}
-		cout << "\n";
-	}
-	cout << "\n";
-}
-
-void SlotGrid::PrintGrid(vector<string> symbolStrings)
-{
-	for (int iRow = 0; iRow < m_numRows; iRow++)
-	{
-		for (int iReel = 0; iReel < m_numReels; iReel++)
-		{
-			cout << symbolStrings.at(m_grid[iReel][iRow]) << "\t";
+			cout << GetSymbolString(m_grid[iReel][iRow]) << "\t";
 		}
 		cout << "\n";
 	}
@@ -83,6 +70,42 @@ void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 			m_lineElements.push_back(LineElement(0, row, m_numReels, lines.at(iLine)));
 		}
 	}
+}
+
+void SlotGrid::SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers)
+{
+	m_numSymbols = numSymbols;
+	m_paytable = paytable;
+	m_symbolSubstitutions = symbolSubstitutions;
+	m_symbolMultipliers = symbolMultipliers;
+
+	// Give default values to symbols not included
+	for (int symbol = 0; symbol < m_numSymbols; symbol++)
+	{
+		if (!m_paytable.contains(symbol))
+		{
+			vector<double> zero_pays(m_numReels, 0);
+			m_paytable[symbol] = zero_pays;
+		}
+		if (!m_symbolSubstitutions.contains(symbol))
+		{
+			m_symbolSubstitutions[symbol] = { symbol };
+		}
+		if (!m_symbolMultipliers.contains(symbol))
+		{
+			m_symbolMultipliers[symbol] = 1;
+		}
+	}
+}
+
+void SlotGrid::SetSymbolStrings(map<int, string> symbolStrings)
+{
+	m_symbolStrings = symbolStrings;
+}
+
+void SlotGrid::SetPrintComboInfo(bool printComboInfo)
+{
+	m_printComboInfo = printComboInfo;
 }
 
 SlotGrid::LineElement::LineElement(int reel, int row, int numReels, vector<int> line)
@@ -122,7 +145,7 @@ void SlotGrid::LineElement::AddElement(vector<int>& line)
 	}
 }
 
-double SlotGrid::EvaluateGrid(MultiSymbolComboInfo* &currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos)
 {
 	double score = 0;
 	vector<vector<int>> grid = m_grid;
@@ -153,7 +176,81 @@ void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &
 	}
 }
 
-double SlotGrid::EvaluateGrid(SymbolComboInfo*& currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(SymbolComboInfo*& currentSymbolCombos)
 {
-	return 0.0;
+	double score = 0;
+	for (int iLine = 0; iLine < m_lines.size(); iLine++)
+	{
+		// Calculate the Symbol Key for this line
+		size_t symbolKey = 0;
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			symbolKey += currentSymbolCombos->GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
+		}
+		// Grab the combo pay for this Symbol Key
+		double lineScore = currentSymbolCombos->GetComboInfo(symbolKey);
+		score += lineScore;
+		// Print Combos
+		if (m_printComboInfo && lineScore > 0)
+		{
+			cout << "Line " << iLine + 1 << " pays " << lineScore << "\n";
+		}
+	}
+	return score;
+}
+
+double SlotGrid::EvaluateGridWays()
+{
+	double score = 0;
+
+	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
+	{
+		int numCombos = 1;
+		int comboLength = 0;
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			int symbolCount = 0;
+			for (int iRow = 0; iRow < m_numRows; iRow++)
+			{
+				int currentSymbol = m_grid[iReel][iRow];
+				if (m_symbolSubstitutions[currentSymbol].contains(iSymbol))
+				{
+					symbolCount += m_symbolMultipliers[currentSymbol];
+				}
+			}
+			if (symbolCount > 0)
+			{
+				comboLength++;
+				numCombos *= symbolCount;
+			}
+			else
+			{
+				break;
+			}
+		}
+		if (comboLength > 0)
+		{
+			double symbolScore = numCombos * m_paytable[iSymbol][comboLength-1];
+
+			if (m_printComboInfo && symbolScore > 0)
+			{
+				cout << comboLength << "-" << GetSymbolString(iSymbol) << " x " << numCombos << " Ways pays " << symbolScore << "\n";
+			}
+
+			score += symbolScore;
+		}
+	}
+	return score;
+}
+
+string SlotGrid::GetSymbolString(int symbol)
+{
+	if (m_symbolStrings.contains(symbol))
+	{
+		return m_symbolStrings[symbol];
+	}
+	else
+	{
+		return "S" + to_string(symbol);
+	}
 }

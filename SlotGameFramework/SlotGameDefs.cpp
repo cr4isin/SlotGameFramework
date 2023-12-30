@@ -48,16 +48,16 @@ map<int, vector<double>> SlotGame::paytable =
 	{CH, {0,0,2,10,50}},
 };
 
-vector<string> SlotGame::symbolStrings =
+map<int, string> SlotGame::symbolStrings =
 {
-	"X ", // BLANK
-	"W7", // WILD
-	"SE", // AA
-	"BE", // BB
-	"PL", // CC
-	"OR", // DD
-	"CH", // EE
-	"MM", // BONUS
+	{BLANK, "--"},
+	{W7, "W7"},
+	{SE, "SE"},
+	{BE, "BE"},
+	{PL, "PL"},
+	{OR, "OR"},
+	{CH, "CH"},
+	{MM, "MM"},
 };
 
 

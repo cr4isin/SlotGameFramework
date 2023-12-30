@@ -137,6 +137,7 @@
     <ClCompile Include="SlotGame.cpp" />
     <ClCompile Include="SlotGrid.cpp" />
     <ClCompile Include="SymbolComboInfo.cpp" />
+    <ClCompile Include="WeightTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="General.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />
     <ClInclude Include="SymbolComboInfo.h" />
+    <ClInclude Include="WeightTable.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

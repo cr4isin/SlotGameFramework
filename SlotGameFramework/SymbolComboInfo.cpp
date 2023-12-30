@@ -31,6 +31,15 @@ SymbolComboInfo::SymbolComboInfo(int numReels, int numSymbols, map<int, vector<d
 
 	// Set up m_combos size
 	m_combos.resize(pow(m_numSymbols, m_numReels));
+	m_combo_location.resize(numReels);
+	for (int iReel = 0; iReel < numReels; iReel++)
+	{
+		m_combo_location.at(iReel).resize(numSymbols);
+		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
+		{
+			m_combo_location[iReel][currentSymbol] = currentSymbol * pow(numSymbols, iReel);
+		}
+	}
 
 	// Calculate all possible symbol combos
 	EvaluateSymbolCombos();
@@ -45,6 +54,11 @@ SymbolComboInfo::~SymbolComboInfo()
 double SymbolComboInfo::GetComboInfo(size_t symbolkey)
 {
 	return m_combos[symbolkey];
+}
+
+size_t SymbolComboInfo::GetSymbolLocation(const int reel, const int symbol)
+{
+	return m_combo_location[reel][symbol];
 }
 
 set<int> SymbolComboInfo::SetIntersect(set<int> seta, set<int> setb)

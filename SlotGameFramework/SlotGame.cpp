@@ -20,17 +20,59 @@ SlotGame::~SlotGame()
 	delete symbolComboInfo;
 }
 // ============================== Setup ==============================
+void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
+{
+	this->baseBet = baseBet;
+	this->betMult = betMult;
+	if (totalBet < 0)
+	{
+		this->totalBet = baseBet * betMult;
+	}
+	else
+	{
+		this->totalBet = totalBet;
+	}
+}
+
 void SlotGame::SetupGame()
 {
+	SetupGrids();
+	SetupReels();
+	SetupWeightTables();
+}
+
+void SlotGame::SetupGrids()
+{
+	baseGrid->SetSymbolStrings(symbolStrings);
+	baseGrid->SetPrintComboInfo(printComboInfo);
 	baseGrid->SetLines(CustomLines, 5);
+	baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+}
+
+void SlotGame::SetupReels()
+{
 	//baseReelSet->ReplaceSymbolOnReel(1, MM, SE);
 	//baseReelSet->ReplaceSymbolOnReel(2, MM, SE);
 	//baseReelSet->ReplaceSymbolOnReel(3, MM, BE);
+}
+
+void SlotGame::SetupWeightTables()
+{
 }
 // ============================== Game Functions ==============================
 double SlotGame::PlayGame()
 {
 	double score = 0;
+
+	vector<int> stops = baseReelSet->GenerateRandomStops();
+	baseGrid->FillGrid(stops, baseReelSet);
+	if (printComboInfo)
+	{
+		baseGrid->PrintGrid();
+	}
+	//score += baseGrid->EvaluateGridLines(symbolComboInfo);
+	score += baseGrid->EvaluateGridWays();
+
 	return score;
 }
 double SlotGame::PlayBonus()
@@ -42,13 +84,65 @@ double SlotGame::PlayBonus()
 void SlotGame::DoSomething()
 {
 	// Blank function used for testing
-	vector<int> stops = { 0,1,2,3,4 };
-	vector<int> stops2 = stops;
+	printComboInfo = true;
+	SetupGame();
+	double score = PlayGame();
 
-	baseGrid->FillGrid(stops, baseReelSet);
-	baseGrid->PrintGrid(symbolStrings);
-	double score = baseGrid->EvaluateGrid(multiSymbolComboInfo);
 	cout << "SCORE: " << score << endl;
+}
+
+void SlotGame::RunSims(int numTrials, int trialSize)
+{
+	SetupGame();
+	map<double, size_t> hist;
+	int percentile = trialSize / 100;
+	double coinIn = 0;
+	double coinOut = 0;
+
+	for (int iTrial = 0; iTrial < numTrials; iTrial++)
+	{
+		for (int iGame = 1; iGame <= trialSize; iGame++)
+		{
+			double score = PlayGame();
+			coinOut += score;
+			coinIn += totalBet;
+			hist[PlayGame()]++;
+			if (iGame % percentile == 0)
+			{
+				cout << iGame / percentile << "/100\t" << coinOut / coinIn << endl;
+			}
+		}
+	}
+
+	ofstream outputFile("SimsOutput.txt");
+	for (auto const& [score, combo] : hist)
+	{
+		outputFile << score << "\t" << combo << "\n";
+	}
+	outputFile.close();
+}
+
+void SlotGame::FreePlay()
+{
+	printComboInfo = true;
+	string input;
+	SetupGame();
+	cout << "Press Enter to Play!";
+	cin.get();
+
+	double coinIn = 0;
+	double coinOut = 0;
+	while (true)
+	{
+		system("cls");
+		cout << "\n";
+		double score = PlayGame();
+		coinIn += totalBet;
+		coinOut += score;
+		cout << "\nScore: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
+		cin.get();
+
+	}
 }
 
 void SlotGame::CycleStops()
@@ -85,15 +179,11 @@ void SlotGame::CycleStopsRecursive(map<double, size_t>& hist, vector<int>& stops
 	}
 	else
 	{
-		double score = baseGrid->EvaluateGrid(multiSymbolComboInfo);
+		double score = baseGrid->EvaluateGridLines(multiSymbolComboInfo);
 		int combos = 1;
 		for (int i=0; i<stops.size(); i++)
 		{
 			combos *= baseReelSet->m_reelWeights[i][stops[i]];
-		}
-		if (!hist.contains(score))
-		{
-			hist[score] = 0;
 		}
 		hist[score] += combos;
 	}

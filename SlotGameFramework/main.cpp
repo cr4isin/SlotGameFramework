@@ -1,18 +1,18 @@
-// SlotGameFramework.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
 
 #include "SlotGame.h"
 
 int main()
 {
     SlotGame game = SlotGame();
-    game.SetupGame();
+    game.SetBetScheme(1, 1);
     game.DoSomething();
+    //game.RunSims(1, 100'000'000);
+    //game.FreePlay();
 }
 
 // to do:
-// have SetLines copy the lines array to a grid variable, and create the line elements
-// this way users can use multi symbol combos or normal symbol combos
-// add a function for set lines all ways which will also change the line counts to 1
-// add an optional variable BothWays = false to creating symbol combos
-// two evaluate grid functions, one that accepts symbol combos and one that accepts multi symbol combos
+// clean up custom classes and add getters so variables can be private
+// add a way to calculate ways pays
+// add weight tables/manager
+// add game pays
+// add median spins calculator

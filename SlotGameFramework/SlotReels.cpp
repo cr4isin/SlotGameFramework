@@ -20,6 +20,13 @@ SlotReels::SlotReels(vector<vector<int>> reels, int maxRows) {
 			m_reelWeights.at(iReel).push_back(1);
 		}
 	}
+	random_device rd;
+	stopRNG.seed(rd());
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		uniform_int_distribution<> dist(0, m_totalWeights.at(iReel) - 1);
+		stopGenerator.push_back(dist);
+	}
 }
 
 SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights, int maxRows)
@@ -42,6 +49,13 @@ SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights,
 			totalWeight += m_reelWeights.at(iReel).at(i);
 		}
 		m_totalWeights.push_back(totalWeight);
+	}
+	random_device rd;
+	stopRNG.seed(rd());
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		uniform_int_distribution<> dist(0, m_totalWeights.at(iReel) - 1);
+		stopGenerator.push_back(dist);
 	}
 }
 
@@ -70,4 +84,14 @@ void SlotReels::ReplaceSymbolOnReel(int reelIndex, int oldSymbol, int newSymbol)
 			m_reels[reelIndex][i] = newSymbol;
 		}
 	}
+}
+
+vector<int> SlotReels::GenerateRandomStops()
+{
+	vector<int> stops(m_numReels);
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		stops[iReel] = stopGenerator[iReel](stopRNG);
+	}
+	return stops;
 }
