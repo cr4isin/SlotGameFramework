@@ -15,3 +15,5 @@
 using namespace std;
 
 void PrintVec(vector<int> input);
+
+vector<int> ChangeBase(int input, int base, int length = 0);

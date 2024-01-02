@@ -15,7 +15,7 @@ public:
 		MAX,
 	};
 
-	SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType = PRODUCT);
+	SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays = false, multiplierType multType = PRODUCT);
 	~SymbolComboInfo();
 	double GetComboInfo(size_t symbolkey);
 	size_t GetSymbolLocation(const int reel, const int symbol);

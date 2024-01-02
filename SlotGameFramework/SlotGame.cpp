@@ -7,8 +7,8 @@ SlotGame::SlotGame()
 	// Create pointers here
 	baseReelSet = new SlotReels(baseReels);
 	baseGrid = new SlotGrid(numReels, numRows);
-	multiSymbolComboInfo = new MultiSymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
-	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	//multiSymbolComboInfo = new MultiSymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers, true);
 }
 
 SlotGame::~SlotGame()
@@ -16,7 +16,7 @@ SlotGame::~SlotGame()
 	// Delete pointers here
 	delete baseReelSet;
 	delete baseGrid;
-	delete multiSymbolComboInfo;
+	//delete multiSymbolComboInfo;
 	delete symbolComboInfo;
 }
 // ============================== Setup ==============================
@@ -24,7 +24,7 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 {
 	this->baseBet = baseBet;
 	this->betMult = betMult;
-	if (totalBet < 0)
+	if (totalBet <= 0)
 	{
 		this->totalBet = baseBet * betMult;
 	}
@@ -46,7 +46,7 @@ void SlotGame::SetupGrids()
 	baseGrid->SetSymbolStrings(symbolStrings);
 	baseGrid->SetPrintComboInfo(printComboInfo);
 	baseGrid->SetLines(CustomLines, 5);
-	baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	//baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 void SlotGame::SetupReels()
@@ -70,8 +70,8 @@ double SlotGame::PlayGame()
 	{
 		baseGrid->PrintGrid();
 	}
-	//score += baseGrid->EvaluateGridLines(symbolComboInfo);
-	score += baseGrid->EvaluateGridWays();
+	score += baseGrid->EvaluateGridLines(symbolComboInfo);
+	//score += baseGrid->EvaluateGridWays();
 
 	return score;
 }
@@ -84,6 +84,15 @@ double SlotGame::PlayBonus()
 void SlotGame::DoSomething()
 {
 	// Blank function used for testing
+
+	/*for (int i = 0; i <= 30; i++)
+	{
+		cout << i << endl;
+		vector<int> output = ChangeBase(i, 5, 5);
+		PrintVec(output);
+	}*/
+
+
 	printComboInfo = true;
 	SetupGame();
 	double score = PlayGame();
@@ -179,7 +188,7 @@ void SlotGame::CycleStopsRecursive(map<double, size_t>& hist, vector<int>& stops
 	}
 	else
 	{
-		double score = baseGrid->EvaluateGridLines(multiSymbolComboInfo);
+		double score = baseGrid->EvaluateGridLines(symbolComboInfo);
 		int combos = 1;
 		for (int i=0; i<stops.size(); i++)
 		{

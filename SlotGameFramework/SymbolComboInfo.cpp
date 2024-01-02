@@ -1,7 +1,7 @@
 
 #include "SymbolComboInfo.h"
 
-SymbolComboInfo::SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType)
+SymbolComboInfo::SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays, multiplierType multType)
 {
 	cout << "Calculating Symbol Combos... ";
 	m_numReels = numReels;
@@ -43,6 +43,21 @@ SymbolComboInfo::SymbolComboInfo(int numReels, int numSymbols, map<int, vector<d
 
 	// Calculate all possible symbol combos
 	EvaluateSymbolCombos();
+	if (bothWays)
+	{
+		vector<double> m_combosCopy = m_combos;
+		for (int iCombo = 0; iCombo < m_combos.size(); iCombo++)
+		{
+			vector<int> combo = ChangeBase(iCombo, m_numSymbols, m_numReels);
+			reverse(combo.begin(), combo.end());
+			size_t symbolKey = 0;
+			for (int iReel = 0; iReel < m_numReels; iReel++)
+			{
+				symbolKey += GetSymbolLocation(iReel, combo[iReel]);
+			}
+			m_combos[iCombo] = max(m_combosCopy[iCombo], m_combosCopy[symbolKey]);
+		}
+	}
 	cout << "Done!\n";
 }
 

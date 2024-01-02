@@ -24,17 +24,17 @@ public:
 	
 	// ==================== General Functions and Variables ====================
 	// Grid and Reels
-	SlotReels* baseReelSet;
 	SlotGrid* baseGrid;
+	SlotReels* baseReelSet;
 	// Grid Evaluation
-	MultiSymbolComboInfo* multiSymbolComboInfo;
+	//MultiSymbolComboInfo* multiSymbolComboInfo;
 	SymbolComboInfo* symbolComboInfo;
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
 	bool printComboInfo = false;
 	// Setup
-	void SetBetScheme(int baseBet, int betMult, int totalBet = -1);
+	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGame();
 	void SetupGrids();
 	void SetupReels();
