@@ -45,7 +45,7 @@ void SlotGame::SetupGrids()
 {
 	baseGrid->SetSymbolStrings(symbolStrings);
 	baseGrid->SetPrintComboInfo(printComboInfo);
-	baseGrid->SetLines(CustomLines, 5);
+	baseGrid->SetLines(CustomLines, 1);
 	//baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
@@ -157,6 +157,7 @@ void SlotGame::FreePlay()
 void SlotGame::CycleStops()
 {
 	// Will cycle through all stops of a reel set and create a histogram of every possible score
+	SetupGame();
 	map<double, size_t> hist;
 	vector<int> stops(numReels,0);
 	CycleStopsRecursive(hist, stops);

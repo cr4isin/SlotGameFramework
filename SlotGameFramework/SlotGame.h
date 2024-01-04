@@ -12,13 +12,18 @@ public:
 	enum Symbols 
 	{
 		BLANK,
-		W7,
-		SE,
-		BE,
-		PL,
-		OR,
-		CH,
-		MM,
+		WC,
+		AA,
+		BB,
+		CC,
+		DD,
+		EE,
+		FF,
+		GG,
+		HH,
+		JJ,
+		KK,
+		BN,
 		numSymbols
 	};
 	

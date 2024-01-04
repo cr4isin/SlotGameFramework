@@ -5,8 +5,9 @@ int main()
 {
     SlotGame game = SlotGame();
     game.SetBetScheme(1, 1);
+    game.CycleStops();
     //game.DoSomething();
-    game.RunSims(1, 100'000'000);
+    //game.RunSims(1, 100'000'000);
     //game.FreePlay();
 }
 

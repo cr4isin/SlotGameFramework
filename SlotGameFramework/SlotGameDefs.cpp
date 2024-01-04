@@ -4,17 +4,17 @@
 
 // ==================================== Grid Dimensions ==================================== 
 int SlotGame::numReels = 5;
-int SlotGame::numRows = 3;
+int SlotGame::numRows = 1;
 
 
 // ==================================== Reels ==================================== 
 vector<vector<int>> SlotGame::baseReels =
 {
-	{BE, OR, BE, W7, BE, OR, BE, OR, PL, OR, BE, OR, BE, W7, BE, OR, BE, OR, CH, OR, BE, OR, BE, W7, OR},
-	{OR, BE, OR, W7, OR, BE, OR, PL, OR, BE, OR, CH, OR, BE, OR, CH, OR, BE},
-	{W7, CH, BE, W7, OR, CH, W7, PL, CH, W7, OR, CH, W7, BE, PL, W7, CH, OR, W7, CH, PL, W7, CH, OR},
-	{PL, CH, W7, CH, PL, CH, PL, CH, W7, CH, PL, CH, PL, CH, PL, BE, PL, CH, PL, OR, PL, CH, PL, CH},
-	{PL, CH, PL, W7, PL, CH, PL, CH, PL, W7, PL, CH, PL, CH, PL, CH, BE, CH, PL, CH, OR, CH, PL, CH, W7},
+	{BN, AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK},
+	{WC, AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK, BN},
+	{WC, AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK, BN},
+	{WC, AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK, BN},
+	{BN, AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK},
 };
 
 vector<vector<int>> SlotGame::baseReelWeights =
@@ -31,7 +31,7 @@ vector<vector<int>> SlotGame::baseReelWeights =
 map<int, set<int>> SlotGame::symbolSubstitutions =
 { // Symbols not listed here will be set to only map to themselves: {X, {X}}
 	{BLANK, {}},
-	{W7, {SE, BE, PL, OR, CH}},
+	{WC, {AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK}},
 };
 
 map<int, int> SlotGame::symbolMultipliers =
@@ -41,31 +41,41 @@ map<int, int> SlotGame::symbolMultipliers =
 
 map<int, vector<double>> SlotGame::paytable =
 { // Symbols not listed here will be set to have zero pays: {X, {0,0,0,0,0}}
-	{SE, {0,0,20,100,750}},
-	{BE, {0,0,10,50,250}},
-	{PL, {0,0,5,25,125}},
-	{OR, {0,0,3,15,75}},
-	{CH, {0,0,2,10,50}},
+	{AA,{0,0,100,250,500}},
+	{BB,{0,0,75,150,250}},
+	{CC,{0,0,50,100,150}},
+	{DD,{0,0,25,75,100}},
+	{EE,{0,0,10,50,75}},
+	{FF,{0,0,10,50,75}},
+	{GG,{0,0,5,25,50}},
+	{HH,{0,0,5,25,50}},
+	{JJ,{0,0,3,10,25}},
+	{KK,{0,0,3,10,25}},
 };
 
 map<int, string> SlotGame::symbolStrings =
 {
 	{BLANK, "--"},
-	{W7, "W7"},
-	{SE, "SE"},
-	{BE, "BE"},
-	{PL, "PL"},
-	{OR, "OR"},
-	{CH, "CH"},
-	{MM, "MM"},
+	{WC,"WC"},
+	{AA,"AA"},
+	{BB,"BB"},
+	{CC,"CC"},
+	{DD,"DD"},
+	{EE,"EE"},
+	{FF,"FF"},
+	{GG,"GG"},
+	{HH,"HH"},
+	{JJ,"JJ"},
+	{KK,"KK"},
+	{BN,"BN"},
 };
 
 
 // ==================================== Lines ==================================== 
 vector<vector<int>> SlotGame::CustomLines =
 {
-	{1,1,1,1,1},
 	{0,0,0,0,0},
+	{1,1,1,1,1},
 	{2,2,2,2,2},
 	{0,1,2,1,0},
 	{2,1,0,1,2},
