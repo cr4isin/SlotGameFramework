@@ -8,10 +8,14 @@ class SlotGrid
 {
 public:
 	SlotGrid(int numReels=5, int numRows=3);
+	int GetSymbol(int reelIndex, int rowIndex);
+	vector<vector<int>> GetGrid();
+	int GetNumReels();
+	int GetNumRows();
 	
 	// Standard Grid Functions
-	void FillGrid(vector<int> &stops, SlotReels* &reels);
-	void FillGridColumn(vector<int> &stops, SlotReels* &reels, int colIndex);
+	void FillGrid(vector<int> &positions, SlotReels* &reels);
+	void FillGridReel(int reelIndex, int position, SlotReels* &reels);
 	void PrintGrid();
 
 	// Grid Evaluation
@@ -22,6 +26,20 @@ public:
 	double EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos);
 	double EvaluateGridLines(SymbolComboInfo* &currentSymbolCombos);
 	double EvaluateGridWays();
+
+	bool IsSymbolOnGrid(int symbol);
+	bool IsSymbolOnReel(int symbol, int reelIndex);
+	bool IsSymbolOnRow(int symbol, int rowIndex);
+	int CountSymbolOnGrid(int symbol);
+	int CountSymbolOnReel(int symbol, int reelIndex);
+	int CountSymbolOnRow(int symbol, int rowIndex);
+	void FillGridWithSymbol(int symbol);
+	void FillReelWithSymbol(int symbol, int reelIndex);
+	void FillRowWithSymbol(int symbol, int rowIndex);
+	void ReplaceSymbolOnGrid(int oldSymbol, int newSymbol);
+	void ReplaceSymbolOnReel(int oldSymbol, int newSymbol, int reelIndex);
+	void ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex);
+
 
 	string GetSymbolString(int symbol);
 

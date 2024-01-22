@@ -3,7 +3,8 @@
 #include "General.h"
 
 // This class contains the info about every symbol combo using all reels
-// (standard lines from left to right, evaluated one by one)
+// Standard lines from left-to-right, evaluated one by one
+// Set bothWays to true to evaluate from left-to-right and right-to-left
 
 class SymbolComboInfo
 {

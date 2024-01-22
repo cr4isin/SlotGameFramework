@@ -14,19 +14,37 @@ SlotGrid::SlotGrid(int numReels, int numRows)
 	}
 }
 
-void SlotGrid::FillGrid(vector<int> &stops, SlotReels* &reels)
+int SlotGrid::GetSymbol(int reelIndex, int rowIndex)
 {
-	for (int iCol = 0; iCol < m_numReels; iCol++)
+	return m_grid[reelIndex][rowIndex];
+}
+
+vector<vector<int>> SlotGrid::GetGrid()
+{
+	return m_grid;
+}
+
+int SlotGrid::GetNumReels()
+{
+	return m_numReels;
+}
+
+int SlotGrid::GetNumRows()
+{
+	return m_numRows;
+}
+
+void SlotGrid::FillGrid(vector<int> &positions, SlotReels* &reels)
+{
+	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
-		FillGridColumn(stops, reels, iCol);
+		FillGridReel(iReel, positions[iReel], reels);
 	}
 }
 
-void SlotGrid::FillGridColumn(vector<int> &stops, SlotReels* &reels, int colIndex)
+void SlotGrid::FillGridReel(int reelIndex, int position, SlotReels*& reels)
 {
-	int stopIndex = reels->GetIndexFromStop(colIndex, stops[colIndex]);
-	vector<int> newCol(reels->m_reels[colIndex].begin() + stopIndex, reels->m_reels[colIndex].begin() + stopIndex + m_numRows);
-	m_grid[colIndex] = newCol;
+	m_grid[reelIndex] = reels->GetSubReel(reelIndex, position, m_numRows);
 }
 
 void SlotGrid::PrintGrid()
@@ -202,7 +220,6 @@ double SlotGrid::EvaluateGridLines(SymbolComboInfo*& currentSymbolCombos)
 double SlotGrid::EvaluateGridWays()
 {
 	double score = 0;
-
 	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
 	{
 		int numCombos = 1;
@@ -241,6 +258,132 @@ double SlotGrid::EvaluateGridWays()
 		}
 	}
 	return score;
+}
+
+bool SlotGrid::IsSymbolOnGrid(int symbol)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			if (m_grid[iReel][iRow] == symbol) return true;
+		}
+	}
+	return false;
+}
+
+bool SlotGrid::IsSymbolOnReel(int symbol, int reelIndex)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		if (m_grid[reelIndex][iRow] == symbol) return true;
+	}
+	return false;
+}
+
+bool SlotGrid::IsSymbolOnRow(int symbol, int rowIndex)
+{
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		if (m_grid[iReel][rowIndex] == symbol) return true;
+	}
+	return false;
+}
+
+int SlotGrid::CountSymbolOnGrid(int symbol)
+{
+	int symbolCount = 0;
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			symbolCount += m_grid[iReel][iRow] == symbol;
+		}
+	}
+	return symbolCount;
+}
+
+int SlotGrid::CountSymbolOnReel(int symbol, int reelIndex)
+{
+	int symbolCount = 0;
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		symbolCount += m_grid[reelIndex][iRow] == symbol;
+	}
+	return symbolCount;
+}
+
+int SlotGrid::CountSymbolOnRow(int symbol, int rowIndex)
+{
+	int symbolCount = 0;
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		symbolCount += m_grid[iReel][rowIndex] == symbol;
+	}
+	return symbolCount;
+}
+
+void SlotGrid::FillGridWithSymbol(int symbol)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			m_grid[iReel][iRow] = symbol;
+		}
+	}
+}
+
+void SlotGrid::FillReelWithSymbol(int symbol, int reelIndex)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		m_grid[reelIndex][iRow] = symbol;
+	}
+}
+
+void SlotGrid::FillRowWithSymbol(int symbol, int rowIndex)
+{
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		m_grid[iReel][rowIndex] = symbol;
+	}
+}
+
+void SlotGrid::ReplaceSymbolOnGrid(int oldSymbol, int newSymbol)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			if (m_grid[iReel][iRow] == oldSymbol)
+			{
+				m_grid[iReel][iRow] = newSymbol;
+			}
+		}
+	}
+}
+
+void SlotGrid::ReplaceSymbolOnReel(int oldSymbol, int newSymbol, int reelIndex)
+{
+	for (int iRow = 0; iRow < m_numRows; iRow++)
+	{
+		if (m_grid[reelIndex][iRow] == oldSymbol)
+		{
+			m_grid[reelIndex][iRow] = newSymbol;
+		}
+	}
+}
+
+void SlotGrid::ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex)
+{
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		if (m_grid[iReel][rowIndex] == oldSymbol)
+		{
+			m_grid[iReel][rowIndex] = newSymbol;
+		}
+	}
 }
 
 string SlotGrid::GetSymbolString(int symbol)

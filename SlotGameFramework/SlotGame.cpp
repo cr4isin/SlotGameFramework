@@ -5,9 +5,8 @@
 SlotGame::SlotGame()
 {
 	// Create pointers here
-	baseReelSet = new SlotReels(baseReels);
+	baseReelSet = new SlotReels(baseReels, baseReelWeights);
 	baseGrid = new SlotGrid(numReels, numRows);
-	//multiSymbolComboInfo = new MultiSymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers, true);
 }
 
@@ -16,7 +15,6 @@ SlotGame::~SlotGame()
 	// Delete pointers here
 	delete baseReelSet;
 	delete baseGrid;
-	//delete multiSymbolComboInfo;
 	delete symbolComboInfo;
 }
 // ============================== Setup ==============================
@@ -46,7 +44,7 @@ void SlotGame::SetupGrids()
 	baseGrid->SetSymbolStrings(symbolStrings);
 	baseGrid->SetPrintComboInfo(printComboInfo);
 	baseGrid->SetLines(CustomLines, 1);
-	//baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 void SlotGame::SetupReels()
@@ -64,14 +62,14 @@ double SlotGame::PlayGame()
 {
 	double score = 0;
 
-	vector<int> stops = baseReelSet->GenerateRandomStops();
-	baseGrid->FillGrid(stops, baseReelSet);
+	vector<int> positions = baseReelSet->GenerateRandomPositions();
+	baseGrid->FillGrid(positions, baseReelSet);
 	if (printComboInfo)
 	{
 		baseGrid->PrintGrid();
 	}
-	score += baseGrid->EvaluateGridLines(symbolComboInfo);
-	//score += baseGrid->EvaluateGridWays();
+	//score += baseGrid->EvaluateGridLines(symbolComboInfo);
+	score += baseGrid->EvaluateGridWays();
 
 	return score;
 }
@@ -83,26 +81,20 @@ double SlotGame::PlayBonus()
 // ============================== Other Functions ==============================
 void SlotGame::DoSomething()
 {
-	// Blank function used for testing
-
-	/*for (int i = 0; i <= 30; i++)
+	vector<long long> weights = {1,0,2,0,3,0,4,0,5,0,0,0,1};
+	WeightTable weightTable(weights);
+	int index = 0;
+	long long weight = 0;
+	double value = 0;
+	for (int i = 0; i < 30; i++)
 	{
-		cout << i << endl;
-		vector<int> output = ChangeBase(i, 5, 5);
-		PrintVec(output);
-	}*/
-
-
-	printComboInfo = true;
-	SetupGame();
-	double score = PlayGame();
-
-	cout << "SCORE: " << score << endl;
+		weightTable.Call(weight, index, value);
+		cout << weight << "\t" << index << "\t" << value << "\n";
+	}
 }
 
 void SlotGame::RunSims(int numTrials, int trialSize)
 {
-	SetupGame();
 	map<double, size_t> hist;
 	int percentile = trialSize / 100;
 	double coinIn = 0;
@@ -134,8 +126,8 @@ void SlotGame::RunSims(int numTrials, int trialSize)
 void SlotGame::FreePlay()
 {
 	printComboInfo = true;
+	baseGrid->SetPrintComboInfo(true);
 	string input;
-	SetupGame();
 	cout << "Press Enter to Play!";
 	cin.get();
 
@@ -154,15 +146,22 @@ void SlotGame::FreePlay()
 	}
 }
 
-void SlotGame::CycleStops()
+void SlotGame::CyclePositions()
 {
-	// Will cycle through all stops of a reel set and create a histogram of every possible score
-	SetupGame();
+	// Will cycle through all positions of a reel set and create a histogram of every possible score
 	map<double, size_t> hist;
-	vector<int> stops(numReels,0);
-	CycleStopsRecursive(hist, stops);
+	vector<int> positions(numReels,0);
+	double maxScore = 0;
+	vector<int> maxPositions(numReels, 0);
+	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
 	ofstream outputFile("CycleStopsOutput.txt");
+	outputFile << "Max Pay Stops:\t";
+	for (int iReel = 0; iReel < numReels; iReel++)
+	{
+		outputFile << maxPositions[iReel] << "\t";
+	}
+	outputFile << "\n\n";
 	for (auto const& [score, combo] : hist)
 	{
 		outputFile << score << "\t" << combo << "\n";
@@ -170,31 +169,36 @@ void SlotGame::CycleStops()
 	outputFile.close();
 }
 
-void SlotGame::CycleStopsRecursive(map<double, size_t>& hist, vector<int>& stops, int currentReel)
+void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel)
 {
 	// Function used to run CycleStops()
 	// Might need to edit your grid, reels, and evaluation type being used
-	if (currentReel < stops.size())
+	if (currentReel < positions.size())
 	{
-		for (int i = 0; i < baseReelSet->m_reelSizes[currentReel]; i++)
+		for (int i = 0; i < baseReelSet->GetReelSize(currentReel); i++)
 		{
 			if (currentReel == 0)
 			{
-				cout << i << " / " << baseReelSet->m_reelSizes[currentReel] << "\n";
+				cout << i << " / " << baseReelSet->GetReelSize(currentReel) << "\n";
 			}
-			stops.at(currentReel) = i;
-			baseGrid->FillGridColumn(stops, baseReelSet, currentReel);
-			CycleStopsRecursive(hist, stops, currentReel + 1);
+			positions.at(currentReel) = i;
+			baseGrid->FillGridReel(currentReel, positions[currentReel], baseReelSet);
+			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
 		}
 	}
 	else
 	{
-		double score = baseGrid->EvaluateGridLines(symbolComboInfo);
+		double score = baseGrid->EvaluateGridWays();
 		int combos = 1;
-		for (int i=0; i<stops.size(); i++)
+		for (int iReel=0; iReel < positions.size(); iReel++)
 		{
-			combos *= baseReelSet->m_reelWeights[i][stops[i]];
+			combos *= baseReelSet->GetWeight(iReel, positions[iReel]);
 		}
 		hist[score] += combos;
+		if (score > maxScore)
+		{
+			maxPositions = positions;
+			maxScore = score;
+		}
 	}
 }

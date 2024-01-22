@@ -13,57 +13,63 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Source Files\SlotGame">
+      <UniqueIdentifier>{e2c546fa-5227-4661-ae5c-817dc77381ba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\SlotFramework">
+      <UniqueIdentifier>{08027ad0-dfba-4870-98e8-a95df92725fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotGame</Filter>
     </ClCompile>
     <ClCompile Include="SlotGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotGrid.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotReels.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MultiSymbolComboInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotGame</Filter>
     </ClCompile>
     <ClCompile Include="SlotGameDefs.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotGame</Filter>
     </ClCompile>
     <ClCompile Include="General.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiSymbolComboInfo.cpp">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SlotGrid.cpp">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="SlotReels.cpp">
+      <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
     <ClCompile Include="SymbolComboInfo.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
     <ClCompile Include="WeightTable.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="General.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SlotGame.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\SlotGame</Filter>
     </ClInclude>
-    <ClInclude Include="SlotGrid.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SlotReels.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="General.h">
+      <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="MultiSymbolComboInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SlotGrid.h">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="SlotReels.h">
+      <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="SymbolComboInfo.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="WeightTable.h">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

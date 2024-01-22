@@ -8,9 +8,9 @@ SlotReels::SlotReels(vector<vector<int>> reels, int maxRows) {
 	m_weightedReels = false;
 	for (int iReel = 0; iReel < m_numReels; iReel++) 
 	{
-		size_t reelSize = m_reels.at(iReel).size();
+		int reelSize = m_reels.at(iReel).size();
 		m_reelSizes.push_back(reelSize);
-		for (size_t i = 0; i < maxRows; i++) 
+		for (int i = 0; i < maxRows; i++) 
 		{
 			m_reels.at(iReel).push_back(m_reels.at(iReel).at(i % reelSize));
 		}
@@ -35,18 +35,30 @@ SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights,
 	m_numReels = m_reels.size();
 	m_reelWeights = reelWeights;
 	m_weightedReels = true;
+	m_cumulativeWeights.resize(m_numReels);
+	m_numZeroIndexes.resize(m_numReels);
 	for (int iReel = 0; iReel < m_numReels; iReel++) 
 	{
-		size_t reelSize = m_reels.at(iReel).size();
+		int reelSize = m_reels.at(iReel).size();
 		m_reelSizes.push_back(reelSize);
-		for (size_t i = 0; i < maxRows; i++) 
+		for (int i = 0; i < maxRows; i++) 
 		{
 			m_reels.at(iReel).push_back(m_reels.at(iReel).at(i % reelSize));
 		}
-		size_t totalWeight = 0;
+		int numZeroes = 0;
+		int totalWeight = 0;
 		for (int i = 0; i < reelSize; i++) 
 		{
-			totalWeight += m_reelWeights.at(iReel).at(i);
+			if (m_reelWeights.at(iReel).at(i) > 0)
+			{
+				totalWeight += m_reelWeights.at(iReel).at(i);
+				m_cumulativeWeights.at(iReel).push_back(totalWeight);
+				m_numZeroIndexes.at(iReel).push_back(numZeroes);
+			}
+			else
+			{
+				numZeroes++;
+			}
 		}
 		m_totalWeights.push_back(totalWeight);
 	}
@@ -59,31 +71,34 @@ SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights,
 	}
 }
 
-int SlotReels::GetIndexFromStop(int reelIndex, int stop)
+int SlotReels::GetNumReels()
 {
-	if (m_weightedReels)
-	{
-		int index = 0;
-		while (stop >= 0) {
-			stop -= m_reelWeights.at(reelIndex).at(index++);
-		}
-		return index-1;
-	}
-	else
-	{
-		return stop;
-	}
+	return m_numReels;
 }
 
-void SlotReels::ReplaceSymbolOnReel(int reelIndex, int oldSymbol, int newSymbol)
+bool SlotReels::IsWeighted()
 {
-	for (int i = 0; i < m_reels[reelIndex].size(); i++)
-	{
-		if (m_reels[reelIndex][i] == oldSymbol)
-		{
-			m_reels[reelIndex][i] = newSymbol;
-		}
-	}
+	return m_weightedReels;
+}
+
+int SlotReels::GetReelSize(int reelIndex)
+{
+	return m_reelSizes[reelIndex];
+}
+
+int SlotReels::GetSymbol(int reelIndex, int position)
+{
+	return m_reels[reelIndex][position];
+}
+
+int SlotReels::GetReelWeight(int reelIndex)
+{
+	return m_totalWeights[reelIndex];
+}
+
+int SlotReels::GetWeight(int reelIndex, int position)
+{
+	return m_reelWeights[reelIndex][position];
 }
 
 vector<int> SlotReels::GenerateRandomStops()
@@ -94,4 +109,45 @@ vector<int> SlotReels::GenerateRandomStops()
 		stops[iReel] = stopGenerator[iReel](stopRNG);
 	}
 	return stops;
+}
+
+vector<int> SlotReels::ConvertStopsToPositions(vector<int> stops)
+{
+	if (!m_weightedReels)
+	{
+		return stops;
+	}
+	vector<int> positions(m_numReels);
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		int low = 0;
+		int high = m_cumulativeWeights[iReel].size();
+
+		while (low < high)
+		{
+			int mid = (low + high) / 2;
+
+			if (stops[iReel] < m_cumulativeWeights[iReel][mid])
+			{
+				high = mid;
+			}
+			else
+			{
+				low = mid + 1;
+			}
+		}
+		positions[iReel] =  low + m_numZeroIndexes[iReel][low];
+	}
+	return positions;
+}
+
+vector<int> SlotReels::GenerateRandomPositions()
+{
+	vector<int> stops = GenerateRandomStops();
+	return ConvertStopsToPositions(stops);
+}
+
+vector<int> SlotReels::GetSubReel(int reelIndex, int position, int numRows)
+{
+	return vector<int>(m_reels[reelIndex].begin() + position, m_reels[reelIndex].begin() + position + numRows);
 }

@@ -2,6 +2,7 @@
 
 #include "General.h"
 #include "SlotGrid.h"
+#include "WeightTable.h"
 
 class SlotGame 
 {
@@ -23,7 +24,8 @@ public:
 		HH,
 		JJ,
 		KK,
-		BN,
+		LL,
+		FG,
 		numSymbols
 	};
 	
@@ -32,7 +34,6 @@ public:
 	SlotGrid* baseGrid;
 	SlotReels* baseReelSet;
 	// Grid Evaluation
-	//MultiSymbolComboInfo* multiSymbolComboInfo;
 	SymbolComboInfo* symbolComboInfo;
 	int baseBet = 1;
 	int betMult = 1;
@@ -49,10 +50,10 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
-	void CycleStops();
-	void CycleStopsRecursive(map<double, size_t> &hist, vector<int> &stops, int currentReel = 0);
 	void RunSims(int numTrials, int trialSize);
 	void FreePlay();
+	void CyclePositions();
+	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);
 
 	// ==================== Game Specific ====================
 	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)
@@ -67,5 +68,6 @@ public:
 	static vector<vector<int>> CustomLines;
 
 	// NON-STATIC VARIABLES
+
 
 };
