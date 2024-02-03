@@ -13,19 +13,18 @@ public:
 	enum Symbols 
 	{
 		BLANK,
-		WC,
-		AA,
-		BB,
-		CC,
-		DD,
-		EE,
-		FF,
-		GG,
-		HH,
-		JJ,
-		KK,
-		LL,
-		FG,
+		WILD,
+		S01,
+		S02,
+		S03,
+		S04,
+		S05,
+		S06,
+		S07,
+		S08,
+		S09,
+		S10,
+		BONUS,
 		numSymbols
 	};
 	
@@ -33,6 +32,7 @@ public:
 	// Grid and Reels
 	SlotGrid* baseGrid;
 	SlotReels* baseReelSet;
+	SlotReels* freeReelSet;
 	// Grid Evaluation
 	SymbolComboInfo* symbolComboInfo;
 	int baseBet = 1;
@@ -50,6 +50,7 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
+	void TestStops();
 	void RunSims(int numTrials, int trialSize);
 	void FreePlay();
 	void CyclePositions();
@@ -61,13 +62,17 @@ public:
 	static int numRows;
 	static vector<vector<int>> baseReels;
 	static vector<vector<int>> baseReelWeights;
+	static vector<vector<int>> freeReels;
+	static vector<vector<int>> freeReelWeights;
 	static map<int, set<int>> symbolSubstitutions;
 	static map<int, int> symbolMultipliers;
 	static map<int, vector<double>> paytable;
 	static map<int, string> symbolStrings;
 	static vector<vector<int>> CustomLines;
+	static int numFreeGames[6];
 
 	// NON-STATIC VARIABLES
-
+	int numBonus = 0;
+	bool wildReels[3] = { false, false, false };
 
 };

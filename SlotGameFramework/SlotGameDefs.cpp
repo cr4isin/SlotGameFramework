@@ -4,33 +4,52 @@
 
 // ==================================== Grid Dimensions ==================================== 
 int SlotGame::numReels = 5;
-int SlotGame::numRows = 4;
-
+int SlotGame::numRows = 3;
+int SlotGame::numFreeGames[6] = { 0,0,0,10,15,20 };
 
 // ==================================== Reels ==================================== 
 vector<vector<int>> SlotGame::baseReels =
 {
-	{BB, BB, GG, JJ, AA, GG, JJ, BB, GG, JJ, HH, AA, GG, GG, EE, HH, JJ, FG, HH, AA, EE, CC, DD, DD, EE, AA, JJ, GG, JJ, CC, FF, FF, AA, GG, CC, EE, EE, HH, JJ, LL, HH, AA, GG, DD, DD, CC, DD, FF, HH, JJ, AA, GG, HH, FF, FF, HH, AA, JJ, GG, FG, HH, JJ, GG, BB, HH, FF, FF, KK, JJ},
-	{WC},
-	{WC},
-	{WC},
-	{EE, CC, BB, AA, AA, EE, CC, BB, CC, FF, FF, FF, DD, AA, CC, DD, BB, FF, AA, FF, EE, DD, DD, AA, CC, DD, EE, AA, FF, DD, CC, DD, CC, FG, DD, GG, CC, CC, AA, EE, DD, CC, KK, EE, EE, DD, AA, FF, EE, KK, DD, CC, EE, EE, DD, CC, EE, EE, JJ, AA, LL, DD, CC, EE, DD, FG, EE, AA, HH},
+	{S07, S08, S08, S02, S06, S05, S09, S02, S03, S07, S10, BONUS, S09, S10, S06, S05, S08, S01, S07, S09, S05, S03, S07, S04, S09, S05, S03, S10, S04, S09, S08, S01, S10, S07, S05, S05, S06, S08, S06, S02, S09, S06, S03, S08, BONUS, S04, S04, S07, S10, S01, S06, S10, S07, S05, S08, S06, S04, S02, S09, S03, S04, S10},
+	{WILD}, //{S09, S05, S06, S07, S09, S08, WILD, S09, S08, S04, S04, S05, S09, S07, S01, S08, S06, S03, S06, S02, BONUS, S08, S07, S08, S06, S03, S10, S09, S07, S10, S06, S02, S05, S10, S07, WILD, S10, S07, S02, S05, S06, S10, S01, S05, S04, S10, S03, S04, S02, S04, BONUS, S09, S10, S05, S01, S05, S08, S03, S07, S06, S04, S08, S09, S03},
+	{WILD}, //{S07, S02, S10, S05, S01, S02, S08, S10, BONUS, S09, S07, S02, S06, S06, S04, S08, S07, WILD, S08, S07, S09, S10, S03, S07, S04, S10, S05, S03, S01, S03, S09, S06, S05, S02, S04, S04, S05, S09, BONUS, S06, S07, S03, S08, S05, S03, S06, S08, S09, S04, S06, S05, S05, S07, S10, S09, WILD, S10, S09, S08, S06, S01, S04, S08, S10},
+	{WILD}, //{S02, S06, S06, S03, S07, S01, S05, S02, S10, S08, WILD, S10, S08, S04, S10, S07, S07, S01, S06, S05, S07, S09, BONUS, S10, S09, S08, S03, S04, S05, S08, S02, S07, S06, S10, S09, S07, WILD, S09, S07, S03, S02, S08, S06, S03, S09, S06, S01, S06, S08, S09, BONUS, S05, S04, S05, S04, S03, S08, S04, S09, S10, S04, S05, S05, S10},
+	{S06, S02, S07, S09, S01, S08, S09, S02, S10, S07, S05, S02, S03, BONUS, S08, S07, S04, S06, S04, S03, S07, S03, S08, S09, S10, S01, S06, S09, S05, S06, S04, S04, S10, S08, S02, S10, S06, S07, S10, S01, S08, S09, S05, S09, S10, S06, S04, S05, BONUS, S05, S04, S05, S05, S08, S07, S09, S08, S03, S10, S07, S06, S03},
 };
 
 vector<vector<int>> SlotGame::baseReelWeights =
 {
-	{1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1},
-	{1},
-	{1},
-	{1},
-	{3, 3, 3, 3, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 4, 4, 4, 4, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
+	{  },
+	{  },
+	{  },
+	{  },
+	{  },
+};
+
+vector<vector<int>> SlotGame::freeReels =
+{
+	{S03, S04, S08, S10, S09, S06, S08, S05, S10, S02, S07, S10, S04, S03, S10, S07, S10, S10, S01, S08, S07, S07, S05, S06, S09, S09, S08, S08, S05, S09, S07, S08, S06, S09, S06, S10, S08, S08, S03, S10, S08, S05, S08, S09, S02, S09, S07, S06, S04, S06, S10, S09, S10, S06, S04, S09, S05, S05, S07, S05, S09, S05},
+	{WILD}, //{S08, S07, S02, S04, S06, S10, S03, S09, S08, WILD, S09, S08, S06, S10, S04, S06, S10, S02, S09, S07, S03, S05, S01, S09, S07, S05, S10, S04, S09, S08, S05, S02, S05, S07, S04, S10, S01, S09, S05, S06, S07, S03, S05, S10, S07, WILD, S10, S07, S06, S05, S10, S08, S06, S04, S09, S09, S05, S08, S06, S07, S03, S07, S04, S08, S02, S06, S03, S10, S01, S08, S09, S08},
+	{WILD}, //{S04, S06, S07, S09, S05, S03, S07, S06, S04, S10, S10, S09, S05, S08, S07, WILD, S08, S07, S08, S07, S10, S03, S06, S04, S09, S01, S06, S06, S10, S02, S03, S06, S05, S07, S04, S05, S07, S05, S05, S09, S08, S03, S07, S08, S01, S10, S02, S04, S06, S08, S09, S07, S06, S10, S09, WILD, S10, S09, S02, S08, S02, S10, S08, S08, S03, S05, S04, S09, S09, S01, S06, S05, S10},
+	{WILD}, //{S06, S08, S07, S03, S04, S08, S10, S08, WILD, S10, S08, S05, S07, S02, S08, S05, S07, S04, S09, S01, S06, S08, S08, S10, S10, S09, S09, S03, S02, S10, S01, S06, S07, S03, S07, S10, S06, S02, S06, S06, S09, S05, S04, S08, S06, S01, S06, S03, S08, S04, S10, S09, S05, S07, S07, S10, S03, S09, S05, S05, S09, S07, WILD, S09, S07, S04, S10, S05, S02, S04, S09, S05},
+	{S04, S03, S08, S07, S10, S05, S08, S08, S07, S09, S06, S06, S02, S07, S04, S09, S05, S06, S08, S10, S09, S10, S07, S09, S08, S05, S09, S08, S09, S08, S10, S01, S03, S10, S08, S06, S06, S08, S07, S05, S02, S05, S10, S03, S04, S09, S05, S08, S10, S10, S06, S10, S07, S04, S09, S09, S05, S09, S07, S06, S10},
+};
+
+vector<vector<int>> SlotGame::freeReelWeights =
+{
+	{  },
+	{  },
+	{  },
+	{  },
+	{  },
 };
 
 // ==================================== Symbol Combo Info ==================================== 
 map<int, set<int>> SlotGame::symbolSubstitutions =
 { // Symbols not listed here will be set to only map to themselves: {X, {X}}
 	{BLANK, {}},
-	{WC, {AA, BB, CC, DD, EE, FF, GG, HH, JJ, KK, LL}},
+	{WILD, {S01, S02, S03, S04, S05, S06, S07, S08, S09, S10}},
+	{BONUS, {}},
 };
 
 map<int, int> SlotGame::symbolMultipliers =
@@ -40,35 +59,33 @@ map<int, int> SlotGame::symbolMultipliers =
 
 map<int, vector<double>> SlotGame::paytable =
 { // Symbols not listed here will be set to have zero pays: {X, {0,0,0,0,0}}
-	{AA,{0,25,125,250,800}},
-	{BB,{0,20,100,200,500}},
-	{CC,{0,15,75,150,400}},
-	{DD,{0,10,50,100,300}},
-	{EE,{0,10,50,100,300}},
-	{FF,{0,0,25,50,150}},
-	{GG,{0,0,25,50,150}},
-	{HH,{0,0,15,25,100}},
-	{JJ,{0,0,15,25,100}},
-	{KK,{0,0,10,15,75}},
-	{LL,{0,0,10,15,75}},
+	{S01,{0,0,40,80,800}},
+	{S02,{0,0,30,60,400}},
+	{S03,{0,0,20,40,300}},
+	{S04,{0,0,10,20,200}},
+	{S05,{0,0,6,10,100}},
+	{S06,{0,0,6,8,50}},
+	{S07,{0,0,4,6,40}},
+	{S08,{0,0,4,6,30}},
+	{S09,{0,0,2,4,20}},
+	{S10,{0,0,2,4,10}},
 };
 
 map<int, string> SlotGame::symbolStrings =
 {
 	{BLANK, "--"},
-	{WC,"WC"},
-	{AA,"AA"},
-	{BB,"BB"},
-	{CC,"CC"},
-	{DD,"DD"},
-	{EE,"EE"},
-	{FF,"FF"},
-	{GG,"GG"},
-	{HH,"HH"},
-	{JJ,"JJ"},
-	{KK,"KK"},
-	{LL,"LL"},
-	{FG,"FG"},
+	{WILD,"WILD"},
+	{S01,"S01"},
+	{S02,"S02"},
+	{S03,"S03"},
+	{S04,"S04"},
+	{S05,"S05"},
+	{S06,"S06"},
+	{S07,"S07"},
+	{S08,"S08"},
+	{S09,"S09"},
+	{S10,"S10"},
+	{BONUS,"BONUS"},
 };
 
 

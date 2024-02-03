@@ -5,7 +5,8 @@
 SlotGame::SlotGame()
 {
 	// Create pointers here
-	baseReelSet = new SlotReels(baseReels, baseReelWeights);
+	baseReelSet = new SlotReels(baseReels);
+	freeReelSet = new SlotReels(freeReels);
 	baseGrid = new SlotGrid(numReels, numRows);
 	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers, true);
 }
@@ -14,6 +15,7 @@ SlotGame::~SlotGame()
 {
 	// Delete pointers here
 	delete baseReelSet;
+	delete freeReelSet;
 	delete baseGrid;
 	delete symbolComboInfo;
 }
@@ -43,15 +45,12 @@ void SlotGame::SetupGrids()
 {
 	baseGrid->SetSymbolStrings(symbolStrings);
 	baseGrid->SetPrintComboInfo(printComboInfo);
-	baseGrid->SetLines(CustomLines, 1);
+	baseGrid->SetLines(CustomLines, 5);
 	baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 void SlotGame::SetupReels()
 {
-	//baseReelSet->ReplaceSymbolOnReel(1, MM, SE);
-	//baseReelSet->ReplaceSymbolOnReel(2, MM, SE);
-	//baseReelSet->ReplaceSymbolOnReel(3, MM, BE);
 }
 
 void SlotGame::SetupWeightTables()
@@ -62,20 +61,62 @@ double SlotGame::PlayGame()
 {
 	double score = 0;
 
+	// Generate positions and fill grid
 	vector<int> positions = baseReelSet->GenerateRandomPositions();
 	baseGrid->FillGrid(positions, baseReelSet);
+
+	// Expand wilds
+	for (int iReel = 0; iReel < 3; iReel++)
+	{
+		if (baseGrid->IsSymbolOnReel(WILD, 1 + iReel))
+		{
+			baseGrid->FillReelWithSymbol(WILD, 1 + iReel);
+		}
+	}
 	if (printComboInfo)
 	{
 		baseGrid->PrintGrid();
 	}
-	//score += baseGrid->EvaluateGridLines(symbolComboInfo);
-	score += baseGrid->EvaluateGridWays();
+	score += baseGrid->EvaluateGridLines(symbolComboInfo);
+
+	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
+	if (numBonus >= 3)
+	{
+		score += PlayBonus();
+	}
 
 	return score;
 }
 double SlotGame::PlayBonus()
 {
 	double score = 0;
+	vector<int> positions;
+	int spinsRemaining = numFreeGames[numBonus];
+
+	while (spinsRemaining > 0)
+	{
+		positions = freeReelSet->GenerateRandomPositions();
+		baseGrid->FillGrid(positions, freeReelSet);
+
+		for (int iReel = 0; iReel < 3; iReel++)
+		{
+			if (!wildReels[iReel] && baseGrid->IsSymbolOnReel(WILD, 1 + iReel))
+			{
+				wildReels[iReel] = true;
+			}
+			if (wildReels[iReel])
+			{
+				baseGrid->FillReelWithSymbol(WILD, 1 + iReel);
+			}
+		}
+
+		score += baseGrid->EvaluateGridLines(symbolComboInfo);
+		spinsRemaining--;
+	}
+	for (int iReel = 0; iReel < 3; iReel++)
+	{
+		wildReels[iReel] = false;
+	}
 	return score;
 }
 // ============================== Other Functions ==============================
@@ -91,6 +132,58 @@ void SlotGame::DoSomething()
 		weightTable.Call(weight, index, value);
 		cout << weight << "\t" << index << "\t" << value << "\n";
 	}
+}
+
+void SlotGame::TestStops()
+{
+	vector<vector<int>> stops = {
+		{ 14, 15, 16, 17, 56, 57, 58, 59 },
+		{ 20, 21, 22, 23, 40, 41, 42, 43 },
+		{ 7, 8, 9, 10, 24, 25, 26, 27 },
+		{ 29, 30, 31, 32 },
+		{ 30, 31, 32, 33, 62, 63, 64, 65 },
+	};
+
+	double maxPay = 0;
+	vector<int> maxStops = {};
+
+	for (int i1 = 0; i1 < stops[0].size(); i1++)
+	{
+		baseGrid->FillGridReel(0, stops[0][i1], baseReelSet);
+
+
+		for (int i2 = 0; i2 < stops[1].size(); i2++)
+		{
+			baseGrid->FillGridReel(1, stops[1][i2], baseReelSet);
+
+
+			for (int i3 = 0; i3 < stops[2].size(); i3++)
+			{
+				baseGrid->FillGridReel(2, stops[2][i3], baseReelSet);
+
+
+				for (int i4 = 0; i4 < stops[3].size(); i4++)
+				{
+					baseGrid->FillGridReel(3, stops[3][i4], baseReelSet);
+
+
+					for (int i5 = 0; i5 < stops[4].size(); i5++)
+					{
+						baseGrid->FillGridReel(4, stops[4][i5], baseReelSet);
+						double score = baseGrid->EvaluateGridWays();
+						cout << score << endl;
+						if (score > maxPay)
+						{
+							maxPay = score;
+							maxStops = { i1, i2, i3, i4, i5 };
+						}
+					}
+				}
+			}
+		}
+	}
+	cout << "MAX: " << maxPay << endl;
+	cout << "STOPS: " << maxStops[0] << maxStops[1] << maxStops[2] << maxStops[3] << maxStops[4] << endl;
 }
 
 void SlotGame::RunSims(int numTrials, int trialSize)
@@ -155,8 +248,8 @@ void SlotGame::CyclePositions()
 	vector<int> maxPositions(numReels, 0);
 	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
-	ofstream outputFile("CycleStopsOutput.txt");
-	outputFile << "Max Pay Stops:\t";
+	ofstream outputFile("CyclePositionsOutput.txt");
+	outputFile << "Max Pay Positions:\t";
 	for (int iReel = 0; iReel < numReels; iReel++)
 	{
 		outputFile << maxPositions[iReel] << "\t";
@@ -171,28 +264,28 @@ void SlotGame::CyclePositions()
 
 void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel)
 {
-	// Function used to run CycleStops()
+	// Function used to run CyclePositions()
 	// Might need to edit your grid, reels, and evaluation type being used
 	if (currentReel < positions.size())
 	{
-		for (int i = 0; i < baseReelSet->GetReelSize(currentReel); i++)
+		for (int i = 0; i < freeReelSet->GetReelSize(currentReel); i++)
 		{
 			if (currentReel == 0)
 			{
-				cout << i << " / " << baseReelSet->GetReelSize(currentReel) << "\n";
+				cout << i << " / " << freeReelSet->GetReelSize(currentReel) << "\n";
 			}
 			positions.at(currentReel) = i;
-			baseGrid->FillGridReel(currentReel, positions[currentReel], baseReelSet);
+			baseGrid->FillGridReel(currentReel, positions[currentReel], freeReelSet);
 			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
 		}
 	}
 	else
 	{
-		double score = baseGrid->EvaluateGridWays();
+		double score = baseGrid->EvaluateGridLines(symbolComboInfo);
 		int combos = 1;
 		for (int iReel=0; iReel < positions.size(); iReel++)
 		{
-			combos *= baseReelSet->GetWeight(iReel, positions[iReel]);
+			combos *= freeReelSet->GetWeight(iReel, positions[iReel]);
 		}
 		hist[score] += combos;
 		if (score > maxScore)
