@@ -4,7 +4,7 @@
 int main()
 {
     SlotGame game = SlotGame();
-    game.SetBetScheme(5, 1);
+    game.SetBetScheme(1, 1);
     game.SetupGame();
 
     game.CyclePositions();

@@ -12,19 +12,18 @@ public:
 
 	enum Symbols 
 	{
-		BLANK,
-		WILD,
-		S01,
-		S02,
-		S03,
-		S04,
-		S05,
-		S06,
-		S07,
-		S08,
-		S09,
-		S10,
-		BONUS,
+		BLANK, 
+		Diamond,
+		Boat,
+		Car,
+		Glass,
+		Lobster,
+		Bell,
+		Plum,
+		Melon,
+		Orange,
+		Cherry,
+		Coin,
 		numSymbols
 	};
 	
@@ -73,6 +72,4 @@ public:
 
 	// NON-STATIC VARIABLES
 	int numBonus = 0;
-	bool wildReels[3] = { false, false, false };
-
 };
