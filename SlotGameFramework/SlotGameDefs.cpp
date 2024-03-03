@@ -1,20 +1,19 @@
 
 #include "SlotGame.h"
 
-
 // ==================================== Grid Dimensions ==================================== 
 int SlotGame::numReels = 5;
 int SlotGame::numRows = 3;
-int SlotGame::numFreeGames[6] = { 0,0,0,10,15,20 };
+int SlotGame::numFreeGames[6] = { 0,0,0,5,10,15 };
 
 // ==================================== Reels ==================================== 
 vector<vector<int>> SlotGame::baseReels =
 {
-	{Plum, Bell, Boat, Cherry, Melon, Boat, Orange, Bell, Melon, Car, Orange, Melon, Cherry, Diamond, Melon, Cherry, Boat, Orange, Car, Plum, Boat, Glass, Orange, Lobster, Plum, Melon, Lobster, Cherry, Bell, Orange, Melon, Bell, Cherry, Lobster, Plum, Car, Bell, Coin, Lobster, Boat, Cherry, Melon, Lobster, Glass, Plum, Bell, Boat, Cherry, Melon, Coin, Orange, Bell, Melon, Car, Orange, Melon, Cherry, Diamond, Melon, Cherry, Boat, Orange, Car, Plum, Cherry, Glass, Orange, Lobster, Plum, Melon, Lobster, Cherry, Bell, Orange, Melon, Bell, Cherry, Lobster, Plum, Car, Bell, Plum, Lobster, Boat, Cherry, Melon, Lobster, Glass},
-	{Orange, Bell, Diamond, Orange, Bell, Coin, Car, Orange, Lobster, Melon, Orange, Plum, Bell, Car, Orange, Glass, Melon, Plum, Car, Glass, Orange, Lobster, Melon, Plum, Glass, Bell, Boat, Orange, Bell, Boat, Orange, Bell, Coin, Car, Orange, Lobster, Melon, Orange, Plum, Bell, Cherry, Orange, Glass, Melon, Orange, Car, Glass, Orange, Lobster, Boat, Orange, Glass, Bell, Cherry},
-	{Melon, Lobster, Plum, Diamond, Lobster, Plum, Glass, Bell, Boat, Plum, Car, Boat, Glass, Lobster, Melon, Glass, Lobster, Plum, Diamond, Lobster, Plum, Orange, Boat, Car, Bell, Cherry, Boat, Melon, Cherry, Lobster, Car, Bell, Plum, Melon, Lobster, Orange, Melon, Lobster, Orange, Boat, Glass, Melon, Lobster, Car, Orange, Lobster, Plum, Orange, Bell, Boat, Cherry, Car, Glass, Boat, Cherry, Coin, Lobster, Bell, Plum, Cherry, Glass, Melon, Orange, Cherry, Car, Bell, Cherry, Lobster, Plum, Diamond, Lobster, Plum, Bell, Cherry, Melon, Lobster, Boat, Melon, Lobster, Orange, Plum},
-	{Orange, Bell, Diamond, Orange, Bell, Coin, Car, Orange, Lobster, Boat, Orange, Plum, Bell, Car, Orange, Glass, Melon, Plum, Car, Glass, Orange, Lobster, Boat, Orange, Glass, Bell, Cherry, Orange, Bell, Car, Orange, Bell, Coin, Car, Orange, Lobster, Melon, Orange, Plum, Bell, Cherry, Orange, Glass, Melon, Orange, Car, Glass, Orange, Lobster, Melon, Orange, Glass, Bell, Boat, Orange, Bell, Diamond, Orange, Bell, Coin, Car, Orange, Lobster, Boat, Orange, Plum, Bell, Boat, Orange, Glass, Melon, Orange, Car, Glass, Cherry, Lobster, Boat, Orange, Glass, Bell, Cherry, Melon, Bell, Car, Orange, Bell, Coin, Car, Orange, Lobster, Melon, Orange, Plum, Bell, Cherry, Orange, Glass, Melon, Orange, Car, Glass, Orange, Lobster, Melon, Orange, Glass, Bell, Boat},
-	{Plum, Bell, Boat, Cherry, Melon, Boat, Orange, Bell, Melon, Car, Orange, Melon, Cherry, Diamond, Melon, Cherry, Boat, Orange, Car, Plum, Cherry, Glass, Orange, Lobster, Plum, Melon, Lobster, Cherry, Bell, Orange, Melon, Bell, Cherry, Lobster, Plum, Car, Bell, Coin, Lobster, Boat, Cherry, Melon, Lobster, Glass, Plum, Bell, Boat, Cherry, Melon, Coin, Orange, Bell, Melon, Car, Orange, Melon, Cherry, Diamond, Melon, Cherry, Boat, Orange, Car, Plum, Cherry, Glass, Orange, Lobster, Plum, Melon, Lobster, Cherry, Bell, Orange, Melon, Bell, Cherry, Lobster, Plum, Car, Bell, Plum, Lobster, Boat, Cherry, Melon, Lobster, Glass},
+	{S07, S02, S03, S06, S05, S08, S01, S04, S06, S09, S08, BONUS, S09, S08, S06, S07, BONUS, S09, S04, S03, S08, S09, S02, S03, S06, S01, S03, S05, WILD, S08, S04, S07, WILD, S08, S09, S02, S08, S05, S06, S09},
+	{S06, S05, S09, S07, S03, S09, S04, S05, S07, S09, S01, S06, S07, S09, S06, WILD, S08, S07, S09, S04, S01, S07, S09, S06, S04, S07, BONUS, S05, S09, S02, S07, S09, S04, S07, S08, S09, S07, S02, S01, S03, S08},
+	{S06, S09, S07, S05, BONUS, S08, S03, S06, S07, S03, S06, S04, S08, S02, S09, S06, S08, S07, S05, S09, S08, WILD, S07, S06, S03, S01, S06, BONUS, S04, S08, S06, S02, S08, S07, S05, S01, S08, S07, S05, S06, S09, S08, S07, S06, S08, S05},
+	{S07, S06, S02, S03, S08, BONUS, S06, S04, S02, S05, S03, S06, S09, WILD, S01, S08, S02, S05, S07, S08, S05, S07, S09, S04, S03, S06, S07, S09, WILD, S04, S08, WILD, S09, S04, S08, WILD, S05, S08, S02},
+	{WILD, S04, S01, WILD, S06, S05, S09, S04, WILD, S07, S03, S09, S07, S04, S03, S09, S08, S02, S07, S09, S02, S04, S06, S01, S05, S08, S09, S05, S07, S06, WILD, S04, S03, BONUS, S06, S07, S08, S02, S05, S07, S06},
 };
 
 vector<vector<int>> SlotGame::baseReelWeights =
@@ -28,11 +27,11 @@ vector<vector<int>> SlotGame::baseReelWeights =
 
 vector<vector<int>> SlotGame::freeReels =
 {
-	{ BLANK },
-	{ BLANK },
-	{ BLANK },
-	{ BLANK },
-	{ BLANK },
+	{S08, S06, S07, S08, S06, S04, S08, S06, S07, WILD, WILD, WILD, S08, S04, S07, S05, BONUS, S08, S06, S07, S01, S09, S08, S07, S05, S06, S08, BONUS, S07, S08, S03, S05, S07, S06, S08, BONUS, S05, S06, S07, S08, S03, S04, S08, S02, S04, S06, S03, S08, S06, S03, S07, S08, S06, S05, S08, S07, S02, S08, S03, S01, S07, S08, S04, S06, S02, S08, S05, S07, BONUS, S06, S08, S01, S07, S08, S06, BONUS, S08, S05, S03, S07, S08, S05, S01, S08, S07, S04, S08, S06, S05, S08, S07, S06, S03, S08, S07, S04, S06, BONUS, S08, S06, BONUS, S07, S03, S08, S07, S06, S02, S08, S07, S02, S08, S03, S02, S08, S07, S04, S08, S07, S06, S03, BONUS, S08, S07, BONUS, S05, S08, S03, S05, S02, S06, S08, S02, S09, S06, S05, S08, S06, S01, S07, S08, S06, S04, S08, S01, S04, S06, S08, S03, S07, S08, BONUS, S03, S08, S06, S05, S08, S06, S03, S08, S09, BONUS, S07, S08, S05, S02, S06, S04, S08, BONUS, S07, S08, S03, S05, S04},
+	{S09, S05, S07, S04, S09, S07, S01, S04, S07, S09, S02, S03, S09, S04, S07, S09, BONUS, S07, S09, S05, S01, S07, S09, WILD, WILD, WILD, S03, S07, S09, S01, S04, S03, S01, S07, S09, S04, S06, S02, S07, S09, S01, S07, S08, S09, S03, S07, S09, S05, S04, S02, S07, S09, S05, S03, S07, S09, S04, S03, S09, S02, S07, S09, S02, S07, S09, S02, S03, S07, S09, S01, S04, S07, BONUS, S03, S09, BONUS, S03, S09, S08, S04, S09, S07, BONUS, S09, S03, S07, S04, S09, S03, S07, S05, S06, S09, S03, S07, S04, S09, S02, S03, S07, BONUS, S09, S04, S07, BONUS, S09, S07, S02, S03, S07, S04, S03, S09, S05, S07, S09, BONUS, S07, S03, S09, S07, S04, S06, S05, S09, S04, S05, S09, S08, S07, S09, BONUS, S03, S09, S07, BONUS, S03, S07, S09, S02, S07, S09, S05, S07},
+	{S06, S05, S04, S08, S09, S06, S05, WILD, WILD, WILD, S09, S06, S08, BONUS, S06, S08, BONUS, S06, S04, S09, BONUS, S05, S08, S06, S09, S08, BONUS, S04, S08, S06, S02, S08, S09, S06, S08, BONUS, S09, S06, S05, S08, S02, S06, BONUS, S08, S04, BONUS, S06, S08, S02, S06, S08, S07, S03, S01, S06, S07, S02, S08, S01, S06, S02, S08, S09, S05, BONUS, S08, S06, S09, S08, S05, S06, S09, S08, S02, S07, S09, S06, S08, S05, BONUS, S04, S08, S06, S05, S09, S06, S08, S05, S06, S01, S08, S05, S06, BONUS, S09, S06, S01, S05, S08, S04, S01, S08, S05, S07, S01, S08, S06, S07, S05, S08, S03, BONUS, S06, S05, S08, BONUS, S05, S08, S07, S03},
+	{S04, S09, S08, S06, S04, S08, S09, S04, S01, S09, S07, WILD, WILD, WILD, WILD, S06, S09, S03, BONUS, S08, S04, S02, S03, S08, S04, S09, S02, S08, S07, S09, S03, S05, S07, S02, S09, S05, S08, BONUS, S05, S09, S08, S07, S09, S02, S03, S06, S08, S07, S09, S04, S02, S07, S01, S09, S02, S08, S07, S09, S02, S07, S01, S08, S09, S02, S06, S09, S08, S07, S06, S09, S03, S08, S09, S06, S07, S09, S02, S06, S07, S09, S02, S04, S08, S06, S04, S09, S06, BONUS, S08, S09, S06, S07, S05, S09, S08, S06, S09, S08, S02, S05, S03, S08, S09, S07, S05, S06, S09, S08, BONUS, S07, S05, S09, S06, S04, S02, S05, S09, S08, S04, BONUS, S08, S03, S06, S07, S08, S03, S09, S08, S05, S04, S09, S08, S04, S09, S03, BONUS, S09, S08, S06},
+	{S09, S08, S06, S05, S09, S01, S06, S09, S03, S05, S07, BONUS, S05, S09, S02, S07, S09, S04, WILD, WILD, WILD, WILD, S07, S09, S08, S01, S04, S09, BONUS, S07, S03, S06, S09, S07, S06, S09, S05, S07, S09, S04, S06, S01, S07, S05, S03, BONUS, S09, S06, S03, S02, S09, S04, S02, S07, S06, S09, BONUS, S08, S03, S06, S09, S01, S08, S03, S02, S09, S04, S05, BONUS, S04, S09, S05, S02, S03, S07, S01, S09, S05, S04, S09, S05, S06, S09, S03, BONUS, S05, S09, S08, S04, S05, S09, BONUS, S05, S04, S01, S09, S06, S04, S07, S09, S03, S04, S07, S09, S04, S06, S09, S08, BONUS, S05, S08, S09, S07, BONUS, S09, S04, S08, BONUS, S07, S06, S09, S05, S02, S07, S09, S08, BONUS, S06, S04, S09, S02, S06, S09, S02, S04, S05, S09, BONUS, S07, S09, S06, S02},
 };
 
 vector<vector<int>> SlotGame::freeReelWeights =
@@ -44,50 +43,55 @@ vector<vector<int>> SlotGame::freeReelWeights =
 	{ BLANK },
 };
 
+// ==================================== Weight Tables ==================================== 
+
+vector<long long> SlotGame::freeSpinWildWeights = { 1, 1, 2, 4, 1, 2, 3, 2, 3, 2 };
+
+vector<double> SlotGame::freeSpinWildValues = { 3, 5, 9, 17, 6, 10, 18, 12, 20, 24 };
+
 // ==================================== Symbol Combo Info ==================================== 
 map<int, set<int>> SlotGame::symbolSubstitutions =
 { // Symbols not listed here will be set to only map to themselves: {X, {X}}
 	{BLANK, {}},
-	{Diamond, {Diamond, Boat, Car, Glass, Lobster, Bell, Plum, Melon, Orange, Cherry}},
-	{Coin, {}},
+	{WILD, {WILD, S01, S02, S03, S04, S05, S06, S07, S08, S09}},
+	{BONUS, {}}, // BONUS does not contribute to line pays
 };
 
 map<int, int> SlotGame::symbolMultipliers =
 { // Symbols not included will be set to a multiplier of 1: {X, 1}
-	{Diamond, 2},
+
 };
 
 map<int, vector<double>> SlotGame::paytable =
 { // Symbols not listed here will be set to have zero pays: {X, {0,0,0,0,0}}
-	{Diamond,{0, 0, 40, 100, 2000}},
-	{Boat,{0, 0, 20, 60, 750}},
-	{Car,{0, 0, 16, 50, 500}},
-	{Glass,{0, 0, 12, 40, 500}},
-	{Lobster,{0, 0, 8, 25, 250}},
-	{Bell,{0, 0, 8, 25, 250}},
-	{Plum,{0, 0, 5, 15, 150}},
-	{Melon,{0, 0, 5, 15, 150}},
-	{Orange,{0, 0, 5, 10, 100}},
-	{Cherry,{0, 0, 5, 10, 100}},
-	{Coin, {0, 0, 2, 5, 20, 200}},
+	{WILD, {0, 0, 100, 750, 2500}},
+	{S01, {0, 0, 50, 250, 750}},
+	{S02, {0, 0, 50, 250, 750}},
+	{S03, {0, 0, 25, 100, 500}},
+	{S04, {0, 0, 25, 100, 400}},
+	{S05, {0, 0, 25, 75, 250}},
+	{S06, {0, 0, 5, 25, 125}},
+	{S07, {0, 0, 5, 25, 100}},
+	{S08, {0, 0, 5, 20, 100}},
+	{S09, {0, 0, 5, 20, 100}},
+	{BONUS, {0, 0, 0, 1, 5, 10}}, // Indexing on BONUS is different because it is used as a scatter pay
 };
 
 map<int, string> SlotGame::symbolStrings =
 {
 	{BLANK, "--"},
-	{Diamond,"Diamond"},
-	{Boat,"Boat"},
-	{Car,"Car"},
-	{Glass,"Glass"},
-	{Lobster,"Lobster"},
-	{Bell,"Bell"},
-	{Plum,"Plum"},
-	{Melon,"Melon"},
-	{Orange,"Orange"},
-	{Cherry,"Cherry"},
-	{Coin,"Coin"},
+	{WILD, "WILD"},
+	{S01, "S01"},
+	{S02, "S02"},
+	{S03, "S03"},
+	{S04, "S04"},
+	{S05, "S05"},
+	{S06, "S06"},
+	{S07, "S07"},
+	{S08, "S08"},
+	{S09, "S09"},
+	{BONUS, "BONUS"},
 };
-
 
 // ==================================== Lines ==================================== 
 vector<vector<int>> SlotGame::CustomLines =
@@ -97,29 +101,39 @@ vector<vector<int>> SlotGame::CustomLines =
 	{2,2,2,2,2},
 	{0,1,2,1,0},
 	{2,1,0,1,2},
-	{1,0,0,0,1},
-	{1,2,2,2,1},
+	{1,0,1,2,1},
+	{1,2,1,0,1},
 	{0,0,1,2,2},
 	{2,2,1,0,0},
-	{1,0,1,0,1},
-	{1,2,1,2,1},
-	{0,1,1,1,2},
-	{2,1,1,1,0},
-	{1,1,0,1,2},
-	{1,1,2,1,0},
 	{0,1,0,1,0},
 	{2,1,2,1,2},
-	{0,0,2,0,0},
-	{2,2,0,2,2},
-	{1,0,2,0,1},
-	{1,2,0,2,1},
+	{1,0,0,0,1},
+	{1,2,2,2,1},
+	{0,1,1,1,0},
+	{2,1,1,1,2},
+	{1,1,0,1,1},
+	{1,1,2,1,1},
 	{0,2,0,2,0},
 	{2,0,2,0,2},
+	{2,0,1,0,2},
+	{0,2,1,2,0},
 	{0,2,2,2,0},
 	{2,0,0,0,2},
-	{0,2,1,2,0},
-	{2,0,1,0,2},
-	{1,1,2,1,1},
-	{1,1,0,1,1},
-	{0,2,0,1,1}
+	{1,0,2,0,1},
+	{1,2,0,2,1},
+	{0,0,2,0,0},
+	{2,2,0,2,2},
+	{1,0,1,0,1},
+	{1,2,1,2,1},
+	{2,2,2,1,0},
+	{0,0,0,1,2},
+	{2,1,0,0,0},
+	{0,1,2,2,2},
+	{1,1,1,0,1},
+	{1,1,1,2,1},
+	{1,0,1,1,1},
+	{1,2,1,1,1},
+	{2,1,1,1,0},
+	{0,1,1,1,2},
+	{1,2,2,1,0},
 };

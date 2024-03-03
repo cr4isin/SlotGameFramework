@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DynamicWeightTable.cpp" />
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MultiSymbolComboInfo.cpp" />
@@ -140,6 +141,7 @@
     <ClCompile Include="WeightTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DynamicWeightTable.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="MultiSymbolComboInfo.h" />
     <ClInclude Include="SlotReels.h" />

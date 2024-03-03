@@ -4,7 +4,7 @@
 class WeightTable
 {
 public:
-	WeightTable(vector<long long> weights);
+	WeightTable(vector<long long> weights = {1});
 	WeightTable(vector<long long> weights, vector<double> values);
 	int GetIndexOfWeight(long long weight);
 	void Call(long long& weight, int& index, double& value);

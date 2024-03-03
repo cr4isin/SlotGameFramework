@@ -3,6 +3,7 @@
 #include "General.h"
 #include "SlotGrid.h"
 #include "WeightTable.h"
+#include "DynamicWeightTable.h"
 
 class SlotGame 
 {
@@ -13,23 +14,24 @@ public:
 	enum Symbols 
 	{
 		BLANK, 
-		Diamond,
-		Boat,
-		Car,
-		Glass,
-		Lobster,
-		Bell,
-		Plum,
-		Melon,
-		Orange,
-		Cherry,
-		Coin,
+		WILD,
+		S01,
+		S02,
+		S03,
+		S04,
+		S05,
+		S06,
+		S07,
+		S08,
+		S09,
+		BONUS,
 		numSymbols
 	};
 	
 	// ==================== General Functions and Variables ====================
 	// Grid and Reels
 	SlotGrid* baseGrid;
+	SlotGrid* freeGrid;
 	SlotReels* baseReelSet;
 	SlotReels* freeReelSet;
 	// Grid Evaluation
@@ -38,18 +40,20 @@ public:
 	int betMult = 1;
 	int totalBet = 1;
 	bool printComboInfo = false;
+	// Weight Tables
+	map<string, WeightTable> weightTable;
+	map<string, DynamicWeightTable> dynamicWeightTable;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGame();
 	void SetupGrids();
 	void SetupReels();
 	void SetupWeightTables();
-	// Playing Game
+	// Game Functions
 	double PlayGame();
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
-	void TestStops();
 	void RunSims(int numTrials, int trialSize);
 	void FreePlay();
 	void CyclePositions();
@@ -69,6 +73,10 @@ public:
 	static map<int, string> symbolStrings;
 	static vector<vector<int>> CustomLines;
 	static int numFreeGames[6];
+
+	// Weight Tables
+	static vector<long long> freeSpinWildWeights;
+	static vector<double> freeSpinWildValues;
 
 	// NON-STATIC VARIABLES
 	int numBonus = 0;

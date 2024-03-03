@@ -8,7 +8,8 @@ SlotGame::SlotGame()
 	baseReelSet = new SlotReels(baseReels);
 	freeReelSet = new SlotReels(freeReels);
 	baseGrid = new SlotGrid(numReels, numRows);
-	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers, true, SymbolComboInfo::MAX);
+	freeGrid = new SlotGrid(numReels, numRows);
+	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 SlotGame::~SlotGame()
@@ -17,8 +18,10 @@ SlotGame::~SlotGame()
 	delete baseReelSet;
 	delete freeReelSet;
 	delete baseGrid;
+	delete freeGrid;
 	delete symbolComboInfo;
 }
+
 // ============================== Setup ==============================
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 {
@@ -43,35 +46,42 @@ void SlotGame::SetupGame()
 
 void SlotGame::SetupGrids()
 {
-	baseGrid->SetSymbolStrings(symbolStrings);
-	baseGrid->SetPrintComboInfo(printComboInfo);
 	baseGrid->SetLines(CustomLines, baseBet);
-	baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	freeGrid->SetLines(CustomLines, baseBet);
+	// baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+
+	//baseGrid->SetSymbolStrings(symbolStrings);
+	//baseGrid->SetPrintComboInfo(printComboInfo);
 }
 
 void SlotGame::SetupReels()
 {
+
 }
 
 void SlotGame::SetupWeightTables()
 {
+	weightTable["freeSpinWild"] = WeightTable(freeSpinWildWeights, freeSpinWildValues);
 }
+
 // ============================== Game Functions ==============================
 double SlotGame::PlayGame()
 {
 	double score = 0;
+	int index = 0;
+	long long weight = 0;
+	double value = 0;
 
 	// Generate positions and fill grid
-	vector<int> pos2 = { 12,1,2,1,12 };
 	vector<int> positions = baseReelSet->GenerateRandomPositions();
-	baseGrid->FillGrid(pos2, baseReelSet);
-	if (printComboInfo)
-	{
-		baseGrid->PrintGrid();
-	}
-	score += baseGrid->EvaluateGridLines(symbolComboInfo);
+	baseGrid->FillGrid(positions, baseReelSet);
 
-	numBonus = baseGrid->CountSymbolOnGrid(Coin);
+	// Evaluate Lines/Ways
+	score += betMult * baseGrid->EvaluateGridLines(symbolComboInfo);
+
+	// Evaluate Scatter pays and bonus triggers
+	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
+	score += totalBet * paytable[BONUS][numBonus];
 	if (numBonus >= 3)
 	{
 		score += PlayBonus();
@@ -82,84 +92,50 @@ double SlotGame::PlayGame()
 double SlotGame::PlayBonus()
 {
 	double score = 0;
+	int index = 0;
+	long long weight = 0;
+	double value = 0;
 	vector<int> positions;
 	int spinsRemaining = numFreeGames[numBonus];
 
 	while (spinsRemaining > 0)
 	{
-		positions = freeReelSet->GenerateRandomPositions();
-		baseGrid->FillGrid(positions, freeReelSet);
+		double spinScore = 0;
 
-		score += baseGrid->EvaluateGridLines(symbolComboInfo);
+		// Generate positions and fill grid
+		positions = freeReelSet->GenerateRandomPositions();
+		freeGrid->FillGrid(positions, freeReelSet);
+
+		// Determine which 2 reels to fill with WILDs
+		weightTable["freeSpinWild"].Call(weight, index, value);
+		vector<int> wildReels = ChangeBase(value, 2, numReels);
+		for (int iReel = 0; iReel < numReels; iReel++)
+		{
+			if (wildReels[iReel] == 1)
+			{
+				freeGrid->FillReelWithSymbol(WILD, iReel);
+			}
+		}
+		
+		// Evaluate Lines/Ways
+		spinScore += betMult * freeGrid->EvaluateGridLines(symbolComboInfo);
+
+		// Evaluate Scatter pays and bonus triggers
+		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
+		spinScore += totalBet * paytable[BONUS][numBonus];
+		spinsRemaining += numFreeGames[numBonus];
+
+		score += spinScore;
 		spinsRemaining--;
 	}
+
 	return score;
 }
+
 // ============================== Other Functions ==============================
 void SlotGame::DoSomething()
 {
-	vector<long long> weights = {1,0,2,0,3,0,4,0,5,0,0,0,1};
-	WeightTable weightTable(weights);
-	int index = 0;
-	long long weight = 0;
-	double value = 0;
-	for (int i = 0; i < 30; i++)
-	{
-		weightTable.Call(weight, index, value);
-		cout << weight << "\t" << index << "\t" << value << "\n";
-	}
-}
 
-void SlotGame::TestStops()
-{
-	vector<vector<int>> stops = {
-		{ 14, 15, 16, 17, 56, 57, 58, 59 },
-		{ 20, 21, 22, 23, 40, 41, 42, 43 },
-		{ 7, 8, 9, 10, 24, 25, 26, 27 },
-		{ 29, 30, 31, 32 },
-		{ 30, 31, 32, 33, 62, 63, 64, 65 },
-	};
-
-	double maxPay = 0;
-	vector<int> maxStops = {};
-
-	for (int i1 = 0; i1 < stops[0].size(); i1++)
-	{
-		baseGrid->FillGridReel(0, stops[0][i1], baseReelSet);
-
-
-		for (int i2 = 0; i2 < stops[1].size(); i2++)
-		{
-			baseGrid->FillGridReel(1, stops[1][i2], baseReelSet);
-
-
-			for (int i3 = 0; i3 < stops[2].size(); i3++)
-			{
-				baseGrid->FillGridReel(2, stops[2][i3], baseReelSet);
-
-
-				for (int i4 = 0; i4 < stops[3].size(); i4++)
-				{
-					baseGrid->FillGridReel(3, stops[3][i4], baseReelSet);
-
-
-					for (int i5 = 0; i5 < stops[4].size(); i5++)
-					{
-						baseGrid->FillGridReel(4, stops[4][i5], baseReelSet);
-						double score = baseGrid->EvaluateGridWays();
-						cout << score << endl;
-						if (score > maxPay)
-						{
-							maxPay = score;
-							maxStops = { i1, i2, i3, i4, i5 };
-						}
-					}
-				}
-			}
-		}
-	}
-	cout << "MAX: " << maxPay << endl;
-	cout << "STOPS: " << maxStops[0] << maxStops[1] << maxStops[2] << maxStops[3] << maxStops[4] << endl;
 }
 
 void SlotGame::RunSims(int numTrials, int trialSize)
@@ -176,7 +152,7 @@ void SlotGame::RunSims(int numTrials, int trialSize)
 			double score = PlayGame();
 			coinOut += score;
 			coinIn += totalBet;
-			hist[PlayGame()]++;
+			hist[score]++;
 			if (iGame % percentile == 0)
 			{
 				cout << iGame / percentile << "/100\t" << coinOut / coinIn << endl;
@@ -184,7 +160,8 @@ void SlotGame::RunSims(int numTrials, int trialSize)
 		}
 	}
 
-	ofstream outputFile("SimsOutput.txt");
+	string filename = "SimsOutput_" + to_string(baseBet) + "L_" + to_string(betMult) + "x.txt";
+	ofstream outputFile(filename);
 	for (auto const& [score, combo] : hist)
 	{
 		outputFile << score << "\t" << combo << "\n";
@@ -224,7 +201,8 @@ void SlotGame::CyclePositions()
 	vector<int> maxPositions(numReels, 0);
 	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
-	ofstream outputFile("CyclePositionsOutput.txt");
+	string filename = "CyclePositionsOutput_" + to_string(baseBet) + "L_" + to_string(betMult) + "x.txt";
+	ofstream outputFile(filename);
 	outputFile << "Max Pay Positions:\t";
 	for (int iReel = 0; iReel < numReels; iReel++)
 	{
@@ -250,21 +228,16 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 			{
 				cout << i << " / " << baseReelSet->GetReelSize(currentReel) << "\n";
 			}
-			if (baseGrid->GetSymbol(currentReel, 0) == Coin)
-				numBonus--;
 			positions.at(currentReel) = i;
 			baseGrid->FillGridReel(currentReel, positions[currentReel], baseReelSet);
-			if (baseGrid->GetSymbol(currentReel, 2) == Coin)
-				numBonus++;
 			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
 		}
 	}
 	else
 	{
-		//double score = baseGrid->EvaluateGridLines(symbolComboInfo);
-		double score = paytable[Coin][numBonus];
+		double score = betMult * baseGrid->EvaluateGridLines(symbolComboInfo);
 		int combos = 1;
-		for (int iReel=0; iReel < positions.size(); iReel++)
+		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{
 			combos *= baseReelSet->GetWeight(iReel, positions[iReel]);
 		}
