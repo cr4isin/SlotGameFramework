@@ -5,10 +5,6 @@
 SlotGame::SlotGame()
 {
 	// Create pointers here
-	baseReelSet = new SlotReels(baseReels);
-	freeReelSet = new SlotReels(freeReels);
-	baseGrid = new SlotGrid(numReels, numRows);
-	freeGrid = new SlotGrid(numReels, numRows);
 	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
@@ -46,17 +42,21 @@ void SlotGame::SetupGame()
 
 void SlotGame::SetupGrids()
 {
-	baseGrid->SetLines(CustomLines, baseBet);
-	freeGrid->SetLines(CustomLines, baseBet);
-	// baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	baseGrid = new SlotGrid(numReels, numRows);
+	baseGrid->SetLines(lines, baseBet);
+	baseGrid->SetSymbolPrintInfo(symbolStrings, symbolColors);
 
-	//baseGrid->SetSymbolStrings(symbolStrings);
-	//baseGrid->SetPrintComboInfo(printComboInfo);
+	freeGrid = new SlotGrid(numReels, numRows);
+	freeGrid->SetLines(lines, baseBet);
+	freeGrid->SetSymbolPrintInfo(symbolStrings, symbolColors);
+
+	//baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers); // Ways Example
 }
 
 void SlotGame::SetupReels()
 {
-
+	baseReelSet = new SlotReels(baseReels);
+	freeReelSet = new SlotReels(freeReels);
 }
 
 void SlotGame::SetupWeightTables()
@@ -67,6 +67,7 @@ void SlotGame::SetupWeightTables()
 // ============================== Game Functions ==============================
 double SlotGame::PlayGame()
 {
+	if (inFreePlay) cout << "=== Base Game ===\n";
 	double score = 0;
 	int index = 0;
 	long long weight = 0;
@@ -97,9 +98,12 @@ double SlotGame::PlayBonus()
 	double value = 0;
 	vector<int> positions;
 	int spinsRemaining = numFreeGames[numBonus];
+	int spinNumber = 1;
 
 	while (spinsRemaining > 0)
 	{
+		if (inFreePlay) cout << "=== Free Spin " << spinNumber << " ===\n";
+
 		double spinScore = 0;
 
 		// Generate positions and fill grid
@@ -116,7 +120,7 @@ double SlotGame::PlayBonus()
 				freeGrid->FillReelWithSymbol(WILD, iReel);
 			}
 		}
-		
+
 		// Evaluate Lines/Ways
 		spinScore += betMult * freeGrid->EvaluateGridLines(symbolComboInfo);
 
@@ -126,6 +130,7 @@ double SlotGame::PlayBonus()
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
+		spinNumber++;
 		spinsRemaining--;
 	}
 
@@ -135,7 +140,7 @@ double SlotGame::PlayBonus()
 // ============================== Other Functions ==============================
 void SlotGame::DoSomething()
 {
-
+	// Blank function for testing
 }
 
 void SlotGame::RunSims(int numTrials, int trialSize)
@@ -171,8 +176,9 @@ void SlotGame::RunSims(int numTrials, int trialSize)
 
 void SlotGame::FreePlay()
 {
-	printComboInfo = true;
-	baseGrid->SetPrintComboInfo(true);
+	inFreePlay = true;
+	baseGrid->SetInFreePlay(true);
+	freeGrid->SetInFreePlay(true);
 	string input;
 	cout << "Press Enter to Play!";
 	cin.get();
@@ -186,7 +192,7 @@ void SlotGame::FreePlay()
 		double score = PlayGame();
 		coinIn += totalBet;
 		coinOut += score;
-		cout << "\nScore: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
+		cout << "Score: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
 		cin.get();
 
 	}
@@ -196,7 +202,7 @@ void SlotGame::CyclePositions()
 {
 	// Will cycle through all positions of a reel set and create a histogram of every possible score
 	map<double, size_t> hist;
-	vector<int> positions(numReels,0);
+	vector<int> positions(numReels, 0);
 	double maxScore = 0;
 	vector<int> maxPositions(numReels, 0);
 	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);

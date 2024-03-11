@@ -39,7 +39,7 @@ public:
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
-	bool printComboInfo = false;
+	bool inFreePlay = false;
 	// Weight Tables
 	map<string, WeightTable> weightTable;
 	map<string, DynamicWeightTable> dynamicWeightTable;
@@ -71,7 +71,8 @@ public:
 	static map<int, int> symbolMultipliers;
 	static map<int, vector<double>> paytable;
 	static map<int, string> symbolStrings;
-	static vector<vector<int>> CustomLines;
+	static map<int, Colors> symbolColors;
+	static vector<vector<int>> lines;
 	static int numFreeGames[6];
 
 	// Weight Tables

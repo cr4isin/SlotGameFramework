@@ -53,7 +53,8 @@ void SlotGrid::PrintGrid()
 	{
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			cout << GetSymbolString(m_grid[iReel][iRow]) << "\t";
+			int symbol = m_grid[iReel][iRow];
+			cout << GetSymbolColor(symbol) << GetSymbolString(symbol) << "\033[0m\t";
 		}
 		cout << "\n";
 	}
@@ -116,14 +117,15 @@ void SlotGrid::SetWays(int numSymbols, map<int, vector<double>> paytable, map<in
 	}
 }
 
-void SlotGrid::SetSymbolStrings(map<int, string> symbolStrings)
+void SlotGrid::SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors)
 {
 	m_symbolStrings = symbolStrings;
+	m_symbolColors = symbolColors;
 }
 
-void SlotGrid::SetPrintComboInfo(bool printComboInfo)
+void SlotGrid::SetInFreePlay(bool inFreePlay)
 {
-	m_printComboInfo = printComboInfo;
+	m_inFreePlay = inFreePlay;
 }
 
 SlotGrid::LineElement::LineElement(int reel, int row, int numReels, vector<int> line)
@@ -197,6 +199,10 @@ void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &
 double SlotGrid::EvaluateGridLines(SymbolComboInfo*& currentSymbolCombos)
 {
 	double score = 0;
+	if (m_inFreePlay)
+	{
+		PrintGrid();
+	}
 	for (int iLine = 0; iLine < m_lines.size(); iLine++)
 	{
 		// Calculate the Symbol Key for this line
@@ -209,10 +215,14 @@ double SlotGrid::EvaluateGridLines(SymbolComboInfo*& currentSymbolCombos)
 		double lineScore = currentSymbolCombos->GetComboInfo(symbolKey);
 		score += lineScore;
 		// Print Combos
-		if (m_printComboInfo && lineScore > 0)
+		if (m_inFreePlay && lineScore > 0)
 		{
 			cout << "Line " << iLine + 1 << " pays " << lineScore << "\n";
 		}
+	}
+	if (m_inFreePlay && score > 0)
+	{
+		cout << "\n";
 	}
 	return score;
 }
@@ -249,7 +259,7 @@ double SlotGrid::EvaluateGridWays()
 		{
 			double symbolScore = numCombos * m_paytable[iSymbol][comboLength-1];
 
-			if (m_printComboInfo && symbolScore > 0)
+			if (m_inFreePlay && symbolScore > 0)
 			{
 				cout << comboLength << "-" << GetSymbolString(iSymbol) << " x " << numCombos << " Ways pays " << symbolScore << "\n";
 			}
@@ -395,5 +405,17 @@ string SlotGrid::GetSymbolString(int symbol)
 	else
 	{
 		return "S" + to_string(symbol);
+	}
+}
+
+string SlotGrid::GetSymbolColor(int symbol)
+{
+	if (m_symbolColors.contains(symbol))
+	{
+		return "\033[" + to_string(m_symbolColors[symbol]) + "m";
+	}
+	else
+	{
+		return "\033[0m";
 	}
 }

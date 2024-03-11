@@ -21,8 +21,8 @@ public:
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);
 	void SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers);
-	void SetSymbolStrings(map<int, string> symbolStrings);
-	void SetPrintComboInfo(bool printComboInfo);
+	void SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors = {});
+	void SetInFreePlay(bool inFreePlay);
 	double EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos);
 	double EvaluateGridLines(SymbolComboInfo* &currentSymbolCombos);
 	double EvaluateGridWays();
@@ -40,8 +40,8 @@ public:
 	void ReplaceSymbolOnReel(int oldSymbol, int newSymbol, int reelIndex);
 	void ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex);
 
-
 	string GetSymbolString(int symbol);
+	string GetSymbolColor(int symbol);
 
 private:
 	class LineElement
@@ -67,5 +67,6 @@ private:
 	map<int, int> m_symbolMultipliers; // The symbol multipiers mapping (used for evaluating ways-pays)
 	map<int, vector<double>> m_paytable; // The symbol paytable mapping (used for evaluating ways-pays)
 	map<int, string> m_symbolStrings; // The symbol string mapping (used for printing the Grid and combo info)
-	bool m_printComboInfo = false; // Determines if combo info will be printed after Grid Evaluation
+	map<int, Colors> m_symbolColors;
+	bool m_inFreePlay = false; // Determines if combo info will be printed after Grid Evaluation
 };
