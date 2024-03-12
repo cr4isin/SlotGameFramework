@@ -11,6 +11,10 @@
 #include <fstream>
 #include <cmath>
 #include <random>
+#include <Windows.h>
+#include <thread>
+#include <chrono>
+#include <iomanip>
 
 using namespace std;
 
@@ -36,3 +40,5 @@ enum Colors {
 void PrintVec(vector<int> input);
 
 vector<int> ChangeBase(int input, int base, int length = 0);
+
+void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds = 0);

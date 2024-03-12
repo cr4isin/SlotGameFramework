@@ -54,7 +54,7 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
-	void RunSims(int numTrials, int trialSize);
+	void RunSims(int numTrials, int trialSize, int argc, char* argv[]);
 	void FreePlay();
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);

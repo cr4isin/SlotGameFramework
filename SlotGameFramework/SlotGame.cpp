@@ -143,35 +143,56 @@ void SlotGame::DoSomething()
 	// Blank function for testing
 }
 
-void SlotGame::RunSims(int numTrials, int trialSize)
+void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 {
-	map<double, size_t> hist;
+	// Opening more processes if necessary
+	int numProcesses = 0;
+	if (argc > 1) 
+	{
+		numProcesses = atoi(argv[1]);
+	}
+	else 
+	{
+		std::cout << "How many processes would you like to run? (1-" << thread::hardware_concurrency() << "): ";
+		std::cin >> numProcesses;
+	}
+	if (numProcesses > 1)
+	{
+		SpawnProcesses(argv[0], numProcesses - 1, 2);
+	}
+
+	// Initializing variables for the sim
+	string simName = to_string(baseBet) + "L_" + to_string(betMult) + "x";
 	int percentile = trialSize / 100;
 	double coinIn = 0;
 	double coinOut = 0;
+	int maxWin = 0;
+	int hits = 0;
+	int wins = 0;
 
 	for (int iTrial = 0; iTrial < numTrials; iTrial++)
 	{
+		cout << "Running sim set " << simName << ":\n";
 		for (int iGame = 1; iGame <= trialSize; iGame++)
 		{
 			double score = PlayGame();
 			coinOut += score;
 			coinIn += totalBet;
-			hist[score]++;
+			if (score > maxWin) maxWin = score;
+			if (score > 0) hits++;
+			if (score > totalBet) wins++;
 			if (iGame % percentile == 0)
 			{
 				cout << iGame / percentile << "/100\t" << coinOut / coinIn << endl;
 			}
 		}
+		// Write results to a file
+		string filename = "SimsOutput_" + simName + ".txt";
+		ofstream outputFile(filename, ios::app);
+		outputFile << fixed << setprecision(numeric_limits<double>::max_digits10);
+		outputFile << coinOut / coinIn << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins << "\n";
+		outputFile.close();
 	}
-
-	string filename = "SimsOutput_" + to_string(baseBet) + "L_" + to_string(betMult) + "x.txt";
-	ofstream outputFile(filename);
-	for (auto const& [score, combo] : hist)
-	{
-		outputFile << score << "\t" << combo << "\n";
-	}
-	outputFile.close();
 }
 
 void SlotGame::FreePlay()
