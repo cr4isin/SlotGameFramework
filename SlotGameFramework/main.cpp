@@ -13,5 +13,4 @@ int main(int argc, char* argv[])
 }
 
 // to do:
-// add game pays
 // add median spins calculator

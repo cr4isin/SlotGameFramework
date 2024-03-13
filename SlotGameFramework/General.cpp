@@ -76,3 +76,34 @@ void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds)
 		CloseHandle(processInfo.hThread);
 	}
 }
+
+string formatDouble(double value, int precision)
+{
+	ostringstream oss;
+	if (precision < 0)
+	{
+		oss << fixed << setprecision(numeric_limits<double>::max_digits10) << value;
+	}
+	else
+	{
+		oss << fixed << setprecision(precision) << value;
+	}
+	return oss.str();
+}
+
+string formatInteger(int value, int width) {
+	ostringstream oss;
+	oss << setfill('0') << setw(width) << value;
+	return oss.str();
+}
+
+std::string formatTime(long long milliseconds) {
+	long long seconds = milliseconds / 1000;
+	long long minutes = seconds / 60;
+	long long hours = minutes / 60;
+	minutes %= 60;
+	seconds %= 60;
+	ostringstream oss;
+	oss << setfill('0') << setw(2) << hours << ":" << setw(2) << minutes << ":" << setw(2) << seconds;
+	return oss.str();
+}

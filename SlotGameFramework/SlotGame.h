@@ -43,6 +43,10 @@ public:
 	// Weight Tables
 	map<string, WeightTable> weightTable;
 	map<string, DynamicWeightTable> dynamicWeightTable;
+	//Game Pays
+	map<string, double> gameValue;
+	map<string, int> gameWinHits;
+	map<string, int> gameTotalHits;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGame();
@@ -54,6 +58,8 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
+	void AddGamePay(string name, double value);
+	void ClearGamePays();
 	void RunSims(int numTrials, int trialSize, int argc, char* argv[]);
 	void FreePlay();
 	void CyclePositions();
