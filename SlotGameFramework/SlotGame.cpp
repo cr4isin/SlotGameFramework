@@ -130,6 +130,7 @@ double SlotGame::PlayBonus()
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
+		AddGamePay("FreeSpin", score);
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
@@ -137,7 +138,7 @@ double SlotGame::PlayBonus()
 		spinsRemaining--;
 	}
 
-	AddGamePay("FreeSpinbonus", score);
+	AddGamePay("FreeSpinBonus", score);
 	return score;
 }
 
@@ -150,15 +151,15 @@ void SlotGame::DoSomething()
 void SlotGame::AddGamePay(string name, double value)
 {
 	gameValue[name] += value;
-	if (value > 0) gameWinHits[name]++;
 	gameTotalHits[name]++;
+	if (value > 0) gameTotalWinHits[name]++;
 }
 
 void SlotGame::ClearGamePays()
 {
 	gameValue.clear();
-	gameWinHits.clear();
 	gameTotalHits.clear();
+	gameTotalWinHits.clear();
 }
 
 void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
@@ -179,22 +180,23 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 		SpawnProcesses(argv[0], numProcesses - 1, 2); // Final argument is the delay in seconds between opening processes
 	}
 
-	// Initializing variables for the sim
 	string simName = to_string(baseBet) + "L_" + to_string(betMult) + "x";
 	int percentile = trialSize / 100;
-	double coinIn = 0;
-	double coinOut = 0;
-	int maxWin = 0;
-	int hits = 0;
-	int wins = 0;
-	map<string, double> trialValue;
-	map<string, int> trialGameHits;
-	map<string, int> trialWinHits;
-	map<string, int> trialTotalHits;
-	auto startTime = chrono::high_resolution_clock::now();
 
 	for (int iTrial = 0; iTrial < numTrials; iTrial++)
 	{
+		// Initializing variables for the sim
+		double coinIn = 0;
+		double coinOut = 0;
+		int maxWin = 0;
+		int hits = 0;
+		int wins = 0;
+		map<string, double> trialValue;
+		map<string, int> trialGameHits;
+		map<string, int> trialGameWinHits;
+		map<string, int> trialTotalHits;
+		map<string, int> trialTotalWinHits;
+		auto startTime = chrono::high_resolution_clock::now();
 		cout << "Running Sim: " << simName << "\n";
 		for (int iGame = 1; iGame <= trialSize; iGame++)
 		{
@@ -211,8 +213,9 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 			{
 				trialValue[name] += value;
 				trialGameHits[name]++;
-				trialWinHits[name] += gameWinHits[name];
+				if (value > 0) trialGameWinHits[name]++;
 				trialTotalHits[name] += gameTotalHits[name];
+				trialTotalWinHits[name] += gameTotalWinHits[name];
 			}
 			ClearGamePays();
 			// Print sim status to console
@@ -228,14 +231,15 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 		// Write results to a file
 		string filename = "SimsOutput_" + simName + ".txt";
 		ofstream outputFile(filename, ios::app);
-		outputFile << formatDouble(coinOut / coinIn) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
+		outputFile << formatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
 		for (auto const& [name, value] : trialValue)
 		{
 			outputFile << "\t" << name;
-			outputFile << "\t" << formatDouble(trialValue[name]);
+			outputFile << "\t" << formatDouble(trialValue[name], 15);
 			outputFile << "\t" << trialGameHits[name];
-			outputFile << "\t" << trialWinHits[name];
+			outputFile << "\t" << trialGameWinHits[name];
 			outputFile << "\t" << trialTotalHits[name];
+			outputFile << "\t" << trialTotalWinHits[name];
 		}
 		outputFile << "\n";
 		outputFile.close();

@@ -45,8 +45,8 @@ public:
 	map<string, DynamicWeightTable> dynamicWeightTable;
 	//Game Pays
 	map<string, double> gameValue;
-	map<string, int> gameWinHits;
 	map<string, int> gameTotalHits;
+	map<string, int> gameTotalWinHits;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGame();
