@@ -130,7 +130,7 @@ double SlotGame::PlayBonus()
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
-		AddGamePay("FreeSpin", score);
+		AddGamePay("FreeSpin", spinScore);
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
