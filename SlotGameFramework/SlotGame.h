@@ -58,10 +58,10 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
-	void AddGamePay(string name, double value);
-	void ClearGamePays();
-	void RunSims(int numTrials, int trialSize, int argc, char* argv[]);
-	void FreePlay();
+	void LogHit(string name, double value);
+	void ClearHits();
+	void RunSims(int numTrials, int trialSize, vector<string>& args);
+	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);
 

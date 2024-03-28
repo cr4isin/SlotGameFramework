@@ -1,6 +1,11 @@
 
 #include "WeightTable.h"
 
+WeightTable::WeightTable()
+{
+	throw runtime_error("Tried to access a weight table that does not exist");
+}
+
 WeightTable::WeightTable(vector<long long> weights)
 {
 	m_weights = weights;
@@ -22,7 +27,7 @@ WeightTable::WeightTable(vector<long long> weights)
 	}
 	if (totalWeight <= 0)
 	{
-		throw;
+		throw runtime_error("Weight Table has no positive weights");
 	}
 	random_device rd;
 	weightRNG.seed(rd());
@@ -50,11 +55,11 @@ WeightTable::WeightTable(vector<long long> weights, vector<double> values)
 	}
 	if (totalWeight <= 0)
 	{
-		throw;
+		throw runtime_error("Weight Table has no positive weights");
 	}
 	if (m_weights.size() != m_values.size())
 	{
-		throw;
+		throw runtime_error("Weight Table size does not match the Value Table");
 	}
 	random_device rd;
 	weightRNG.seed(rd());

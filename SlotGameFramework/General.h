@@ -41,10 +41,10 @@ void PrintVec(vector<int> input);
 
 vector<int> ChangeBase(int input, int base, int length = 0);
 
-void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds = 0);
+void SpawnProcesses(string programName, int numTimes, int delayInSeconds = 0);
 
-string formatDouble(double value, int precision = -1);
+string FormatDouble(double value, int precision = -1);
 
-string formatInteger(int value, int width = 1);
+string FormatInteger(int value, int width = 1, char fill = ' ');
 
-string formatTime(long long milliseconds);
+string FormatTime(long long milliseconds);

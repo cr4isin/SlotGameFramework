@@ -1,5 +1,10 @@
 #include "DynamicWeightTable.h"
 
+DynamicWeightTable::DynamicWeightTable()
+{
+	throw runtime_error("Tried to access a weight table that does not exist");
+}
+
 DynamicWeightTable::DynamicWeightTable(vector<long long> weights)
 {
 	m_weights = weights;
@@ -17,7 +22,7 @@ DynamicWeightTable::DynamicWeightTable(vector<long long> weights)
 	}
 	if (totalWeight <= 0)
 	{
-		throw;
+		throw runtime_error("Weight Table has no positive weights");
 	}
 	currentWeights = m_weights;
 	currentTotalWeight = totalWeight;
@@ -43,11 +48,11 @@ DynamicWeightTable::DynamicWeightTable(vector<long long> weights, vector<double>
 	}
 	if (totalWeight <= 0)
 	{
-		throw;
+		throw runtime_error("Weight Table has no positive weights");
 	}
 	if (m_weights.size() != m_values.size())
 	{
-		throw;
+		throw runtime_error("Weight Table size does not match the Value Table");
 	}
 	currentWeights = m_weights;
 	currentTotalWeight = totalWeight;
@@ -70,7 +75,7 @@ void DynamicWeightTable::Call(long long& weight, int& index, double& value)
 {
 	if (currentTotalWeight <= 0)
 	{
-		throw;
+		throw runtime_error("Dynamic Weight Table is empty");
 	}
 	weight = weightGenerator(weightRNG);
 	index = GetIndexOfWeight(weight);
@@ -91,5 +96,12 @@ void DynamicWeightTable::ResetIndex(int index)
 {
 	currentWeights[index] = m_weights[index];
 	currentTotalWeight += m_weights[index];
+	weightGenerator = uniform_int_distribution<long long>(0, currentTotalWeight - 1);
+}
+
+void DynamicWeightTable::ZeroIndex(int index)
+{
+	currentTotalWeight -= currentWeights[index];
+	currentWeights[index] = 0;
 	weightGenerator = uniform_int_distribution<long long>(0, currentTotalWeight - 1);
 }

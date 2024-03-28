@@ -61,7 +61,7 @@ void SlotGame::SetupReels()
 
 void SlotGame::SetupWeightTables()
 {
-	weightTable["freeSpinWild"] = WeightTable(freeSpinWildWeights, freeSpinWildValues);
+	weightTable.emplace("freeSpinWild", WeightTable(freeSpinWildWeights, freeSpinWildValues));
 }
 
 // ============================== Game Functions ==============================
@@ -83,7 +83,7 @@ double SlotGame::PlayGame()
 	// Evaluate Scatter pays
 	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
 	score += totalBet * paytable[BONUS][numBonus];
-	AddGamePay("BaseGame", score);
+	LogHit("BaseGame", score);
 
 	// Trigger free games
 	if (numBonus >= 3)
@@ -130,7 +130,7 @@ double SlotGame::PlayBonus()
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
-		AddGamePay("FreeSpin", spinScore);
+		LogHit("FreeSpin", spinScore);
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
@@ -138,7 +138,7 @@ double SlotGame::PlayBonus()
 		spinsRemaining--;
 	}
 
-	AddGamePay("FreeSpinBonus", score);
+	LogHit("FreeSpinBonus", score);
 	return score;
 }
 
@@ -148,36 +148,37 @@ void SlotGame::DoSomething()
 	// Blank function for testing
 }
 
-void SlotGame::AddGamePay(string name, double value)
+void SlotGame::LogHit(string name, double value)
 {
 	gameValue[name] += value;
 	gameTotalHits[name]++;
 	if (value > 0) gameTotalWinHits[name]++;
 }
 
-void SlotGame::ClearGamePays()
+void SlotGame::ClearHits()
 {
 	gameValue.clear();
 	gameTotalHits.clear();
 	gameTotalWinHits.clear();
 }
 
-void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
+void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
-	if (argc > 1) 
+	if (args.size() > 1)
 	{
-		numProcesses = atoi(argv[1]);
+		numProcesses = stoi(args[1]);
 	}
 	else 
 	{
 		std::cout << "How many processes would you like to run? (1-" << thread::hardware_concurrency() << "): ";
 		std::cin >> numProcesses;
+		args.push_back("1");
 	}
 	if (numProcesses > 1)
 	{
-		SpawnProcesses(argv[0], numProcesses - 1, 2); // Final argument is the delay in seconds between opening processes
+		SpawnProcesses(args[0], numProcesses - 1, 2); // Final argument is the delay in seconds between opening processes
 	}
 
 	string simName = to_string(baseBet) + "L_" + to_string(betMult) + "x";
@@ -217,7 +218,7 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 				trialTotalHits[name] += gameTotalHits[name];
 				trialTotalWinHits[name] += gameTotalWinHits[name];
 			}
-			ClearGamePays();
+			ClearHits();
 			// Print sim status to console
 			if (iGame % percentile == 0)
 			{
@@ -225,17 +226,17 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 				long long elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTime).count();
 				long long remainingTime = elapsedTime * (100 - step) / step;
 				long long totalTime = elapsedTime + remainingTime;
-				cout << step << "/100\t" << formatDouble(coinOut / coinIn, 8) << "\tE " << formatTime(elapsedTime) << "\tR " << formatTime(remainingTime) << "\tT " << formatTime(totalTime) << endl;
+				cout << step << "/100\t" << FormatDouble(coinOut / coinIn, 8) << "\tE " << FormatTime(elapsedTime) << "\tR " << FormatTime(remainingTime) << "\tT " << FormatTime(totalTime) << endl;
 			}
 		}
 		// Write results to a file
 		string filename = "SimsOutput_" + simName + ".txt";
 		ofstream outputFile(filename, ios::app);
-		outputFile << formatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
+		outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
 		for (auto const& [name, value] : trialValue)
 		{
 			outputFile << "\t" << name;
-			outputFile << "\t" << formatDouble(trialValue[name], 15);
+			outputFile << "\t" << FormatDouble(trialValue[name], 15);
 			outputFile << "\t" << trialGameHits[name];
 			outputFile << "\t" << trialGameWinHits[name];
 			outputFile << "\t" << trialTotalHits[name];
@@ -246,7 +247,7 @@ void SlotGame::RunSims(int numTrials, int trialSize, int argc, char* argv[])
 	}
 }
 
-void SlotGame::FreePlay()
+void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
 	baseGrid->SetInFreePlay(true);
@@ -259,14 +260,13 @@ void SlotGame::FreePlay()
 	double coinOut = 0;
 	while (true)
 	{
-		system("cls");
+		if (clearConsole) system("cls");
 		cout << "\n";
 		double score = PlayGame();
 		coinIn += totalBet;
 		coinOut += score;
 		cout << "Score: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
 		cin.get();
-
 	}
 }
 

@@ -35,10 +35,10 @@ vector<int> ChangeBase(int input, int base, int length)
 	return baseVector;
 }
 
-void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds)
+void SpawnProcesses(string programName, int numTimes, int delayInSeconds)
 {
 	// Convert the executable name to a wide string and create the full command line
-	wstring fullCommandLine = L"\"" + wstring(programName, programName + strlen(programName)) + L"\" 1";
+	wstring fullCommandLine = L"\"" + wstring(programName.begin(), programName.end()) + L"\" 1";
 
 	// Create new processes
 	for (int i = 0; i < numTimes; ++i) {
@@ -49,8 +49,6 @@ void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds)
 		ZeroMemory(&startupInfo, sizeof(startupInfo));
 		startupInfo.cb = sizeof(startupInfo);
 		ZeroMemory(&processInfo, sizeof(processInfo));
-
-		fullCommandLine = L"\"" + wstring(programName, programName + strlen(programName)) + L"\" 0";
 
 		// Create new process
 		if (!CreateProcess(
@@ -77,7 +75,7 @@ void SpawnProcesses(const char* programName, int numTimes, int delayInSeconds)
 	}
 }
 
-string formatDouble(double value, int precision)
+string FormatDouble(double value, int precision)
 {
 	ostringstream oss;
 	if (precision < 0)
@@ -91,13 +89,13 @@ string formatDouble(double value, int precision)
 	return oss.str();
 }
 
-string formatInteger(int value, int width) {
+string FormatInteger(int value, int width, char fill) {
 	ostringstream oss;
-	oss << setfill('0') << setw(width) << value;
+	oss << setfill(fill) << setw(width) << value;
 	return oss.str();
 }
 
-std::string formatTime(long long milliseconds) {
+std::string FormatTime(long long milliseconds) {
 	long long seconds = milliseconds / 1000;
 	long long minutes = seconds / 60;
 	long long hours = minutes / 60;

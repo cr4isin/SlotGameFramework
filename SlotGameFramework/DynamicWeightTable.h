@@ -4,12 +4,14 @@
 class DynamicWeightTable
 {
 public:
-	DynamicWeightTable(vector<long long> weights = {1});
+	DynamicWeightTable();
+	DynamicWeightTable(vector<long long> weights);
 	DynamicWeightTable(vector<long long> weights, vector<double> values);
 	int GetIndexOfWeight(long long weight);
 	void Call(long long& weight, int& index, double& value);
 	void Reset();
 	void ResetIndex(int index);
+	void ZeroIndex(int index);
 private:
 	vector<long long> m_weights;
 	vector<double> m_values;
