@@ -43,10 +43,11 @@ public:
 	// Weight Tables
 	map<string, WeightTable> weightTable;
 	map<string, DynamicWeightTable> dynamicWeightTable;
-	//Game Pays
-	map<string, double> gameValue;
+	// Trackers and Histograms
+	map<string, double> gameTotalValues;
 	map<string, int> gameTotalHits;
-	map<string, int> gameTotalWinHits;
+	map<string, int> gameTotalWins;
+	map<string, map<double, long long>> histograms;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGame();
@@ -58,9 +59,11 @@ public:
 	double PlayBonus();
 	// Other Functions
 	void DoSomething();
-	void LogHit(string name, double value);
-	void ClearHits();
-	void RunSims(int numTrials, int trialSize, vector<string>& args);
+	void AddToTracker(string name, double value);
+	void ClearTrackers();
+	void AddToHistogram(string name, double value, long long numHits = 1);
+	void PrintHistograms(string simName);
+	void RunSims(int numTrials, int trialSize, vector<string>& args, bool outputHistograms);
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);

@@ -83,7 +83,7 @@ double SlotGame::PlayGame()
 	// Evaluate Scatter pays
 	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
 	score += totalBet * paytable[BONUS][numBonus];
-	LogHit("BaseGame", score);
+	AddToTracker("BaseGame", score);
 
 	// Trigger free games
 	if (numBonus >= 3)
@@ -130,7 +130,7 @@ double SlotGame::PlayBonus()
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
-		LogHit("FreeSpin", spinScore);
+		AddToTracker("FreeSpin", spinScore);
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
@@ -138,7 +138,7 @@ double SlotGame::PlayBonus()
 		spinsRemaining--;
 	}
 
-	LogHit("FreeSpinBonus", score);
+	AddToTracker("FreeSpinBonus", score);
 	return score;
 }
 
@@ -148,21 +148,40 @@ void SlotGame::DoSomething()
 	// Blank function for testing
 }
 
-void SlotGame::LogHit(string name, double value)
+void SlotGame::AddToTracker(string name, double value)
 {
-	gameValue[name] += value;
+	gameTotalValues[name] += value;
 	gameTotalHits[name]++;
-	if (value > 0) gameTotalWinHits[name]++;
+	if (value > 0) gameTotalWins[name]++;
 }
 
-void SlotGame::ClearHits()
+void SlotGame::ClearTrackers()
 {
-	gameValue.clear();
+	gameTotalValues.clear();
 	gameTotalHits.clear();
-	gameTotalWinHits.clear();
+	gameTotalWins.clear();
 }
 
-void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args)
+void SlotGame::AddToHistogram(string name, double value, long long numHits)
+{
+	histograms[name][value] += numHits;
+}
+
+void SlotGame::PrintHistograms(string simName)
+{
+	for (auto const& [name, hist] : histograms)
+	{
+		string filename = "Histogram_" + simName + "_" + name + ".txt";
+		ofstream outputFile(filename);
+		for (auto const& [value, count] : hist)
+		{
+			outputFile << FormatDouble(value, 15) << "\t" << count << "\n";
+		}
+		outputFile.close();
+	}
+}
+
+void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args, bool outputHistograms)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
@@ -194,9 +213,9 @@ void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args)
 		int wins = 0;
 		map<string, double> trialValue;
 		map<string, int> trialGameHits;
-		map<string, int> trialGameWinHits;
+		map<string, int> trialGameWins;
 		map<string, int> trialTotalHits;
-		map<string, int> trialTotalWinHits;
+		map<string, int> trialTotalWins;
 		auto startTime = chrono::high_resolution_clock::now();
 		cout << "Running Sim: " << simName << "\n";
 		for (int iGame = 1; iGame <= trialSize; iGame++)
@@ -209,16 +228,16 @@ void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args)
 			if (score > maxWin) maxWin = score;
 			if (score > 0) hits++;
 			if (score > totalBet) wins++;
-			// Save and Reset Game Pays
-			for (auto const& [name, value] : gameValue)
+			// Save and Reset Trackers
+			for (auto const& [name, value] : gameTotalValues)
 			{
 				trialValue[name] += value;
 				trialGameHits[name]++;
-				if (value > 0) trialGameWinHits[name]++;
+				if (value > 0) trialGameWins[name]++;
 				trialTotalHits[name] += gameTotalHits[name];
-				trialTotalWinHits[name] += gameTotalWinHits[name];
+				trialTotalWins[name] += gameTotalWins[name];
 			}
-			ClearHits();
+			ClearTrackers();
 			// Print sim status to console
 			if (iGame % percentile == 0)
 			{
@@ -230,17 +249,18 @@ void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args)
 			}
 		}
 		// Write results to a file
+		if (outputHistograms) PrintHistograms(simName);
 		string filename = "SimsOutput_" + simName + ".txt";
 		ofstream outputFile(filename, ios::app);
 		outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
 		for (auto const& [name, value] : trialValue)
 		{
 			outputFile << "\t" << name;
-			outputFile << "\t" << FormatDouble(trialValue[name], 15);
+			outputFile << "\t" << FormatDouble(trialValue[name] / trialSize, 15);
 			outputFile << "\t" << trialGameHits[name];
-			outputFile << "\t" << trialGameWinHits[name];
+			outputFile << "\t" << trialGameWins[name];
 			outputFile << "\t" << trialTotalHits[name];
-			outputFile << "\t" << trialTotalWinHits[name];
+			outputFile << "\t" << trialTotalWins[name];
 		}
 		outputFile << "\n";
 		outputFile.close();
