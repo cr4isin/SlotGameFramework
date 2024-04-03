@@ -5,7 +5,7 @@
 SlotGame::SlotGame()
 {
 	// Create pointers here
-	symbolComboInfo = new SymbolComboInfo(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	symbolCombos = new SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 SlotGame::~SlotGame()
@@ -15,7 +15,7 @@ SlotGame::~SlotGame()
 	delete freeReelSet;
 	delete baseGrid;
 	delete freeGrid;
-	delete symbolComboInfo;
+	delete symbolCombos;
 }
 
 // ============================== Setup ==============================
@@ -78,7 +78,7 @@ double SlotGame::PlayGame()
 	baseGrid->FillGrid(positions, baseReelSet);
 
 	// Evaluate Lines
-	score += betMult * baseGrid->EvaluateGridLines(symbolComboInfo);
+	score += betMult * baseGrid->EvaluateGridLines(symbolCombos);
 
 	// Evaluate Scatter pays
 	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
@@ -125,7 +125,7 @@ double SlotGame::PlayBonus()
 		}
 
 		// Evaluate Lines/Ways
-		spinScore += betMult * freeGrid->EvaluateGridLines(symbolComboInfo);
+		spinScore += betMult * freeGrid->EvaluateGridLines(symbolCombos);
 
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
@@ -181,7 +181,7 @@ void SlotGame::PrintHistograms(string simName)
 	}
 }
 
-void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args, bool outputHistograms)
+void SlotGame::RunSims(int trialSize, vector<string>& args, bool outputHistograms)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
@@ -200,71 +200,81 @@ void SlotGame::RunSims(int numTrials, int trialSize, vector<string>& args, bool 
 		SpawnProcesses(args[0], numProcesses - 1, 2); // Final argument is the delay in seconds between opening processes
 	}
 
-	string simName = to_string(baseBet) + "L_" + to_string(betMult) + "x";
+	// Initializing variables for the sim
+	string simName = to_string(baseBet) + "cr_" + to_string(betMult) + "x";
 	int percentile = trialSize / 100;
-
-	for (int iTrial = 0; iTrial < numTrials; iTrial++)
+	double coinIn = 0;
+	double coinOut = 0;
+	int maxWin = 0;
+	int hits = 0;
+	int wins = 0;
+	double buyIn = 50 * totalBet;
+	double credits = buyIn;
+	int numSpins = 0;
+	map<int, int> spinsHist;
+	map<string, double> trialValue;
+	map<string, int> trialGameHits;
+	map<string, int> trialGameWins;
+	map<string, int> trialTotalHits;
+	map<string, int> trialTotalWins;
+	auto startTime = chrono::high_resolution_clock::now();
+	cout << "Running Sim: " << simName << "\n";
+	for (int iGame = 1; iGame <= trialSize; iGame++)
 	{
-		// Initializing variables for the sim
-		double coinIn = 0;
-		double coinOut = 0;
-		int maxWin = 0;
-		int hits = 0;
-		int wins = 0;
-		map<string, double> trialValue;
-		map<string, int> trialGameHits;
-		map<string, int> trialGameWins;
-		map<string, int> trialTotalHits;
-		map<string, int> trialTotalWins;
-		auto startTime = chrono::high_resolution_clock::now();
-		cout << "Running Sim: " << simName << "\n";
-		for (int iGame = 1; iGame <= trialSize; iGame++)
+		// Play Game
+		double score = PlayGame();
+		coinOut += score;
+		coinIn += totalBet;
+		// Update Values
+		if (score > maxWin) maxWin = score;
+		if (score > 0) hits++;
+		if (score > totalBet) wins++;
+		// Median Spins
+		numSpins++;
+		credits += score - totalBet;
+		if (credits < totalBet || numSpins > 1000)
 		{
-			// Play Game
-			double score = PlayGame();
-			coinOut += score;
-			coinIn += totalBet;
-			// Update Values
-			if (score > maxWin) maxWin = score;
-			if (score > 0) hits++;
-			if (score > totalBet) wins++;
-			// Save and Reset Trackers
-			for (auto const& [name, value] : gameTotalValues)
-			{
-				trialValue[name] += value;
-				trialGameHits[name]++;
-				if (value > 0) trialGameWins[name]++;
-				trialTotalHits[name] += gameTotalHits[name];
-				trialTotalWins[name] += gameTotalWins[name];
-			}
-			ClearTrackers();
-			// Print sim status to console
-			if (iGame % percentile == 0)
-			{
-				int step = iGame / percentile;
-				long long elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTime).count();
-				long long remainingTime = elapsedTime * (100 - step) / step;
-				long long totalTime = elapsedTime + remainingTime;
-				cout << step << "/100\t" << FormatDouble(coinOut / coinIn, 8) << "\tE " << FormatTime(elapsedTime) << "\tR " << FormatTime(remainingTime) << "\tT " << FormatTime(totalTime) << endl;
-			}
+			spinsHist[numSpins]++;
+			credits = buyIn;
+			numSpins = 0;
 		}
-		// Write results to a file
-		if (outputHistograms) PrintHistograms(simName);
-		string filename = "SimsOutput_" + simName + ".txt";
-		ofstream outputFile(filename, ios::app);
-		outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins;
-		for (auto const& [name, value] : trialValue)
+		// Save and Reset Trackers
+		for (auto const& [name, value] : gameTotalValues)
 		{
-			outputFile << "\t" << name;
-			outputFile << "\t" << FormatDouble(trialValue[name] / trialSize, 15);
-			outputFile << "\t" << trialGameHits[name];
-			outputFile << "\t" << trialGameWins[name];
-			outputFile << "\t" << trialTotalHits[name];
-			outputFile << "\t" << trialTotalWins[name];
+			trialValue[name] += value;
+			trialGameHits[name]++;
+			if (value > 0) trialGameWins[name]++;
+			trialTotalHits[name] += gameTotalHits[name];
+			trialTotalWins[name] += gameTotalWins[name];
 		}
-		outputFile << "\n";
-		outputFile.close();
+		ClearTrackers();
+		// Print sim status to console
+		if (iGame % percentile == 0)
+		{
+			int step = iGame / percentile;
+			long long elapsedTime = chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - startTime).count();
+			long long remainingTime = elapsedTime * (100 - step) / step;
+			long long totalTime = elapsedTime + remainingTime;
+			cout << step << "/100\t" << FormatDouble(coinOut / coinIn, 8) << "\tE " << FormatTime(elapsedTime) << "\tR " << FormatTime(remainingTime) << "\tT " << FormatTime(totalTime) << endl;
+		}
 	}
+	// Write results to a file
+	if (outputHistograms) PrintHistograms(simName);
+	string filename = "SimsOutput_" + simName + ".txt";
+	ofstream outputFile(filename, ios::app);
+	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
+	for (auto const& [name, value] : trialValue)
+	{
+		outputFile << "\t" << name;
+		outputFile << "\t" << FormatDouble(trialValue[name] / trialSize, 15);
+		outputFile << "\t" << trialGameHits[name];
+		outputFile << "\t" << trialGameWins[name];
+		outputFile << "\t" << trialTotalHits[name];
+		outputFile << "\t" << trialTotalWins[name];
+	}
+	outputFile << "\n";
+	outputFile.close();
+	
 }
 
 void SlotGame::FreePlay(bool clearConsole)
@@ -299,7 +309,7 @@ void SlotGame::CyclePositions()
 	vector<int> maxPositions(numReels, 0);
 	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
-	string filename = "CyclePositionsOutput_" + to_string(baseBet) + "L_" + to_string(betMult) + "x.txt";
+	string filename = "CyclePositionsOutput_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
 	ofstream outputFile(filename);
 	outputFile << "Max Pay Positions:\t";
 	for (int iReel = 0; iReel < numReels; iReel++)
@@ -333,7 +343,7 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 	}
 	else
 	{
-		double score = betMult * baseGrid->EvaluateGridLines(symbolComboInfo);
+		double score = betMult * baseGrid->EvaluateGridLines(symbolCombos);
 		int combos = 1;
 		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{

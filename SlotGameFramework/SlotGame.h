@@ -35,7 +35,7 @@ public:
 	SlotReels* baseReelSet;
 	SlotReels* freeReelSet;
 	// Grid Evaluation
-	SymbolComboInfo* symbolComboInfo;
+	SymbolCombos* symbolCombos;
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
@@ -63,12 +63,15 @@ public:
 	void ClearTrackers();
 	void AddToHistogram(string name, double value, long long numHits = 1);
 	void PrintHistograms(string simName);
-	void RunSims(int numTrials, int trialSize, vector<string>& args, bool outputHistograms);
+	void RunSims(int trialSize, vector<string>& args, bool outputHistograms);
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);
 
 	// ==================== Game Specific ====================
+	// NON-STATIC VARIABLES
+	int numBonus = 0;
+
 	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)
 	static int numReels;
 	static int numRows;
@@ -87,7 +90,4 @@ public:
 	// Weight Tables
 	static vector<long long> freeSpinWildWeights;
 	static vector<double> freeSpinWildValues;
-
-	// NON-STATIC VARIABLES
-	int numBonus = 0;
 };

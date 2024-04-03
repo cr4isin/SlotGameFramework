@@ -33,7 +33,7 @@
     <ClCompile Include="General.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
-    <ClCompile Include="MultiSymbolComboInfo.cpp">
+    <ClCompile Include="SymbolComboTree.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
     <ClCompile Include="SlotGrid.cpp">
@@ -42,7 +42,7 @@
     <ClCompile Include="SlotReels.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
-    <ClCompile Include="SymbolComboInfo.cpp">
+    <ClCompile Include="SymbolCombos.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
     <ClCompile Include="WeightTable.cpp">
@@ -59,7 +59,7 @@
     <ClInclude Include="General.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
-    <ClInclude Include="MultiSymbolComboInfo.h">
+    <ClInclude Include="SymbolComboTree.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="SlotGrid.h">
@@ -68,7 +68,7 @@
     <ClInclude Include="SlotReels.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
-    <ClInclude Include="SymbolComboInfo.h">
+    <ClInclude Include="SymbolCombos.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="WeightTable.h">

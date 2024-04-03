@@ -6,7 +6,7 @@
 // Standard lines from left-to-right, evaluated one by one
 // Set bothWays to true to evaluate from left-to-right and right-to-left
 
-class SymbolComboInfo
+class SymbolCombos
 {
 public:
 	enum multiplierType
@@ -16,8 +16,8 @@ public:
 		MAX,
 	};
 
-	SymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays = false, multiplierType multType = PRODUCT);
-	~SymbolComboInfo();
+	SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays = false, multiplierType multType = PRODUCT);
+	~SymbolCombos();
 	double GetComboInfo(size_t symbolkey);
 	size_t GetSymbolLocation(const int reel, const int symbol);
 

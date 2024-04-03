@@ -4,9 +4,9 @@
 
 // This class contains the info about every possible symbol combination
 // It is used when efficiently evaluating grid lines
-// (standard lines from left to right, evaluated in binary tree)
+// (standard lines from left to right, evaluated in a tree structure)
 
-class MultiSymbolComboInfo
+class SymbolComboTree
 {
 public:
 	enum multiplierType
@@ -16,8 +16,8 @@ public:
 		MAX,
 	};
 
-	MultiSymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType = PRODUCT);
-	~MultiSymbolComboInfo();
+	SymbolComboTree(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType = PRODUCT);
+	~SymbolComboTree();
 
 	void GetComboInfo(size_t symbolkey, int reel, double& pay, bool& breaks);
 	size_t GetSymbolLocation(const int reel, const int symbol);

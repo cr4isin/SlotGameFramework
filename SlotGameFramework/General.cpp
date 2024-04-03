@@ -105,3 +105,34 @@ std::string FormatTime(long long milliseconds) {
 	oss << setfill('0') << setw(2) << hours << ":" << setw(2) << minutes << ":" << setw(2) << seconds;
 	return oss.str();
 }
+
+int GetMedian(const map<int, int>& hist)
+{
+	int total = 0;
+	for (auto const& [value, count] : hist)
+	{
+		total += count;
+	}
+
+	int medianIndex = (total + 1) / 2;
+	total = 0;
+	for (auto const& [value, count] : hist)
+	{
+		total += count;
+		if (total >= medianIndex) return value;
+	}
+
+	return -1;
+}
+
+int RandInt(int total)
+{
+	if (total <= 0)
+	{
+		throw runtime_error("RandInt requires a positive integer");
+	}
+	random_device rd;
+	mt19937 rng(rd());
+	uniform_int_distribution<> distr(0, total - 1);
+	return distr(rng);
+}

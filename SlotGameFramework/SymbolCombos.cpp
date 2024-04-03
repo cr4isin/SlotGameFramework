@@ -1,9 +1,9 @@
 
-#include "MultiSymbolComboInfo.h"
+#include "SymbolCombos.h"
 
-MultiSymbolComboInfo::MultiSymbolComboInfo(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, multiplierType multType)
+SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays, multiplierType multType)
 {
-	cout << "Calculating Multi-Symbol Combos... ";
+	cout << "Calculating Symbol Combos... ";
 	m_numReels = numReels;
 	m_numSymbols = numSymbols;
 	m_paytable = paytable;
@@ -29,12 +29,11 @@ MultiSymbolComboInfo::MultiSymbolComboInfo(int numReels, int numSymbols, map<int
 		}
 	}
 
-	// Set up m_combos size and m_combo_location size/values
-	m_combos.resize(numReels);
+	// Set up m_combos size
+	m_combos.resize(pow(m_numSymbols, m_numReels));
 	m_combo_location.resize(numReels);
 	for (int iReel = 0; iReel < numReels; iReel++)
 	{
-		m_combos.at(iReel).resize(pow(numSymbols, iReel + 1));
 		m_combo_location.at(iReel).resize(numSymbols);
 		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
 		{
@@ -44,40 +43,51 @@ MultiSymbolComboInfo::MultiSymbolComboInfo(int numReels, int numSymbols, map<int
 
 	// Calculate all possible symbol combos
 	EvaluateSymbolCombos();
+	if (bothWays)
+	{
+		vector<double> m_combosCopy = m_combos;
+		for (int iCombo = 0; iCombo < m_combos.size(); iCombo++)
+		{
+			vector<int> combo = ChangeBase(iCombo, m_numSymbols, m_numReels);
+			reverse(combo.begin(), combo.end());
+			size_t symbolKey = 0;
+			for (int iReel = 0; iReel < m_numReels; iReel++)
+			{
+				symbolKey += GetSymbolLocation(iReel, combo[iReel]);
+			}
+			m_combos[iCombo] = max(m_combosCopy[iCombo], m_combosCopy[symbolKey]);
+		}
+	}
 	cout << "Done!\n";
 }
 
-MultiSymbolComboInfo::~MultiSymbolComboInfo()
+SymbolCombos::~SymbolCombos()
 {
 	m_combos.clear();
-	m_combo_location.clear();
 }
 
-void MultiSymbolComboInfo::GetComboInfo(size_t symbolkey, int reel, double& pay, bool& breaks)
+double SymbolCombos::GetComboInfo(size_t symbolkey)
 {
-	symbolCombo thisSymbolCombo = m_combos[reel][symbolkey];
-	pay = thisSymbolCombo.pay;
-	breaks = thisSymbolCombo.breaks;
-	return;
+	return m_combos[symbolkey];
 }
 
-size_t MultiSymbolComboInfo::GetSymbolLocation(const int reel, const int symbol)
+size_t SymbolCombos::GetSymbolLocation(const int reel, const int symbol)
 {
 	return m_combo_location[reel][symbol];
 }
 
-set<int> MultiSymbolComboInfo::SetIntersect(set<int> seta, set<int> setb)
+set<int> SymbolCombos::SetIntersect(set<int> seta, set<int> setb)
 {
 	set<int> return_set;
 	set_intersection(seta.begin(), seta.end(), setb.begin(), setb.end(), inserter(return_set, return_set.begin()));
 	return return_set;
 }
 
-void MultiSymbolComboInfo::EvaluateSymbolCombos(int reel, double pay, int multiplier, size_t symbol_key, set<int> possible_symbols)
+void SymbolCombos::EvaluateSymbolCombos(int reel, double pay, int multiplier, size_t symbol_key, set<int> possible_symbols)
 {
 	for (size_t symbol = 0; symbol < m_numSymbols; symbol++)
 	{
-		size_t current_symbol_key = symbol_key + m_combo_location[reel][symbol];
+		size_t current_symbol_key = symbol_key + symbol * pow(m_numSymbols, reel);
 		double max_pay = pay;
 		int mult = multiplier;
 		// Update Wild Symbols
@@ -90,13 +100,8 @@ void MultiSymbolComboInfo::EvaluateSymbolCombos(int reel, double pay, int multip
 		{
 			current_possible_symbols = SetIntersect(possible_symbols, m_wildMapping[symbol]);
 		}
-		// Check for combo breaking
-		if (current_possible_symbols.empty())
-		{
-			m_combos[reel][current_symbol_key].breaks = true;
-			m_combos[reel][current_symbol_key].pay = max_pay * mult;
-		}
-		else
+		// If combo is not broken, update the current combo pay and multiplier
+		if (!current_possible_symbols.empty())
 		{
 			// Update Multiplier
 			switch (m_multType) {
@@ -115,16 +120,15 @@ void MultiSymbolComboInfo::EvaluateSymbolCombos(int reel, double pay, int multip
 					max_pay = m_paytable[s][reel];
 				}
 			}
-			m_combos[reel][current_symbol_key].pay = max_pay * mult;
-			// Check if this is the final reel or the combo continues
-			if (reel + 1 < m_numReels)
-			{
-				EvaluateSymbolCombos(reel + 1, max_pay, mult, current_symbol_key, current_possible_symbols);
-			}
-			else
-			{
-				m_combos[reel][current_symbol_key].breaks = true;
-			}
+		}
+		// Check if this is the final reel
+		if (reel + 1 < m_numReels)
+		{
+			EvaluateSymbolCombos(reel + 1, max_pay, mult, current_symbol_key, current_possible_symbols);
+		}
+		else
+		{
+			m_combos[current_symbol_key] = max_pay * mult;
 		}
 	}
 }

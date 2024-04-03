@@ -165,7 +165,7 @@ void SlotGrid::LineElement::AddElement(vector<int>& line)
 	}
 }
 
-double SlotGrid::EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(SymbolComboTree* &currentSymbolCombos)
 {
 	double score = 0;
 	vector<vector<int>> grid = m_grid;
@@ -176,7 +176,7 @@ double SlotGrid::EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos)
 	return score;
 }
 
-void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &grid, MultiSymbolComboInfo* &currentSymbolCombos, size_t symbol_key) const
+void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &grid, SymbolComboTree* &currentSymbolCombos, size_t symbol_key) const
 {
 	int current_symbol = grid[m_reel][m_row];
 	symbol_key += currentSymbolCombos->GetSymbolLocation(m_reel, current_symbol);
@@ -196,7 +196,7 @@ void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &
 	}
 }
 
-double SlotGrid::EvaluateGridLines(SymbolComboInfo*& currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(SymbolCombos*& currentSymbolCombos)
 {
 	double score = 0;
 	if (m_inFreePlay)

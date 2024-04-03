@@ -48,3 +48,7 @@ string FormatDouble(double value, int precision = -1);
 string FormatInteger(int value, int width = 1, char fill = ' ');
 
 string FormatTime(long long milliseconds);
+
+int GetMedian(const map<int, int>& hist);
+
+int RandInt(int total);

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "SlotReels.h"
-#include "MultiSymbolComboInfo.h"
-#include "SymbolComboInfo.h"
+#include "SymbolComboTree.h"
+#include "SymbolCombos.h"
 
 class SlotGrid 
 {
@@ -23,8 +23,8 @@ public:
 	void SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers);
 	void SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors = {});
 	void SetInFreePlay(bool inFreePlay);
-	double EvaluateGridLines(MultiSymbolComboInfo* &currentSymbolCombos);
-	double EvaluateGridLines(SymbolComboInfo* &currentSymbolCombos);
+	double EvaluateGridLines(SymbolComboTree* &currentSymbolCombos);
+	double EvaluateGridLines(SymbolCombos* &currentSymbolCombos);
 	double EvaluateGridWays();
 
 	bool IsSymbolOnGrid(int symbol);
@@ -54,7 +54,7 @@ private:
 		int m_numReels = 0;
 		vector<LineElement> m_subLineElements;
 		void AddElement(vector<int>& line);
-		void EvaluateElement(double& score, vector<vector<int>> &grid, MultiSymbolComboInfo* &currentSymbolCombos, size_t symbol_key = 0) const;
+		void EvaluateElement(double& score, vector<vector<int>> &grid, SymbolComboTree* &currentSymbolCombos, size_t symbol_key = 0) const;
 	};
 
 	int m_numReels = 1; // Number of Reels in the Grid
