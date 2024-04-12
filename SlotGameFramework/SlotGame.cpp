@@ -181,7 +181,7 @@ void SlotGame::PrintHistograms(string simName)
 	}
 }
 
-void SlotGame::RunSims(int trialSize, vector<string>& args, bool outputHistograms)
+void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
@@ -202,7 +202,7 @@ void SlotGame::RunSims(int trialSize, vector<string>& args, bool outputHistogram
 
 	// Initializing variables for the sim
 	string simName = to_string(baseBet) + "cr_" + to_string(betMult) + "x";
-	int percentile = trialSize / 100;
+	int percentile = numGames / 100;
 	double coinIn = 0;
 	double coinOut = 0;
 	int maxWin = 0;
@@ -219,7 +219,7 @@ void SlotGame::RunSims(int trialSize, vector<string>& args, bool outputHistogram
 	map<string, int> trialTotalWins;
 	auto startTime = chrono::high_resolution_clock::now();
 	cout << "Running Sim: " << simName << "\n";
-	for (int iGame = 1; iGame <= trialSize; iGame++)
+	for (int iGame = 1; iGame <= numGames; iGame++)
 	{
 		// Play Game
 		double score = PlayGame();
@@ -262,11 +262,11 @@ void SlotGame::RunSims(int trialSize, vector<string>& args, bool outputHistogram
 	if (outputHistograms) PrintHistograms(simName);
 	string filename = "SimsOutput_" + simName + ".txt";
 	ofstream outputFile(filename, ios::app);
-	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << trialSize << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
+	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
 	for (auto const& [name, value] : trialValue)
 	{
 		outputFile << "\t" << name;
-		outputFile << "\t" << FormatDouble(trialValue[name] / trialSize, 15);
+		outputFile << "\t" << FormatDouble(trialValue[name] / numGames, 15);
 		outputFile << "\t" << trialGameHits[name];
 		outputFile << "\t" << trialGameWins[name];
 		outputFile << "\t" << trialTotalHits[name];

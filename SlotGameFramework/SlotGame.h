@@ -63,7 +63,7 @@ public:
 	void ClearTrackers();
 	void AddToHistogram(string name, double value, long long numHits = 1);
 	void PrintHistograms(string simName);
-	void RunSims(int trialSize, vector<string>& args, bool outputHistograms);
+	void RunSims(int numGames, vector<string>& args, bool outputHistograms);
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);
