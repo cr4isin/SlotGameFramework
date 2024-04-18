@@ -17,7 +17,10 @@ def ConvertType(value):
             return value
 
 def SimAnalyzerToText():
-    sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimsOutput') and f.endswith('.txt')])
+    sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimData_') and f.endswith('.txt')])
+    if not sim_output_files:
+        print('No files were found!')
+        return
     values_per_tracker = 6
     output_file = open('output.txt', 'w')
     for file_index, file_name in enumerate(sim_output_files,1):
@@ -67,7 +70,7 @@ def SimAnalyzerToText():
             tracker_total_stdev[name] = stat.stdev(tracker_ev[name]) if num_trials > 1 else 0
         
         # Output to file
-        output_file.write(f'{file_name[11:-4]}\t{total_ev}\t{total_stdev}\t{num_trials}\t{games_played}\t{bet}\t{hit_rate}\t{win_rate}\t{total_max_win}\t{average_max_win}\n')
+        output_file.write(f'{file_name[8:-4]}\t{total_ev}\t{total_stdev}\t{num_trials}\t{games_played}\t{bet}\t{hit_rate}\t{win_rate}\t{total_max_win}\t{average_max_win}\n')
         for name in tracker_total_ev:
             output_file.write(f'{name}\t{tracker_total_ev[name]}\t{tracker_total_stdev[name]}\t{tracker_game_hits[name]}\t{tracker_game_wins[name]}\t{tracker_total_hits[name]}\t{tracker_total_wins[name]}\n')
         output_file.write('\n')
@@ -84,7 +87,7 @@ def CreateWorkbook()->xlsxwriter.Workbook:
 
 def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_trackers:int):
     data_title_row = ['Sim Name', 'Name Index', 'Simmed EV', 'Standard Deviation', 'Rounded EV', 'Rounding Risk', 'Rounding Confidence', 'Volatility', 'Number of Trials', 'Trial Size', 'Number of Games', 'Bet', 'Hit Rate', 'Win Rate', 'Max Win', 'Avg Max Win', 'Median Spins', 'Number of Trackers', 'Lists']
-    filenames = [file[11:-4] for file in filenames]
+    filenames = [file[8:-4] for file in filenames]
     names_range = 'Data!' + xl_range(1, 0, len(filenames), 0)
 
     # Formats
@@ -267,7 +270,10 @@ def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_tracke
 
 
 def SimAnalyzerToExcel():
-    sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimsOutput') and f.endswith('.txt')])
+    sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimData_') and f.endswith('.txt')])
+    if not sim_output_files:
+        print('No files were found!')
+        return
     values_per_tracker = 6
     max_trackers = 1
     workbook = CreateWorkbook()
@@ -324,7 +330,7 @@ def SimAnalyzerToExcel():
         
         # Output to file
         
-        input_ws.write_row(row_number, 0, [file_name[11:-4],total_ev,total_stdev,num_trials,games_played,bet,hit_rate,win_rate,total_max_win,average_max_win,med_spins])
+        input_ws.write_row(row_number, 0, [file_name[8:-4],total_ev,total_stdev,num_trials,games_played,bet,hit_rate,win_rate,total_max_win,average_max_win,med_spins])
         row_number+=1
         for name in tracker_total_ev:
             input_ws.write_row(row_number, 0,[name,tracker_total_ev[name],tracker_total_stdev[name],tracker_game_hits[name],tracker_game_wins[name],tracker_total_hits[name],tracker_total_wins[name]])

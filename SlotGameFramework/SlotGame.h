@@ -39,6 +39,8 @@ public:
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
+	string configName = "";
+	int configIndex = 0;
 	bool inFreePlay = false;
 	// Weight Tables
 	map<string, WeightTable> weightTable;
@@ -50,6 +52,7 @@ public:
 	map<string, map<double, long long>> histograms;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
+	void SetConfig(string configName);
 	void SetupGame();
 	void SetupGrids();
 	void SetupReels();

@@ -33,6 +33,16 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 	}
 }
 
+void SlotGame::SetConfig(string configName)
+{
+	this->configName = configName;
+	map<string, int> configMapping =
+	{
+		{"EXAMPLE", 0}
+	};
+	configIndex = configMapping.at(configName);
+}
+
 void SlotGame::SetupGame()
 {
 	SetupGrids();
@@ -201,7 +211,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	}
 
 	// Initializing variables for the sim
-	string simName = to_string(baseBet) + "cr_" + to_string(betMult) + "x";
+	string simName = configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x";
 	int percentile = numGames / 100;
 	double coinIn = 0;
 	double coinOut = 0;
@@ -260,7 +270,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	}
 	// Write results to a file
 	if (outputHistograms) PrintHistograms(simName);
-	string filename = "SimsOutput_" + simName + ".txt";
+	string filename = "SimData_" + simName + ".txt";
 	ofstream outputFile(filename, ios::app);
 	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
 	for (auto const& [name, value] : trialValue)
@@ -309,7 +319,7 @@ void SlotGame::CyclePositions()
 	vector<int> maxPositions(numReels, 0);
 	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
-	string filename = "CyclePositionsOutput_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
+	string filename = "CyclePositionsOutput_" + configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
 	ofstream outputFile(filename);
 	outputFile << "Max Pay Positions:\t";
 	for (int iReel = 0; iReel < numReels; iReel++)
