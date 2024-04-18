@@ -3,6 +3,11 @@
 
 
 // ===================== Standard Grid Functions ===================== 
+SlotGrid::SlotGrid()
+{
+	// Empty Default Constructor
+}
+
 SlotGrid::SlotGrid(int numReels, int numRows)
 {
 	m_numReels = numReels;
@@ -34,7 +39,7 @@ int SlotGrid::GetNumRows()
 	return m_numRows;
 }
 
-void SlotGrid::FillGrid(vector<int> &positions, SlotReels* &reels)
+void SlotGrid::FillGrid(vector<int> &positions, SlotReels &reels)
 {
 	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
@@ -42,9 +47,9 @@ void SlotGrid::FillGrid(vector<int> &positions, SlotReels* &reels)
 	}
 }
 
-void SlotGrid::FillGridReel(int reelIndex, int position, SlotReels*& reels)
+void SlotGrid::FillGridReel(int reelIndex, int position, SlotReels &reels)
 {
-	m_grid[reelIndex] = reels->GetSubReel(reelIndex, position, m_numRows);
+	m_grid[reelIndex] = reels.GetSubReel(reelIndex, position, m_numRows);
 }
 
 void SlotGrid::PrintGrid()
@@ -65,7 +70,6 @@ void SlotGrid::PrintGrid()
 void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 {
 	m_lines.clear();
-	m_lineElements.clear();
 	if (numLines <= 0)
 	{
 		numLines = lines.size();
@@ -73,21 +77,6 @@ void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 	for (int iLine = 0; iLine < numLines; iLine++)
 	{
 		m_lines.push_back(lines.at(iLine));
-		int row = lines.at(iLine).at(0);
-		bool found = false;
-		for (auto& line_element : m_lineElements)
-		{
-			if (line_element.m_row == row)
-			{
-				line_element.AddElement(lines.at(iLine));
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			m_lineElements.push_back(LineElement(0, row, m_numReels, lines.at(iLine)));
-		}
 	}
 }
 
@@ -128,75 +117,7 @@ void SlotGrid::SetInFreePlay(bool inFreePlay)
 	m_inFreePlay = inFreePlay;
 }
 
-SlotGrid::LineElement::LineElement(int reel, int row, int numReels, vector<int> line)
-{
-	m_line_count++;
-	m_reel = reel;
-	m_row = row;
-	m_numReels = numReels;
-	if (m_reel + 1 < m_numReels)
-	{
-		int next_row = line.at(m_reel + 1);
-		m_subLineElements.push_back(LineElement(m_reel + 1, next_row, m_numReels, line));
-	}
-}
-
-void SlotGrid::LineElement::AddElement(vector<int>& line)
-{
-	// Adds a branching path from the current line element
-	m_line_count++;
-	if (m_reel + 1 < m_numReels)
-	{
-		int next_row = line.at(m_reel + 1);
-		bool found = false;
-		for (auto& line_element : m_subLineElements)
-		{
-			if (line_element.m_row == next_row)
-			{
-				line_element.AddElement(line);
-				found = true;
-				break;
-			}
-		}
-		if (!found)
-		{
-			m_subLineElements.push_back(LineElement(m_reel + 1, next_row, m_numReels, line));
-		}
-	}
-}
-
-double SlotGrid::EvaluateGridLines(SymbolComboTree* &currentSymbolCombos)
-{
-	double score = 0;
-	vector<vector<int>> grid = m_grid;
-	for (const auto& line_element : m_lineElements)
-	{
-		line_element.EvaluateElement(score, grid, currentSymbolCombos);
-	}
-	return score;
-}
-
-void SlotGrid::LineElement::EvaluateElement(double& score, vector<vector<int>> &grid, SymbolComboTree* &currentSymbolCombos, size_t symbol_key) const
-{
-	int current_symbol = grid[m_reel][m_row];
-	symbol_key += currentSymbolCombos->GetSymbolLocation(m_reel, current_symbol);
-	double pay = 0;
-	bool breaks = false;
-	currentSymbolCombos->GetComboInfo(symbol_key, m_reel, pay, breaks);
-	if (breaks)
-	{
-		score += m_line_count * pay;
-	}
-	else
-	{
-		for (const auto& line_element : m_subLineElements)
-		{
-			line_element.EvaluateElement(score, grid, currentSymbolCombos, symbol_key);
-		}
-	}
-}
-
-double SlotGrid::EvaluateGridLines(SymbolCombos*& currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(SymbolCombos &currentSymbolCombos)
 {
 	double score = 0;
 	if (m_inFreePlay)
@@ -209,10 +130,10 @@ double SlotGrid::EvaluateGridLines(SymbolCombos*& currentSymbolCombos)
 		size_t symbolKey = 0;
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			symbolKey += currentSymbolCombos->GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
+			symbolKey += currentSymbolCombos.GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
 		}
 		// Grab the combo pay for this Symbol Key
-		double lineScore = currentSymbolCombos->GetComboInfo(symbolKey);
+		double lineScore = currentSymbolCombos.GetComboInfo(symbolKey);
 		score += lineScore;
 		// Print Combos
 		if (m_inFreePlay && lineScore > 0)

@@ -1,7 +1,7 @@
 
 #include "SlotGame.h"
 
-// ==================================== Grid Dimensions & Symbol Combo Info ==================================== 
+// ==================================== Grid Dimensions & Symbol Combos ==================================== 
 int SlotGame::numReels = 5;
 int SlotGame::numRows = 3;
 
@@ -32,7 +32,7 @@ map<int, vector<double>> SlotGame::paytable =
 	{BONUS, {0, 0, 0, 1, 5, 10}}, // Indexing on BONUS is different because it is used as a scatter pay
 };
 
-// ==================================== Symbol Print Info ==================================== 
+// ==================================== Symbol Printing ==================================== 
 map<int, string> SlotGame::symbolStrings =
 { // These are how the symbols will print to the console during Free Play
 	{BLANK, "--"},

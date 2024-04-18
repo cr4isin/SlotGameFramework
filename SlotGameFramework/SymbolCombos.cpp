@@ -1,6 +1,11 @@
 
 #include "SymbolCombos.h"
 
+SymbolCombos::SymbolCombos()
+{
+	// Empty Default Constructor
+}
+
 SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays, multiplierType multType)
 {
 	cout << "Calculating Symbol Combos... ";

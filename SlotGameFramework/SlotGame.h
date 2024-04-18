@@ -30,12 +30,12 @@ public:
 	
 	// ==================== General Functions and Variables ====================
 	// Grid and Reels
-	SlotGrid* baseGrid;
-	SlotGrid* freeGrid;
-	SlotReels* baseReelSet;
-	SlotReels* freeReelSet;
+	SlotGrid baseGrid;
+	SlotGrid freeGrid;
+	SlotReels baseReelSet;
+	SlotReels freeReelSet;
 	// Grid Evaluation
-	SymbolCombos* symbolCombos;
+	SymbolCombos symbolCombos;
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;

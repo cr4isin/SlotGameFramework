@@ -132,7 +132,6 @@
     <ClCompile Include="DynamicWeightTable.cpp" />
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="SymbolComboTree.cpp" />
     <ClCompile Include="SlotGameDefs.cpp" />
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SlotGame.cpp" />
@@ -143,7 +142,6 @@
   <ItemGroup>
     <ClInclude Include="DynamicWeightTable.h" />
     <ClInclude Include="General.h" />
-    <ClInclude Include="SymbolComboTree.h" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />

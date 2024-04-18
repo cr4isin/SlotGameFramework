@@ -1,6 +1,11 @@
 
 #include "SlotReels.h"
 
+SlotReels::SlotReels()
+{
+	// Empty Default Constructor
+}
+
 SlotReels::SlotReels(vector<vector<int>> reels, int maxRows) {
 	m_reels = reels;
 	m_numReels = m_reels.size();

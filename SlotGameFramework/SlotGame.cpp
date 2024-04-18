@@ -5,17 +5,11 @@
 SlotGame::SlotGame()
 {
 	// Create pointers here
-	symbolCombos = new SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 }
 
 SlotGame::~SlotGame()
 {
 	// Delete pointers here
-	delete baseReelSet;
-	delete freeReelSet;
-	delete baseGrid;
-	delete freeGrid;
-	delete symbolCombos;
 }
 
 // ============================== Setup ==============================
@@ -52,21 +46,23 @@ void SlotGame::SetupGame()
 
 void SlotGame::SetupGrids()
 {
-	baseGrid = new SlotGrid(numReels, numRows);
-	baseGrid->SetLines(lines, baseBet);
-	baseGrid->SetSymbolPrintInfo(symbolStrings, symbolColors);
+	symbolCombos = SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 
-	freeGrid = new SlotGrid(numReels, numRows);
-	freeGrid->SetLines(lines, baseBet);
-	freeGrid->SetSymbolPrintInfo(symbolStrings, symbolColors);
+	baseGrid = SlotGrid(numReels, numRows);
+	baseGrid.SetLines(lines, baseBet);
+	baseGrid.SetSymbolPrintInfo(symbolStrings, symbolColors);
 
-	//baseGrid->SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers); // Ways Example
+	freeGrid = SlotGrid(numReels, numRows);
+	freeGrid.SetLines(lines, baseBet);
+	freeGrid.SetSymbolPrintInfo(symbolStrings, symbolColors);
+
+	//baseGrid.SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers); // Ways Example
 }
 
 void SlotGame::SetupReels()
 {
-	baseReelSet = new SlotReels(baseReels);
-	freeReelSet = new SlotReels(freeReels);
+	baseReelSet = SlotReels(baseReels);
+	freeReelSet = SlotReels(freeReels);
 }
 
 void SlotGame::SetupWeightTables()
@@ -84,14 +80,14 @@ double SlotGame::PlayGame()
 	double value = 0;
 
 	// Generate positions and fill grid
-	vector<int> positions = baseReelSet->GenerateRandomPositions();
-	baseGrid->FillGrid(positions, baseReelSet);
+	vector<int> positions = baseReelSet.GenerateRandomPositions();
+	baseGrid.FillGrid(positions, baseReelSet);
 
 	// Evaluate Lines
-	score += betMult * baseGrid->EvaluateGridLines(symbolCombos);
+	score += betMult * baseGrid.EvaluateGridLines(symbolCombos);
 
 	// Evaluate Scatter pays
-	numBonus = baseGrid->CountSymbolOnGrid(BONUS);
+	numBonus = baseGrid.CountSymbolOnGrid(BONUS);
 	score += totalBet * paytable[BONUS][numBonus];
 	AddToTracker("BaseGame", score);
 
@@ -120,8 +116,8 @@ double SlotGame::PlayBonus()
 		double spinScore = 0;
 
 		// Generate positions and fill grid
-		positions = freeReelSet->GenerateRandomPositions();
-		freeGrid->FillGrid(positions, freeReelSet);
+		positions = freeReelSet.GenerateRandomPositions();
+		freeGrid.FillGrid(positions, freeReelSet);
 
 		// Determine which 2 reels to fill with WILDs
 		weightTable["freeSpinWild"].Call(weight, index, value);
@@ -130,15 +126,15 @@ double SlotGame::PlayBonus()
 		{
 			if (wildReels[iReel] == 1)
 			{
-				freeGrid->FillReelWithSymbol(WILD, iReel);
+				freeGrid.FillReelWithSymbol(WILD, iReel);
 			}
 		}
 
 		// Evaluate Lines/Ways
-		spinScore += betMult * freeGrid->EvaluateGridLines(symbolCombos);
+		spinScore += betMult * freeGrid.EvaluateGridLines(symbolCombos);
 
 		// Evaluate Scatter pays and bonus triggers
-		numBonus = freeGrid->CountSymbolOnGrid(BONUS);
+		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
 		AddToTracker("FreeSpin", spinScore);
 		spinsRemaining += numFreeGames[numBonus];
@@ -290,8 +286,8 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
-	baseGrid->SetInFreePlay(true);
-	freeGrid->SetInFreePlay(true);
+	baseGrid.SetInFreePlay(true);
+	freeGrid.SetInFreePlay(true);
 	string input;
 	cout << "Press Enter to Play!";
 	cin.get();
@@ -340,24 +336,24 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 	// Might need to edit your grid, reels, and evaluation type being used
 	if (currentReel < positions.size())
 	{
-		for (int i = 0; i < baseReelSet->GetReelSize(currentReel); i++)
+		for (int i = 0; i < baseReelSet.GetReelSize(currentReel); i++)
 		{
 			if (currentReel == 0)
 			{
-				cout << i << " / " << baseReelSet->GetReelSize(currentReel) << "\n";
+				cout << i << " / " << baseReelSet.GetReelSize(currentReel) << "\n";
 			}
 			positions.at(currentReel) = i;
-			baseGrid->FillGridReel(currentReel, positions[currentReel], baseReelSet);
+			baseGrid.FillGridReel(currentReel, positions[currentReel], baseReelSet);
 			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
 		}
 	}
 	else
 	{
-		double score = betMult * baseGrid->EvaluateGridLines(symbolCombos);
+		double score = betMult * baseGrid.EvaluateGridLines(symbolCombos);
 		int combos = 1;
 		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{
-			combos *= baseReelSet->GetWeight(iReel, positions[iReel]);
+			combos *= baseReelSet.GetWeight(iReel, positions[iReel]);
 		}
 		hist[score] += combos;
 		if (score > maxScore)

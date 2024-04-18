@@ -33,9 +33,6 @@
     <ClCompile Include="General.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
-    <ClCompile Include="SymbolComboTree.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
     <ClCompile Include="SlotGrid.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
@@ -57,9 +54,6 @@
       <Filter>Source Files\SlotGame</Filter>
     </ClInclude>
     <ClInclude Include="General.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="SymbolComboTree.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="SlotGrid.h">
