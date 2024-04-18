@@ -280,7 +280,6 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	}
 	outputFile << "\n";
 	outputFile.close();
-	
 }
 
 void SlotGame::FreePlay(bool clearConsole)
@@ -301,7 +300,7 @@ void SlotGame::FreePlay(bool clearConsole)
 		double score = PlayGame();
 		coinIn += totalBet;
 		coinOut += score;
-		cout << "Score: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
+		cout << "\nScore: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
 		cin.get();
 	}
 }

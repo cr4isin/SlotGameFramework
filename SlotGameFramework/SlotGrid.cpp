@@ -151,6 +151,10 @@ double SlotGrid::EvaluateGridLines(SymbolCombos &currentSymbolCombos)
 double SlotGrid::EvaluateGridWays()
 {
 	double score = 0;
+	if (m_inFreePlay)
+	{
+		PrintGrid();
+	}
 	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
 	{
 		int numCombos = 1;
