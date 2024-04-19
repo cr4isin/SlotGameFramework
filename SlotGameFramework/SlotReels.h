@@ -16,10 +16,10 @@ public:
 	int GetReelWeight(int reelIndex);
 	int GetWeight(int reelIndex, int position);
 
-	vector<int> GenerateRandomStops();
-	vector<int> ConvertStopsToPositions(vector<int> stops);
-	vector<int> GenerateRandomPositions();
-	vector<int> GetSubReel(int reelIndex, int position, int numRows);
+	void GenerateRandomStops(vector<int> &stops);
+	void ConvertStopsToPositions(vector<int> &stops);
+	void GenerateRandomPositions(vector<int> &positions);
+	void FillReel(vector<int> &reel, int reelIndex, int position, int numRows);
 
 private:
 	int m_numReels; // Number of reels in the reel set

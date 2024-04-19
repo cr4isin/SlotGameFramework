@@ -78,9 +78,10 @@ double SlotGame::PlayGame()
 	int index = 0;
 	long long weight = 0;
 	double value = 0;
+	vector<int> positions(numReels);
 
 	// Generate positions and fill grid
-	vector<int> positions = baseReelSet.GenerateRandomPositions();
+	baseReelSet.GenerateRandomPositions(positions);
 	baseGrid.FillGrid(positions, baseReelSet);
 
 	// Evaluate Lines
@@ -105,7 +106,7 @@ double SlotGame::PlayBonus()
 	int index = 0;
 	long long weight = 0;
 	double value = 0;
-	vector<int> positions;
+	vector<int> positions(numReels);
 	int spinsRemaining = numFreeGames[numBonus];
 	int spinNumber = 1;
 
@@ -116,7 +117,7 @@ double SlotGame::PlayBonus()
 		double spinScore = 0;
 
 		// Generate positions and fill grid
-		positions = freeReelSet.GenerateRandomPositions();
+		freeReelSet.GenerateRandomPositions(positions);
 		freeGrid.FillGrid(positions, freeReelSet);
 
 		// Determine which 2 reels to fill with WILDs

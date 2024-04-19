@@ -54,7 +54,7 @@ void SlotGrid::FillGrid(vector<int> &positions, SlotReels &reels)
 
 void SlotGrid::FillGridReel(int reelIndex, int position, SlotReels &reels)
 {
-	m_grid[reelIndex] = reels.GetSubReel(reelIndex, position, m_numRows);
+	reels.FillReel(m_grid[reelIndex], reelIndex, position, m_numRows);
 }
 
 void SlotGrid::PrintGrid()
@@ -127,7 +127,7 @@ void SlotGrid::SetInFreePlay(bool inFreePlay)
 	m_inFreePlay = inFreePlay;
 }
 
-double SlotGrid::EvaluateGridLines(SymbolCombos &currentSymbolCombos)
+double SlotGrid::EvaluateGridLines(SymbolCombos &symbolCombos)
 {
 	double score = 0;
 	if (m_inFreePlay)
@@ -140,10 +140,10 @@ double SlotGrid::EvaluateGridLines(SymbolCombos &currentSymbolCombos)
 		size_t symbolKey = 0;
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			symbolKey += currentSymbolCombos.GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
+			symbolKey += symbolCombos.GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
 		}
 		// Grab the combo pay for this Symbol Key
-		double lineScore = currentSymbolCombos.GetComboInfo(symbolKey);
+		double lineScore = symbolCombos.GetComboInfo(symbolKey);
 		score += lineScore;
 		// Print Combos
 		if (m_inFreePlay && lineScore > 0)
@@ -339,7 +339,7 @@ string SlotGrid::GetSymbolString(int symbol)
 	}
 	else
 	{
-		return "S" + to_string(symbol);
+		return "S" + FormatInt(symbol, 2, '0');
 	}
 }
 

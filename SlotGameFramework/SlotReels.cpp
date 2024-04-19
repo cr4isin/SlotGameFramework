@@ -106,23 +106,20 @@ int SlotReels::GetWeight(int reelIndex, int position)
 	return m_reelWeights[reelIndex][position];
 }
 
-vector<int> SlotReels::GenerateRandomStops()
+void SlotReels::GenerateRandomStops(vector<int>& stops)
 {
-	vector<int> stops(m_numReels);
 	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
 		stops[iReel] = stopGenerator[iReel](stopRNG);
 	}
-	return stops;
 }
 
-vector<int> SlotReels::ConvertStopsToPositions(vector<int> stops)
+void SlotReels::ConvertStopsToPositions(vector<int>& stops)
 {
 	if (!m_weightedReels)
 	{
-		return stops;
+		return;
 	}
-	vector<int> positions(m_numReels);
 	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
 		int low = 0;
@@ -141,18 +138,17 @@ vector<int> SlotReels::ConvertStopsToPositions(vector<int> stops)
 				low = mid + 1;
 			}
 		}
-		positions[iReel] =  low + m_numZeroIndexes[iReel][low];
+		stops[iReel] =  low + m_numZeroIndexes[iReel][low];
 	}
-	return positions;
 }
 
-vector<int> SlotReels::GenerateRandomPositions()
+void SlotReels::GenerateRandomPositions(vector<int>& positions)
 {
-	vector<int> stops = GenerateRandomStops();
-	return ConvertStopsToPositions(stops);
+	GenerateRandomStops(positions);
+	ConvertStopsToPositions(positions);
 }
 
-vector<int> SlotReels::GetSubReel(int reelIndex, int position, int numRows)
+void SlotReels::FillReel(vector<int>& reel, int reelIndex, int position, int numRows)
 {
-	return vector<int>(m_reels[reelIndex].begin() + position, m_reels[reelIndex].begin() + position + numRows);
+	copy(m_reels[reelIndex].begin() + position, m_reels[reelIndex].begin() + position + numRows, reel.begin());
 }

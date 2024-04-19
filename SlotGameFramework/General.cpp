@@ -140,8 +140,8 @@ int RandInt(int total)
 	}
 	random_device rd;
 	mt19937 rng(rd());
-	uniform_int_distribution<> distr(0, total - 1);
-	return distr(rng);
+	uniform_int_distribution<> dist(0, total - 1);
+	return dist(rng);
 }
 
 set<int> SetIntersect(set<int> setA, set<int> setB)
