@@ -2,9 +2,9 @@
 
 #include "General.h"
 
-// This class contains the info about every symbol combo using all reels
+// This class calculates the pay for every possible combination of symbols on a line
 // Standard lines from left-to-right, evaluated one by one
-// Set bothWays to true to evaluate from left-to-right and right-to-left
+// Set bothWays to true to evaluate from left-to-right and right-to-left. (Max win is used per line.)
 
 class SymbolCombos
 {
@@ -23,7 +23,6 @@ public:
 	size_t GetSymbolLocation(const int reel, const int symbol);
 
 private:
-	set<int> SetIntersect(set<int> seta, set<int> setb);
 	void EvaluateSymbolCombos(int reel = 0, double pay = 0, int multiplier = 1, size_t symbol_key = 0, set<int> possible_symbols = {});
 
 	int m_numReels;

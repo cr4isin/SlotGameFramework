@@ -97,8 +97,7 @@ void SlotGrid::SetWays(int numSymbols, map<int, vector<double>> paytable, map<in
 	{
 		if (!m_paytable.contains(symbol))
 		{
-			vector<double> zero_pays(m_numReels, 0);
-			m_paytable[symbol] = zero_pays;
+			m_paytable[symbol] = vector<double>(m_numReels, 0);
 		}
 		if (!m_symbolSubstitutions.contains(symbol))
 		{

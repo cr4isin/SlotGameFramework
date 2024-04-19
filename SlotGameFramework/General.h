@@ -54,3 +54,5 @@ string FormatTime(long long milliseconds);
 int GetMedian(const map<int, int>& hist);
 
 int RandInt(int total);
+
+set<int> SetIntersect(set<int> seta, set<int> setb);

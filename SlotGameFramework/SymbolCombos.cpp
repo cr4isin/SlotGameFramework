@@ -21,8 +21,7 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>
 	{
 		if (!m_paytable.contains(symbol))
 		{
-			vector<double> zero_pays(m_numReels, 0);
-			m_paytable[symbol] = zero_pays;
+			m_paytable[symbol] = vector<double>(m_numReels, 0);
 		}
 		if (!m_wildMapping.contains(symbol))
 		{
@@ -34,7 +33,7 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>
 		}
 	}
 
-	// Set up m_combos size
+	// Set up m_combos size and m_combo_location
 	m_combos.resize(pow(m_numSymbols, m_numReels));
 	m_combo_location.resize(numReels);
 	for (int iReel = 0; iReel < numReels; iReel++)
@@ -79,13 +78,6 @@ double SymbolCombos::GetComboInfo(size_t symbolkey)
 size_t SymbolCombos::GetSymbolLocation(const int reel, const int symbol)
 {
 	return m_combo_location[reel][symbol];
-}
-
-set<int> SymbolCombos::SetIntersect(set<int> seta, set<int> setb)
-{
-	set<int> return_set;
-	set_intersection(seta.begin(), seta.end(), setb.begin(), setb.end(), inserter(return_set, return_set.begin()));
-	return return_set;
 }
 
 void SymbolCombos::EvaluateSymbolCombos(int reel, double pay, int multiplier, size_t symbol_key, set<int> possible_symbols)

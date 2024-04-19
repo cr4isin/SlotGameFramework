@@ -143,3 +143,10 @@ int RandInt(int total)
 	uniform_int_distribution<> distr(0, total - 1);
 	return distr(rng);
 }
+
+set<int> SetIntersect(set<int> setA, set<int> setB)
+{
+	set<int> intersection;
+	set_intersection(setA.begin(), setA.end(), setB.begin(), setB.end(), inserter(intersection, intersection.begin()));
+	return intersection;
+}
