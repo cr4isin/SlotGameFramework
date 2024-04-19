@@ -89,9 +89,16 @@ string FormatDouble(double value, int precision)
 	return oss.str();
 }
 
-string FormatInteger(int value, int width, char fill) {
+string FormatInt(int value, int width, char fill) {
 	ostringstream oss;
 	oss << setfill(fill) << setw(width) << value;
+	return oss.str();
+}
+
+string FormatString(string value, int width, char fill, bool alignLeft)
+{
+	ostringstream oss;
+	oss << setfill(fill) << setw(width) << (alignLeft ? left : right) << value;
 	return oss.str();
 }
 

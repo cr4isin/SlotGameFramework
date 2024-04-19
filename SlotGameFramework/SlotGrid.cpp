@@ -59,7 +59,7 @@ void SlotGrid::PrintGrid()
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
 			int symbol = m_grid[iReel][iRow];
-			cout << GetSymbolColor(symbol) << GetSymbolString(symbol) << "\033[0m\t";
+			cout << GetSymbolColor(symbol) << FormatString(GetSymbolString(symbol), m_maxSymbolLength) << "\033[0m\t";
 		}
 		cout << "\n";
 	}
@@ -110,6 +110,12 @@ void SlotGrid::SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Color
 {
 	m_symbolStrings = symbolStrings;
 	m_symbolColors = symbolColors;
+
+	m_maxSymbolLength = 3;
+	for (auto const& [symbol, name] : symbolStrings)
+	{
+		m_maxSymbolLength = max(m_maxSymbolLength, name.size());
+	}
 }
 
 void SlotGrid::SetInFreePlay(bool inFreePlay)

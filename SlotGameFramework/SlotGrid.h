@@ -53,5 +53,6 @@ private:
 	map<int, vector<double>> m_paytable; // The symbol paytable mapping (used for evaluating ways-pays)
 	map<int, string> m_symbolStrings; // The symbol string mapping (used for printing the Grid and combo info)
 	map<int, Colors> m_symbolColors; // The symbol color mapping (used for printing the Grid and combo info)
+	int m_maxSymbolLength = 3;
 	bool m_inFreePlay = false; // Determines if combo info will be printed after Grid Evaluation
 };

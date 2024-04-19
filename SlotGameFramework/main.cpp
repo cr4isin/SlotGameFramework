@@ -4,7 +4,7 @@
 int main(int argc, char* argv[])
 {
     vector<string> args(argv, argv + argc);
-
+    
     SlotGame game = SlotGame();
     game.SetBetScheme(10, 1);                // If the total bet is not baseBet*betMult it can be set with the third argument
     game.SetConfig("EXAMPLE");

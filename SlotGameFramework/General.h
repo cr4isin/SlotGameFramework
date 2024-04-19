@@ -45,7 +45,9 @@ void SpawnProcesses(string programName, int numTimes, int delayInSeconds = 0);
 
 string FormatDouble(double value, int precision = -1);
 
-string FormatInteger(int value, int width = 1, char fill = ' ');
+string FormatInt(int value, int width = 1, char fill = ' ');
+
+string FormatString(string value, int width = 1, char fill = ' ', bool alignLeft = true);
 
 string FormatTime(long long milliseconds);
 
