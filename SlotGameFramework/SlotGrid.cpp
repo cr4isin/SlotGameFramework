@@ -24,6 +24,11 @@ int SlotGrid::GetSymbol(int reelIndex, int rowIndex)
 	return m_grid[reelIndex][rowIndex];
 }
 
+void SlotGrid::SetSymbol(int symbol, int reelIndex, int rowIndex)
+{
+	m_grid[reelIndex][rowIndex] = symbol;
+}
+
 vector<vector<int>> SlotGrid::GetGrid()
 {
 	return m_grid;

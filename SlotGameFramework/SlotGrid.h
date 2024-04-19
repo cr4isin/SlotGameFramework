@@ -9,6 +9,7 @@ public:
 	SlotGrid();
 	SlotGrid(int numReels, int numRows);
 	int GetSymbol(int reelIndex, int rowIndex);
+	void SetSymbol(int symbol, int reelIndex, int rowIndex);
 	vector<vector<int>> GetGrid();
 	int GetNumReels();
 	int GetNumRows();
