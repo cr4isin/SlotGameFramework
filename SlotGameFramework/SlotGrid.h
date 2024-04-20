@@ -52,6 +52,7 @@ private:
 	map<int, set<int>> m_symbolSubstitutions; // The symbol substitutions mapping (used for evaluating ways-pays)
 	map<int, int> m_symbolMultipliers; // The symbol multipiers mapping (used for evaluating ways-pays)
 	map<int, vector<double>> m_paytable; // The symbol paytable mapping (used for evaluating ways-pays)
+	vector<vector<int>> m_symbolSubstitutionCount; // Combines the symbol substitutions and multipliers for efficient ways evaluation
 	map<int, string> m_symbolStrings; // The symbol string mapping (used for printing the Grid and combo info)
 	map<int, Colors> m_symbolColors; // The symbol color mapping (used for printing the Grid and combo info)
 	int m_maxSymbolLength = 3;

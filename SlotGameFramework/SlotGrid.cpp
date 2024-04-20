@@ -108,6 +108,24 @@ void SlotGrid::SetWays(int numSymbols, map<int, vector<double>> paytable, map<in
 			m_symbolMultipliers[symbol] = 1;
 		}
 	}
+
+	// Create the symbol substitution count for each symbol
+	m_symbolSubstitutionCount.resize(numSymbols);
+	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
+	{
+		m_symbolSubstitutionCount[iSymbol].resize(numSymbols);
+		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
+		{
+			if (m_symbolSubstitutions[currentSymbol].contains(iSymbol))
+			{
+				m_symbolSubstitutionCount[iSymbol][currentSymbol] = m_symbolMultipliers[currentSymbol];
+			}
+			else
+			{
+				m_symbolSubstitutionCount[iSymbol][currentSymbol] = 0;
+			}
+		}
+	}
 }
 
 void SlotGrid::SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors)
@@ -167,18 +185,15 @@ double SlotGrid::EvaluateGridWays()
 	}
 	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
 	{
-		int numCombos = 1;
 		int comboLength = 0;
+		int numCombos = 1;
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
 			int symbolCount = 0;
 			for (int iRow = 0; iRow < m_numRows; iRow++)
 			{
 				int currentSymbol = m_grid[iReel][iRow];
-				if (m_symbolSubstitutions[currentSymbol].contains(iSymbol))
-				{
-					symbolCount += m_symbolMultipliers[currentSymbol];
-				}
+				symbolCount += m_symbolSubstitutionCount[iSymbol][currentSymbol];
 			}
 			if (symbolCount > 0)
 			{
