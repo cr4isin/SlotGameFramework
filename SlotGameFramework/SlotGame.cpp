@@ -157,16 +157,15 @@ void SlotGame::DoSomething()
 
 void SlotGame::AddToTracker(string name, double value)
 {
-	gameTotalValues[name] += value;
-	gameTotalHits[name]++;
-	if (value > 0) gameTotalWins[name]++;
+	Tracker& tracker = trackers[name];
+	tracker.value += value;
+	tracker.totalHits++;
+	if (value > 0) tracker.totalWins++;
 }
 
 void SlotGame::ClearTrackers()
 {
-	gameTotalValues.clear();
-	gameTotalHits.clear();
-	gameTotalWins.clear();
+	trackers.clear();
 }
 
 void SlotGame::AddToHistogram(string name, double value, long long numHits)
@@ -219,13 +218,8 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	double credits = buyIn;
 	int numSpins = 0;
 	map<int, int> spinsHist;
-	map<string, double> trialValue;
-	map<string, int> trialGameHits;
-	map<string, int> trialGameWins;
-	map<string, int> trialTotalHits;
-	map<string, int> trialTotalWins;
-	auto startTime = chrono::high_resolution_clock::now();
 	cout << "Running Sim: " << simName << "\n";
+	auto startTime = chrono::high_resolution_clock::now();
 	for (int iGame = 1; iGame <= numGames; iGame++)
 	{
 		// Play Game
@@ -246,13 +240,14 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 			numSpins = 0;
 		}
 		// Save and Reset Trackers
-		for (auto const& [name, value] : gameTotalValues)
+		for (auto const& [name, tracker] : trackers)
 		{
-			trialValue[name] += value;
-			trialGameHits[name]++;
-			if (value > 0) trialGameWins[name]++;
-			trialTotalHits[name] += gameTotalHits[name];
-			trialTotalWins[name] += gameTotalWins[name];
+			TotalTracker& totalTracker= totalTrackers[name];
+			totalTracker.value += tracker.value;
+			totalTracker.gameHits++;
+			if (tracker.value > 0) totalTracker.gameWins++;
+			totalTracker.totalHits += tracker.totalHits;
+			totalTracker.totalWins += tracker.totalWins;
 		}
 		ClearTrackers();
 		// Print sim status to console
@@ -270,14 +265,14 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	string filename = "SimData_" + simName + ".txt";
 	ofstream outputFile(filename, ios::app);
 	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
-	for (auto const& [name, value] : trialValue)
+	for (auto const& [name, totalTracker] : totalTrackers)
 	{
 		outputFile << "\t" << name;
-		outputFile << "\t" << FormatDouble(trialValue[name] / numGames, 15);
-		outputFile << "\t" << trialGameHits[name];
-		outputFile << "\t" << trialGameWins[name];
-		outputFile << "\t" << trialTotalHits[name];
-		outputFile << "\t" << trialTotalWins[name];
+		outputFile << "\t" << FormatDouble(totalTracker.value / numGames, 15);
+		outputFile << "\t" << totalTracker.gameHits;
+		outputFile << "\t" << totalTracker.gameWins;
+		outputFile << "\t" << totalTracker.totalHits;
+		outputFile << "\t" << totalTracker.totalWins;
 	}
 	outputFile << "\n";
 	outputFile.close();

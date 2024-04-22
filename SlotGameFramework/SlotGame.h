@@ -46,9 +46,22 @@ public:
 	map<string, WeightTable> weightTable;
 	map<string, DynamicWeightTable> dynamicWeightTable;
 	// Trackers and Histograms
-	map<string, double> gameTotalValues;
-	map<string, int> gameTotalHits;
-	map<string, int> gameTotalWins;
+	struct Tracker
+	{
+		double value = 0;
+		int totalHits = 0;
+		int totalWins = 0;
+	};
+	struct TotalTracker
+	{
+		double value = 0;
+		int gameHits = 0;
+		int gameWins = 0;
+		int totalHits = 0;
+		int totalWins = 0;
+	};
+	map<string, Tracker> trackers;
+	map<string, TotalTracker> totalTrackers;
 	map<string, map<double, long long>> histograms;
 	// Setup
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
