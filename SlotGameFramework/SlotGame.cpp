@@ -85,7 +85,7 @@ double SlotGame::PlayGame()
 	baseGrid.FillGrid(positions, baseReelSet);
 
 	// Evaluate Lines
-	score += betMult * baseGrid.EvaluateGridLines(symbolCombos);
+	score += baseGrid.EvaluateLines(symbolCombos, betMult);
 
 	// Evaluate Scatter pays
 	numBonus = baseGrid.CountSymbolOnGrid(BONUS);
@@ -132,7 +132,7 @@ double SlotGame::PlayBonus()
 		}
 
 		// Evaluate Lines/Ways
-		spinScore += betMult * freeGrid.EvaluateGridLines(symbolCombos);
+		spinScore += freeGrid.EvaluateLines(symbolCombos, betMult);
 
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
@@ -284,6 +284,7 @@ void SlotGame::FreePlay(bool clearConsole)
 	baseGrid.SetInFreePlay(true);
 	freeGrid.SetInFreePlay(true);
 	string input;
+	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\n";
 	cout << "Press Enter to Play!";
 	cin.get();
 
@@ -296,7 +297,7 @@ void SlotGame::FreePlay(bool clearConsole)
 		double score = PlayGame();
 		coinIn += totalBet;
 		coinOut += score;
-		cout << "\nScore: " << score << "\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
+		cout << "Score:\t" << score << "\nBet:\t" << totalBet << "\n\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
 		cin.get();
 	}
 }
@@ -344,7 +345,7 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 	}
 	else
 	{
-		double score = betMult * baseGrid.EvaluateGridLines(symbolCombos);
+		double score = baseGrid.EvaluateLines(symbolCombos, betMult);
 		int combos = 1;
 		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{

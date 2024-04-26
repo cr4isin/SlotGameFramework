@@ -145,7 +145,7 @@ void SlotGrid::SetInFreePlay(bool inFreePlay)
 	m_inFreePlay = inFreePlay;
 }
 
-double SlotGrid::EvaluateGridLines(SymbolCombos &symbolCombos)
+double SlotGrid::EvaluateLines(SymbolCombos &symbolCombos, int multiplier)
 {
 	double score = 0;
 	if (m_inFreePlay)
@@ -166,17 +166,17 @@ double SlotGrid::EvaluateGridLines(SymbolCombos &symbolCombos)
 		// Print Combos
 		if (m_inFreePlay && lineScore > 0)
 		{
-			cout << "Line " << iLine + 1 << " pays " << lineScore << "\n";
+			cout << "Line " << iLine + 1 << " pays " << lineScore * multiplier << "\n";
 		}
 	}
 	if (m_inFreePlay && score > 0)
 	{
 		cout << "\n";
 	}
-	return score;
+	return score * multiplier;
 }
 
-double SlotGrid::EvaluateGridWays()
+double SlotGrid::EvaluateWays(int multiplier)
 {
 	double score = 0;
 	if (m_inFreePlay)
@@ -211,13 +211,17 @@ double SlotGrid::EvaluateGridWays()
 
 			if (m_inFreePlay && symbolScore > 0)
 			{
-				cout << comboLength << "-" << GetSymbolString(iSymbol) << " x " << numCombos << " Ways pays " << symbolScore << "\n";
+				cout << comboLength << "-" << GetSymbolString(iSymbol) << " x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
 			}
 
 			score += symbolScore;
 		}
 	}
-	return score;
+	if (m_inFreePlay && score > 0)
+	{
+		cout << "\n";
+	}
+	return score * multiplier;
 }
 
 bool SlotGrid::IsSymbolOnGrid(int symbol)

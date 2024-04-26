@@ -24,8 +24,8 @@ public:
 	void SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers);
 	void SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors = {});
 	void SetInFreePlay(bool inFreePlay);
-	double EvaluateGridLines(SymbolCombos &symbolCombos);
-	double EvaluateGridWays();
+	double EvaluateLines(SymbolCombos &symbolCombos, int multiplier = 1);
+	double EvaluateWays(int multiplier = 1);
 
 	bool IsSymbolOnGrid(int symbol);
 	bool IsSymbolOnReel(int symbol, int reelIndex);
