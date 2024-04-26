@@ -194,6 +194,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	if (args.size() > 1)
 	{
 		numProcesses = stoi(args[1]);
+		args[1] = "1";
 	}
 	else 
 	{
