@@ -1,18 +1,14 @@
 
 #include "SlotGame.h"
 
-// ============================== Constructor and Destructor ==============================
-SlotGame::SlotGame()
-{
-	// Create pointers here
-}
-
-SlotGame::~SlotGame()
-{
-	// Delete pointers here
-}
-
 // ============================== Setup ==============================
+SlotGame::SlotGame(string configName, int baseBet, int betMult, int totalBet)
+{
+	SetConfig(configName);
+	SetBetScheme(baseBet, betMult, totalBet);
+	SetupGame();
+}
+
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 {
 	this->baseBet = baseBet;

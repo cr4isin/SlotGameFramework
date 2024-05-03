@@ -8,8 +8,6 @@
 class SlotGame 
 {
 public:
-	SlotGame();
-	~SlotGame();
 
 	enum Symbols 
 	{
@@ -28,42 +26,9 @@ public:
 		numSymbols
 	};
 	
-	// ==================== General Functions and Variables ====================
-	// Grid and Reels
-	SlotGrid baseGrid;
-	SlotGrid freeGrid;
-	SlotReels baseReelSet;
-	SlotReels freeReelSet;
-	// Grid Evaluation
-	SymbolCombos symbolCombos;
-	int baseBet = 1;
-	int betMult = 1;
-	int totalBet = 1;
-	string configName = "";
-	int configIndex = 0;
-	bool inFreePlay = false;
-	// Weight Tables
-	map<string, WeightTable> weightTable;
-	map<string, DynamicWeightTable> dynamicWeightTable;
-	// Trackers and Histograms
-	struct Tracker
-	{
-		double value = 0;
-		int totalHits = 0;
-		int totalWins = 0;
-	};
-	struct TotalTracker
-	{
-		double value = 0;
-		int gameHits = 0;
-		int gameWins = 0;
-		int totalHits = 0;
-		int totalWins = 0;
-	};
-	map<string, Tracker> trackers;
-	map<string, TotalTracker> totalTrackers;
-	map<string, map<double, long long>> histograms;
+	// ==================== Functions ====================
 	// Setup
+	SlotGame(string configName, int baseBet, int betMult, int totalBet = 0);
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetConfig(string configName);
 	void SetupGame();
@@ -82,10 +47,41 @@ public:
 	void RunSims(int numGames, vector<string>& args, bool outputHistograms);
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
-	void CyclePositionsRecursive(map<double, size_t> &hist, vector<int> &positions, double &maxScore, vector<int> &maxPositions, int currentReel = 0);
+	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
+	// ==================== Variables ====================
+	string configName = "";
+	int configIndex = 0;
+	int baseBet = 1;
+	int betMult = 1;
+	int totalBet = 1;
+	bool inFreePlay = false;
+	map<string, WeightTable> weightTable;
+	map<string, DynamicWeightTable> dynamicWeightTable;
+	struct Tracker
+	{
+		double value = 0;
+		int totalHits = 0;
+		int totalWins = 0;
+	};
+	struct TotalTracker
+	{
+		double value = 0;
+		int gameHits = 0;
+		int gameWins = 0;
+		int totalHits = 0;
+		int totalWins = 0;
+	};
+	map<string, Tracker> trackers;
+	map<string, TotalTracker> totalTrackers;
+	map<string, map<double, long long>> histograms;
 
 	// ==================== Game Specific ====================
 	// NON-STATIC VARIABLES
+	SlotGrid baseGrid;
+	SlotGrid freeGrid;
+	SlotReels baseReelSet;
+	SlotReels freeReelSet;
+	SymbolCombos symbolCombos;
 	int numBonus = 0;
 
 	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)
