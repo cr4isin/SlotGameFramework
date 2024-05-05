@@ -31,7 +31,6 @@ public:
 	SlotGame(string configName, int baseBet, int betMult, int totalBet = 0);
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetConfig(string configName);
-	void SetupGame();
 	void SetupGrids();
 	void SetupReels();
 	void SetupWeightTables();

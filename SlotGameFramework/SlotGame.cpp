@@ -6,7 +6,9 @@ SlotGame::SlotGame(string configName, int baseBet, int betMult, int totalBet)
 {
 	SetConfig(configName);
 	SetBetScheme(baseBet, betMult, totalBet);
-	SetupGame();
+	SetupGrids();
+	SetupReels();
+	SetupWeightTables();
 }
 
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
@@ -31,13 +33,6 @@ void SlotGame::SetConfig(string configName)
 		{"EXAMPLE", 0}
 	};
 	configIndex = configMapping.at(configName);
-}
-
-void SlotGame::SetupGame()
-{
-	SetupGrids();
-	SetupReels();
-	SetupWeightTables();
 }
 
 void SlotGame::SetupGrids()
