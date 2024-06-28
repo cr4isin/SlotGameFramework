@@ -82,7 +82,10 @@ void DynamicWeightTable::Call(long long& weight, int& index, double& value)
 	value = m_values[index];
 	currentWeights[index] = 0;
 	currentTotalWeight -= m_weights[index];
-	weightGenerator = uniform_int_distribution<long long>(0, currentTotalWeight - 1);
+	if (currentTotalWeight > 0)
+	{
+		weightGenerator = uniform_int_distribution<long long>(0, currentTotalWeight - 1);
+	}
 }
 
 void DynamicWeightTable::Reset()

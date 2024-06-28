@@ -225,7 +225,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 		// Median Spins
 		numSpins++;
 		credits += score - totalBet;
-		if (credits < totalBet || numSpins > 1000)
+		if (credits < totalBet || numSpins > 999)
 		{
 			spinsHist[numSpins]++;
 			credits = buyIn;
