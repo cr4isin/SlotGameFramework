@@ -50,19 +50,20 @@ map<int, string> SlotGame::symbolStrings =
 };
 
 map<int, Colors> SlotGame::symbolColors =
-{ // Available Colors are: BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE. Start with t for text color, b for background color
-	{BLANK,tBLACK},
+{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
+  // Start with a 't' for text color and a 'b' for background color
+	{BLANK,tGRAY},
 	{WILD,bRED},
 	{S01,tCYAN},
-	{S02,tBLUE},
-	{S03,tBLUE},
-	{S04,tGREEN},
-	{S05,tGREEN},
-	{S06,tYELLOW},
-	{S07,tYELLOW},
-	{S08,tWHITE},
+	{S02,tPINK},
+	{S03,tLIME},
+	{S04,tTEAL},
+	{S05,tORANGE},
+	{S06,tGREEN},
+	{S07,tBLUE},
+	{S08,tLAVENDER},
 	{S09,tWHITE},
-	{BONUS,bYELLOW},
+	{BONUS,bGOLD},
 };
 
 // ==================================== Lines ==================================== 

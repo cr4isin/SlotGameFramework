@@ -211,7 +211,7 @@ double SlotGrid::EvaluateWays(int multiplier)
 
 			if (m_inFreePlay && symbolScore > 0)
 			{
-				cout << comboLength << "-" << GetSymbolString(iSymbol) << " x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
+				cout << comboLength << "-" << GetSymbolColor(iSymbol) << GetSymbolString(iSymbol) << "\033[0m x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
 			}
 
 			score += symbolScore;
@@ -366,7 +366,8 @@ string SlotGrid::GetSymbolColor(int symbol)
 {
 	if (m_symbolColors.contains(symbol))
 	{
-		return "\033[" + to_string(m_symbolColors[symbol]) + "m";
+		int color = m_symbolColors[symbol];
+		return "\033[" + to_string(38 + 10 * (color / 256)) + ";5;" + to_string(color % 256) + "m";
 	}
 	else
 	{
