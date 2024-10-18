@@ -59,12 +59,14 @@ public:
 	struct Tracker
 	{
 		double value = 0;
+		double maxValue = 0;
 		int totalHits = 0;
 		int totalWins = 0;
 	};
 	struct TotalTracker
 	{
 		double value = 0;
+		double maxValue = 0;
 		int gameHits = 0;
 		int gameWins = 0;
 		int totalHits = 0;

@@ -128,7 +128,7 @@ double SlotGame::PlayBonus()
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
-		AddToTracker("FreeSpin", spinScore);
+		AddToTracker("FreeGame", spinScore);
 		spinsRemaining += numFreeGames[numBonus];
 
 		score += spinScore;
@@ -136,7 +136,6 @@ double SlotGame::PlayBonus()
 		spinsRemaining--;
 	}
 
-	AddToTracker("FreeSpinBonus", score);
 	return score;
 }
 
@@ -152,6 +151,7 @@ void SlotGame::AddToTracker(string name, double value)
 	tracker.value += value;
 	tracker.totalHits++;
 	if (value > 0) tracker.totalWins++;
+	if (value > tracker.maxValue) tracker.maxValue = value;
 }
 
 void SlotGame::ClearTrackers()
@@ -234,10 +234,11 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 		// Save and Reset Trackers
 		for (auto const& [name, tracker] : trackers)
 		{
-			TotalTracker& totalTracker= totalTrackers[name];
+			TotalTracker& totalTracker = totalTrackers[name];
 			totalTracker.value += tracker.value;
 			totalTracker.gameHits++;
 			if (tracker.value > 0) totalTracker.gameWins++;
+			if (tracker.maxValue > totalTracker.maxValue) totalTracker.maxValue = tracker.maxValue;
 			totalTracker.totalHits += tracker.totalHits;
 			totalTracker.totalWins += tracker.totalWins;
 		}
@@ -261,6 +262,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	{
 		outputFile << "\t" << name;
 		outputFile << "\t" << FormatDouble(totalTracker.value / numGames, 15);
+		outputFile << "\t" << totalTracker.maxValue;
 		outputFile << "\t" << totalTracker.gameHits;
 		outputFile << "\t" << totalTracker.gameWins;
 		outputFile << "\t" << totalTracker.totalHits;

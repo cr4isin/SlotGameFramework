@@ -16,68 +16,6 @@ def ConvertType(value):
         except ValueError:
             return value
 
-def SimAnalyzerToText():
-    sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimData_') and f.endswith('.txt')])
-    if not sim_output_files:
-        print('No files were found!')
-        return
-    values_per_tracker = 6
-    output_file = open('output.txt', 'w')
-    for file_index, file_name in enumerate(sim_output_files,1):
-        print(f'{file_index}/{len(sim_output_files)} Calculating data for {file_name}')
-        num_trials = 0
-        ev_list, max_win_list = (list() for _ in range(2))
-        hits, wins = (int() for _ in range(2))
-        bet, games_played,  = (set() for _ in range(2))
-        tracker_ev = defaultdict(list)
-        tracker_game_hits, tracker_game_wins, tracker_total_hits, tracker_total_wins = (defaultdict(int) for _ in range(4))
-        # Read Data
-        file = open(file_name)
-        for line in file:
-            if line.isspace():
-                continue
-            num_trials += 1
-            trial_ev, trial_bet, trial_games_played, trial_max_win, trial_hits, trial_wins, *trial_trackers = [ConvertType(value) for value in line.split('\t')]
-            ev_list.append(trial_ev)
-            max_win_list.append(trial_max_win)
-            hits += trial_hits
-            wins += trial_wins
-            bet.add(trial_bet)
-            games_played.add(trial_games_played)
-            for name, ev, game_hits, game_wins, total_hits, total_wins in batched(trial_trackers, values_per_tracker):
-                tracker_ev[name].append(ev)
-                tracker_game_hits[name] += game_hits
-                tracker_game_wins[name] += game_wins
-                tracker_total_hits[name] += total_hits
-                tracker_total_wins[name] += total_wins
-        for name in tracker_ev:
-            tracker_ev[name] += [0.0] * (num_trials - len(tracker_ev[name]))
-        file.close()
-        
-        # Analyze Data
-        games_played = max(games_played)
-        bet = max(bet)
-        total_ev = stat.mean(ev_list)
-        total_stdev = stat.stdev(ev_list) if num_trials > 1 else 0
-        hit_rate = hits / games_played / num_trials
-        win_rate = wins / games_played / num_trials
-        average_max_win = stat.mean(max_win_list)
-        total_max_win = max(max_win_list)
-        tracker_total_ev = dict()
-        tracker_total_stdev = dict()
-        for name in tracker_ev:
-            tracker_total_ev[name] = stat.mean(tracker_ev[name])
-            tracker_total_stdev[name] = stat.stdev(tracker_ev[name]) if num_trials > 1 else 0
-        
-        # Output to file
-        output_file.write(f'{file_name[8:-4]}\t{total_ev}\t{total_stdev}\t{num_trials}\t{games_played}\t{bet}\t{hit_rate}\t{win_rate}\t{total_max_win}\t{average_max_win}\n')
-        for name in tracker_total_ev:
-            output_file.write(f'{name}\t{tracker_total_ev[name]}\t{tracker_total_stdev[name]}\t{tracker_game_hits[name]}\t{tracker_game_wins[name]}\t{tracker_total_hits[name]}\t{tracker_total_wins[name]}\n')
-        output_file.write('\n')
-        
-    output_file.close()
-
-
 def CreateWorkbook()->xlsxwriter.Workbook:
     workbook = xlsxwriter.Workbook('SimResults.xlsx', {'use_future_functions': True})
     workbook.add_worksheet('Summary')
@@ -202,16 +140,17 @@ def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_tracke
     summary_ws.write_dynamic_array_formula('G8',f'=LET(_xlpm.name_index,XLOOKUP($F$2,{names_range},ANCHORARRAY(Data!$B$2)),INDEX(Input!$C:$C,_xlpm.name_index+XMATCH(ANCHORARRAY($E$8),INDEX(Input!$A:$A,SEQUENCE($F$4,,1+_xlpm.name_index))))*IF($B$4=Data!$S$8,1,1/$F$3))')
     summary_ws.write_dynamic_array_formula('H8',f'=(ANCHORARRAY($F$8)-NORM.INV(1-(1-$B$3)/2,0,1)*ANCHORARRAY($G$8)/SQRT($J$3))*IF($H$7=Data!$S$10,1,ANCHORARRAY($L$8))')
     summary_ws.write_dynamic_array_formula('I8',f'=(ANCHORARRAY($F$8)+NORM.INV(1-(1-$B$3)/2,0,1)*ANCHORARRAY($G$8)/SQRT($J$3))*IF($H$7=Data!$S$10,1,ANCHORARRAY($L$8))')
-    summary_ws.write_dynamic_array_formula('J8',f'=ANCHORARRAY($F$8)*ANCHORARRAY($L$8)')
+    summary_ws.write_dynamic_array_formula('J8',f'=IF($J$7=Data!$S$27,ANCHORARRAY($F$8)*ANCHORARRAY($L$8),LET(_xlpm.name_index,XLOOKUP($F$2,{names_range},ANCHORARRAY(Data!$B$2)),INDEX(Input!$D:$D,_xlpm.name_index+XMATCH(ANCHORARRAY($E$8),INDEX(Input!$A:$A,SEQUENCE($F$4,,1+_xlpm.name_index))))*IF($B$4=Data!$S$8,1,1/$F$3)))')
     summary_ws.write_dynamic_array_formula('K8',f'=ANCHORARRAY($M$8)/$J$5')
     summary_ws.write_dynamic_array_formula('L8',f'=IF(ANCHORARRAY($K$8)=0,0,1/ANCHORARRAY($K$8))')
-    summary_ws.write_dynamic_array_formula('M8',f'=LET(_xlpm.name_index,XLOOKUP($F$2,{names_range},ANCHORARRAY(Data!$B$2)),INDEX(Input!$D:$G,_xlpm.name_index+XMATCH(ANCHORARRAY($E$8),INDEX(Input!$A:$A,SEQUENCE($F$4,,1+_xlpm.name_index))),XMATCH($B$5,Data!$S$2:$S$5)))')
+    summary_ws.write_dynamic_array_formula('M8',f'=LET(_xlpm.name_index,XLOOKUP($F$2,{names_range},ANCHORARRAY(Data!$B$2)),INDEX(Input!$E:$H,_xlpm.name_index+XMATCH(ANCHORARRAY($E$8),INDEX(Input!$A:$A,SEQUENCE($F$4,,1+_xlpm.name_index))),XMATCH($B$5,Data!$S$2:$S$5)))')
 
     summary_ws.data_validation('F2',{"validate": "list", "source": f"={names_range}"})
     summary_ws.data_validation('C7',{"validate": "list", "source": f"=Data!$C$1:$R$1"})
     summary_ws.data_validation('B7',{"validate": "list", "source": f"=Data!$C$1:$R$1"})
     summary_ws.data_validation('B4',{"validate": "list", "source": f"=Data!$S$7:$S$8"})
     summary_ws.data_validation('B5',{"validate": "list", "source": f"=Data!$S$2:$S$5"})
+    summary_ws.data_validation('J7',{"validate": "list", "source": f"=Data!$S$27:$S$28"})
 
     summary_ws.merge_range('H7:I7','Confidence Interval (EV)',formats['title_tblr'])
     summary_ws.data_validation('H7',{"validate": "list", "source": f"=Data!$S$10:$S$11"})
@@ -234,7 +173,7 @@ def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_tracke
     summary_ws.write_comment('C7','Use the drop down in this cell and the one to the left to compare various sim values across paytables', {'x_scale': 2, 'y_scale': .5})
     summary_ws.write_comment('F2','Use the drop down to select the Sim you want to view the details of', {'x_scale': 1.5, 'y_scale': .5})
     summary_ws.write_comment('H7','Use the drop down to switch between the confidence interval being centered around the EV or the Avg Pay', {'x_scale': 2.2, 'y_scale': .5})
-
+    summary_ws.write_comment('J7','Use the drop down to switch between the Avg Pay and Max Pay', {'x_scale': 1.5, 'y_scale': .5})
 
     # Data Worksheet
     data_ws.set_column('A:A',30,formats['center'])
@@ -260,7 +199,7 @@ def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_tracke
     data_ws.write_dynamic_array_formula('P2','=INDEX(Input!$A:$K,ANCHORARRAY(Data!$B$2),10)')
     data_ws.write_dynamic_array_formula('Q2','=INDEX(Input!$A:$K,ANCHORARRAY(Data!$B$2),11)')
     data_ws.write_dynamic_array_formula('R2',f'=MAP(ANCHORARRAY($B$2),LAMBDA(_xlpm.row,XMATCH(TRUE,ISBLANK(INDEX(Input!$A:$A,SEQUENCE({2 + max_trackers},,_xlpm.row))))))-2')
-    data_ws.write_column('S2', ['Game Hits', 'Game Wins', 'Total Hits', 'Total Wins', '', 'Per Bet', 'Credits', '', 'Confidence Interval (EV)', 'Confidence Interval (Avg Pay)', '', 'Simmed EV', 'Rounded EV', 'Rounding Risk', 'Rounding Confidence', 'Hit Rate', 'Win Rate', 'Number of Trials', 'Trial Size', 'Number of Games', 'Bet', 'Volatility', 'Max Win', 'Avg Max Win'])
+    data_ws.write_column('S2', ['Game Hits', 'Game Wins', 'Total Hits', 'Total Wins', '', 'Per Bet', 'Credits', '', 'Confidence Interval (EV)', 'Confidence Interval (Avg Pay)', '', 'Simmed EV', 'Rounded EV', 'Rounding Risk', 'Rounding Confidence', 'Hit Rate', 'Win Rate', 'Number of Trials', 'Trial Size', 'Number of Games', 'Bet', 'Volatility', 'Max Win', 'Avg Max Win', '', 'Avg Pay', 'Max Pay'])
 
     # Input Worksheet
     input_ws.set_column('A:A',30)
@@ -268,13 +207,12 @@ def UpdateWorkbook(workbook:xlsxwriter.Workbook, filenames:list[str], max_tracke
 
     return
 
-
 def SimAnalyzerToExcel():
     sim_output_files = os_sorted([f for f in os.listdir() if f.startswith('SimData_') and f.endswith('.txt')])
     if not sim_output_files:
         print('No files were found!')
         return
-    values_per_tracker = 6
+    values_per_tracker = 7
     max_trackers = 1
     workbook = CreateWorkbook()
     input_ws:xlsxwriter.Workbook.worksheet_class = workbook.get_worksheet_by_name('Input')
@@ -286,7 +224,7 @@ def SimAnalyzerToExcel():
         hits, wins = (int() for _ in range(2))
         bet, games_played,  = (set() for _ in range(2))
         tracker_ev = defaultdict(list)
-        tracker_game_hits, tracker_game_wins, tracker_total_hits, tracker_total_wins = (defaultdict(int) for _ in range(4))
+        tracker_max_value, tracker_game_hits, tracker_game_wins, tracker_total_hits, tracker_total_wins = (defaultdict(int) for _ in range(5))
         # Read Data
         file = open(file_name)
         for line in file:
@@ -301,8 +239,9 @@ def SimAnalyzerToExcel():
             wins += trial_wins
             bet.add(trial_bet)
             games_played.add(trial_games_played)
-            for name, ev, game_hits, game_wins, total_hits, total_wins in batched(trial_trackers, values_per_tracker):
+            for name, ev, max_value, game_hits, game_wins, total_hits, total_wins in batched(trial_trackers, values_per_tracker):
                 tracker_ev[name].append(ev)
+                tracker_max_value[name] = max(tracker_max_value[name], max_value)
                 tracker_game_hits[name] += game_hits
                 tracker_game_wins[name] += game_wins
                 tracker_total_hits[name] += total_hits
@@ -332,8 +271,9 @@ def SimAnalyzerToExcel():
         
         input_ws.write_row(row_number, 0, [file_name[8:-4],total_ev,total_stdev,num_trials,games_played,bet,hit_rate,win_rate,total_max_win,average_max_win,med_spins])
         row_number+=1
-        for name in tracker_total_ev:
-            input_ws.write_row(row_number, 0,[name,tracker_total_ev[name],tracker_total_stdev[name],tracker_game_hits[name],tracker_game_wins[name],tracker_total_hits[name],tracker_total_wins[name]])
+        tracker_names = os_sorted(tracker_total_ev.keys())
+        for name in tracker_names:
+            input_ws.write_row(row_number, 0,[name,tracker_total_ev[name],tracker_total_stdev[name],tracker_max_value[name],tracker_game_hits[name],tracker_game_wins[name],tracker_total_hits[name],tracker_total_wins[name]])
             row_number+=1
         row_number+=1
         
