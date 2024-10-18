@@ -46,6 +46,7 @@ public:
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
+	void ReadXMLTables(string xmlName);
 	// ==================== Variables ====================
 	string configName = "";
 	int configIndex = 0;
@@ -54,6 +55,7 @@ public:
 	int totalBet = 1;
 	bool inFreePlay = false;
 	map<string, WeightTable> weightTables;
+	map<string, vector<double>> valueTables;
 	struct Tracker
 	{
 		double value = 0;

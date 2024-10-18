@@ -15,6 +15,7 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include "tinyxml2.h"
 
 using namespace std;
 
