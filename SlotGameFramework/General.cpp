@@ -10,7 +10,7 @@ void PrintVec(vector<int> input)
 	cout << "\n\n";
 }
 
-vector<int> ChangeBase(int input, int base, int length)
+vector<int> ChangeBase(int input, int base, int length, bool reversed)
 {
 	int quot = abs(input);
 	int rem = 0;
@@ -30,7 +30,7 @@ vector<int> ChangeBase(int input, int base, int length)
 	{
 		rem = quot % base;
 		quot /= base;
-		baseVector[i] = rem;
+		baseVector[reversed ? length-1-i : i] = rem;
 	}
 	return baseVector;
 }

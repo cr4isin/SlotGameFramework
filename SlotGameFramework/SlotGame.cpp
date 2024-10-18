@@ -58,7 +58,7 @@ void SlotGame::SetupReels()
 
 void SlotGame::SetupWeightTables()
 {
-	weightTable.emplace("freeSpinWild", WeightTable(freeSpinWildWeights, freeSpinWildValues));
+	weightTables.emplace("freeSpinWild", WeightTable(freeSpinWildWeights, freeSpinWildValues));
 }
 
 // ============================== Game Functions ==============================
@@ -66,9 +66,6 @@ double SlotGame::PlayGame()
 {
 	if (inFreePlay) cout << "=== Base Game ===\n";
 	double score = 0;
-	int index = 0;
-	long long weight = 0;
-	double value = 0;
 	vector<int> positions(numReels);
 
 	// Generate positions and fill grid
@@ -94,9 +91,6 @@ double SlotGame::PlayGame()
 double SlotGame::PlayBonus()
 {
 	double score = 0;
-	int index = 0;
-	long long weight = 0;
-	double value = 0;
 	vector<int> positions(numReels);
 	int spinsRemaining = numFreeGames[numBonus];
 	int spinNumber = 1;
@@ -112,8 +106,8 @@ double SlotGame::PlayBonus()
 		freeGrid.FillGrid(positions, freeReelSet);
 
 		// Determine which 2 reels to fill with WILDs
-		weightTable["freeSpinWild"].Call(weight, index, value);
-		vector<int> wildReels = ChangeBase(value, 2, numReels);
+		int wildPattern = weightTables["freeSpinWild"].DrawValue();
+		vector<int> wildReels = ChangeBase(wildPattern, 2, numReels);
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
 			if (wildReels[iReel] == 1)

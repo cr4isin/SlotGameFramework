@@ -55,7 +55,7 @@ enum Colors {
 
 void PrintVec(vector<int> input);
 
-vector<int> ChangeBase(int input, int base, int length = 0);
+vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);
 
 void SpawnProcesses(string programName, int numTimes, int delayInSeconds = 0);
 

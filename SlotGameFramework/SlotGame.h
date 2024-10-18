@@ -3,7 +3,6 @@
 #include "General.h"
 #include "SlotGrid.h"
 #include "WeightTable.h"
-#include "DynamicWeightTable.h"
 
 class SlotGame 
 {
@@ -54,8 +53,7 @@ public:
 	int betMult = 1;
 	int totalBet = 1;
 	bool inFreePlay = false;
-	map<string, WeightTable> weightTable;
-	map<string, DynamicWeightTable> dynamicWeightTable;
+	map<string, WeightTable> weightTables;
 	struct Tracker
 	{
 		double value = 0;

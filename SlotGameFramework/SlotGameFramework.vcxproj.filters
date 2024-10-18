@@ -45,9 +45,6 @@
     <ClCompile Include="WeightTable.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
-    <ClCompile Include="DynamicWeightTable.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlotGame.h">
@@ -66,9 +63,6 @@
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="WeightTable.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="DynamicWeightTable.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
   </ItemGroup>
