@@ -18,9 +18,10 @@ public:
 
 	SymbolCombos();
 	SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays = false, multiplierType multType = PRODUCT);
-	~SymbolCombos();
+	SymbolCombos(int numReels, int numSymbols, map<int, set<int>> wildMapping);
 	double GetComboInfo(size_t symbolkey);
 	size_t GetSymbolLocation(const int reel, const int symbol);
+	void SetCombo(vector<int> combo, double pay);
 
 private:
 	void EvaluateSymbolCombos(int reel = 0, double pay = 0, int multiplier = 1, size_t symbol_key = 0, set<int> possible_symbols = {});
@@ -29,6 +30,7 @@ private:
 	int m_numSymbols;
 	multiplierType m_multType;
 	map<int, set<int>> m_wildMapping;
+	map<int, set<int>> m_inverseWildMapping;
 	map<int, int> m_symbolMultipliers;
 	map<int, vector<double>> m_paytable;
 	vector<double> m_combos;

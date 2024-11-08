@@ -37,6 +37,7 @@ void SlotGame::SetConfig(string configName)
 
 void SlotGame::SetupGrids()
 {
+	//ReadXMLCombos(mathxml);
 	symbolCombos = SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 
 	baseGrid = SlotGrid(numReels, numRows);
@@ -52,12 +53,14 @@ void SlotGame::SetupGrids()
 
 void SlotGame::SetupReels()
 {
+	//ReadXMLReels(mathxml);
 	baseReelSet = SlotReels(baseReels);
 	freeReelSet = SlotReels(freeReels);
 }
 
 void SlotGame::SetupWeightTables()
 {
+	//ReadXMLTables(mathxml);
 	weightTables.emplace("freeSpinWild", WeightTable(freeSpinWildWeights, freeSpinWildValues));
 }
 
@@ -478,5 +481,110 @@ void SlotGame::ReadXMLTables(string xmlName)
 			weightTables.emplace(replacementSequenceID, WeightTable(weights, values));
 			ReplacementSequence = ReplacementSequence->NextSiblingElement("ReplacementSequence");
 		}
+	}
+}
+
+void SlotGame::ReadXMLReels(string xmlName)
+{
+	// Open the XML document
+	tinyxml2::XMLDocument doc;
+	if (doc.LoadFile(xmlName.c_str()) != tinyxml2::XML_SUCCESS)
+	{
+		cout << "Error reading xml file: " << doc.ErrorStr() << endl;
+		return;
+	}
+
+	// Loop Through Reel Sets
+	tinyxml2::XMLElement* ReelStripSet = doc.FirstChildElement("GameMath")->FirstChildElement("ReelStripSetList")->FirstChildElement("ReelStripSet");
+	while (ReelStripSet != nullptr)
+	{
+		// Get Name
+		string Identifier = ReelStripSet->FirstChildElement("Identifier")->GetText();
+
+		// Loop Through ReelStripIDs
+		vector<string> reelStripNames;
+		tinyxml2::XMLElement* ReelStripID = ReelStripSet->FirstChildElement("ReelStripIDList")->FirstChildElement("ReelStripID");
+		while (ReelStripID != nullptr)
+		{
+			reelStripNames.push_back(ReelStripID->GetText());
+			ReelStripID = ReelStripID->NextSiblingElement("ReelStripID");
+		}
+
+		// Loop Through Reel Strips Names
+		vector<vector<int>> reelSet;
+		vector<vector<int>> reelSetWeights;
+		for (string reelStripName : reelStripNames)
+		{
+			tinyxml2::XMLElement* ReelStrip = doc.FirstChildElement("GameMath")->FirstChildElement("ReelStripList")->FirstChildElement("ReelStrip");
+
+			// Loop Through XML Reel Strips to Find Matching Name
+			vector<int> reelSymbols;
+			vector<int> reelWeights;
+			while (ReelStrip != nullptr)
+			{
+				if (ReelStrip->FirstChildElement("Identifier")->GetText() == reelStripName)
+				{
+					tinyxml2::XMLElement* WeightedElement = ReelStrip->FirstChildElement("WeightedElementList")->FirstChildElement("WeightedElement");
+
+					// Grab each of the symbols and weights
+					while (WeightedElement != nullptr)
+					{
+						string symbolText = WeightedElement->FirstChildElement("StringValue")->GetText();
+						reelSymbols.push_back(magic_enum::enum_cast<Symbols>(symbolText).value());
+
+						string symbolWeight = WeightedElement->FirstChildElement("Weight")->GetText();
+						reelWeights.push_back(stoi(symbolWeight));
+
+						WeightedElement = WeightedElement->NextSiblingElement("WeightedElement");
+					}
+					break;
+				}
+				ReelStrip = ReelStrip->NextSiblingElement("ReelStrip");
+			}
+			reelSet.push_back(reelSymbols);
+			reelSetWeights.push_back(reelWeights);
+		}
+		reelSets.emplace(Identifier, SlotReels(reelSet, reelSetWeights));
+		ReelStripSet = ReelStripSet->NextSiblingElement("ReelStripSet");
+	}
+}
+
+void SlotGame::ReadXMLCombos(string xmlName)
+{
+	// Open the XML document
+	tinyxml2::XMLDocument doc;
+	if (doc.LoadFile(xmlName.c_str()) != tinyxml2::XML_SUCCESS)
+	{
+		cout << "Error reading xml file: " << doc.ErrorStr() << endl;
+		return;
+	}
+
+	// Loop through each combo set
+	tinyxml2::XMLElement* PaylineComboSet = doc.FirstChildElement("GameMath")->FirstChildElement("ComboSetList")->FirstChildElement("PaylineComboSet");
+	while (PaylineComboSet != nullptr)
+	{
+		string comboSetName = PaylineComboSet->FirstChildElement("Identifier")->GetText();
+		SymbolCombos combos = SymbolCombos(numReels, numSymbols, symbolSubstitutions); // NOTE: Might have to change the number of reels per combo set if there are different number of reels 
+
+		// Loop through each combo
+		tinyxml2::XMLElement* PaylineCombo = PaylineComboSet->FirstChildElement("PaylineComboList")->FirstChildElement("PaylineCombo");
+		while (PaylineCombo != nullptr)
+		{
+			// Loop through the symbols to construct the combo
+			vector<int> combo;
+			tinyxml2::XMLElement* Symbol = PaylineCombo->FirstChildElement("SymbolList")->FirstChildElement("Symbol");
+			while (Symbol != nullptr)
+			{
+				combo.push_back(magic_enum::enum_cast<Symbols>(Symbol->GetText()).value());
+				Symbol = Symbol->NextSiblingElement("Symbol");
+			}
+
+			// Get the Pay and add it to the symbol combos
+			double pay = stod(PaylineCombo->FirstChildElement("Value")->GetText());
+			combos.SetCombo(combo, pay);
+			PaylineCombo = PaylineCombo->NextSiblingElement("PaylineCombo");
+		}
+		comboSets.emplace(comboSetName, combos);
+		PaylineComboSet = PaylineComboSet->NextSiblingElement("PaylineComboSet");
 	}
 }

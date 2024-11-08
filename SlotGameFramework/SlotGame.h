@@ -47,6 +47,8 @@ public:
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
 	void ReadXMLTables(string xmlName);
+	void ReadXMLReels(string xmlName);
+	void ReadXMLCombos(string xmlName);
 	// ==================== Variables ====================
 	string configName = "";
 	string mathxml = "";

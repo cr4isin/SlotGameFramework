@@ -8,7 +8,6 @@ SymbolCombos::SymbolCombos()
 
 SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays, multiplierType multType)
 {
-	cout << "Calculating Symbol Combos... ";
 	m_numReels = numReels;
 	m_numSymbols = numSymbols;
 	m_paytable = paytable;
@@ -30,6 +29,15 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>
 		if (!m_symbolMultipliers.contains(symbol))
 		{
 			m_symbolMultipliers[symbol] = 1;
+		}
+	}
+
+	// Create the Inverse Wild Mapping
+	for (const auto& [symbol, subSymbolSet] : m_wildMapping)
+	{
+		for (int subSymbol : subSymbolSet)
+		{
+			m_inverseWildMapping[subSymbol].insert(symbol);
 		}
 	}
 
@@ -62,12 +70,51 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>
 			m_combos[iCombo] = max(m_combosCopy[iCombo], m_combosCopy[symbolKey]);
 		}
 	}
-	cout << "Done!\n";
 }
 
-SymbolCombos::~SymbolCombos()
+SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, set<int>> wildMapping)
 {
-	m_combos.clear();
+	m_numReels = numReels;
+	m_numSymbols = numSymbols;
+	m_wildMapping = wildMapping;
+
+	// Give default values to symbols not included
+	for (int symbol = 0; symbol < m_numSymbols; symbol++)
+	{
+		if (!m_paytable.contains(symbol))
+		{
+			m_paytable[symbol] = vector<double>(m_numReels, 0);
+		}
+		if (!m_wildMapping.contains(symbol))
+		{
+			m_wildMapping[symbol] = { symbol };
+		}
+		if (!m_symbolMultipliers.contains(symbol))
+		{
+			m_symbolMultipliers[symbol] = 1;
+		}
+	}
+
+	// Create the Inverse Wild Mapping
+	for (const auto& [symbol, subSymbolSet] : m_wildMapping)
+	{
+		for (int subSymbol : subSymbolSet)
+		{
+			m_inverseWildMapping[subSymbol].insert(symbol);
+		}
+	}
+
+	// Set up m_combos size and m_combo_location
+	m_combos.resize(pow(m_numSymbols, m_numReels));
+	m_combo_location.resize(numReels);
+	for (int iReel = 0; iReel < numReels; iReel++)
+	{
+		m_combo_location.at(iReel).resize(numSymbols);
+		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
+		{
+			m_combo_location[iReel][currentSymbol] = currentSymbol * pow(numSymbols, iReel);
+		}
+	}
 }
 
 double SymbolCombos::GetComboInfo(size_t symbolkey)
@@ -78,6 +125,43 @@ double SymbolCombos::GetComboInfo(size_t symbolkey)
 size_t SymbolCombos::GetSymbolLocation(const int reel, const int symbol)
 {
 	return m_combo_location[reel][symbol];
+}
+
+void SymbolCombos::SetCombo(vector<int> combo, double pay)
+{
+	vector<int> symbolKeys = { 0 };
+	for (int iReel = 0; iReel < combo.size(); iReel++)
+	{
+		vector<int> newSymbolKeys;
+		int symbol = combo[iReel];
+
+		if (symbol < 0)
+		{
+			for (int symbolKey : symbolKeys)
+			{
+				for (int subSymbol = 0; subSymbol < m_numSymbols; subSymbol++)
+				{
+					newSymbolKeys.push_back(symbolKey + m_combo_location[iReel][subSymbol]);
+				}
+			}
+		}
+		else
+		{
+			for (int symbolKey : symbolKeys)
+			{
+				for (int subSymbol : m_inverseWildMapping[symbol])
+				{
+					newSymbolKeys.push_back(symbolKey + m_combo_location[iReel][subSymbol]);
+				}
+			}
+		}
+
+		symbolKeys = newSymbolKeys;
+	}
+	for (int symbolKey : symbolKeys)
+	{
+		if (pay > m_combos[symbolKey]) m_combos[symbolKey] = pay;
+	}
 }
 
 void SymbolCombos::EvaluateSymbolCombos(int reel, double pay, int multiplier, size_t symbol_key, set<int> possible_symbols)
