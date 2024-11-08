@@ -6,42 +6,23 @@ SlotReels::SlotReels()
 	// Empty Default Constructor
 }
 
-SlotReels::SlotReels(vector<vector<int>> reels, int maxRows) {
-	m_reels = reels;
-	m_numReels = m_reels.size();
-	m_reelWeights.resize(m_numReels);
-	m_weightedReels = false;
-	for (int iReel = 0; iReel < m_numReels; iReel++) 
-	{
-		int reelSize = m_reels.at(iReel).size();
-		m_reelSizes.push_back(reelSize);
-		for (int i = 0; i < maxRows; i++) 
-		{
-			m_reels.at(iReel).push_back(m_reels.at(iReel).at(i % reelSize));
-		}
-		m_totalWeights.push_back(reelSize);
-		for (int i = 0; i < reelSize; i++) 
-		{
-			m_reelWeights.at(iReel).push_back(1);
-		}
-	}
-	random_device rd;
-	stopRNG.seed(rd());
-	for (int iReel = 0; iReel < m_numReels; iReel++)
-	{
-		uniform_int_distribution<> dist(0, m_totalWeights.at(iReel) - 1);
-		stopGenerator.push_back(dist);
-	}
-}
-
 SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights, int maxRows)
 {
+	// Set variables
 	m_reels = reels;
 	m_numReels = m_reels.size();
 	m_reelWeights = reelWeights;
-	m_weightedReels = true;
+	if (m_reelWeights.size() == 0)
+	{
+		for (int iReel = 0; iReel < m_numReels; iReel++)
+		{
+			m_reelWeights.push_back(vector<int>(m_reels.at(iReel).size(), 1));
+		}
+	}
 	m_cumulativeWeights.resize(m_numReels);
 	m_numZeroIndexes.resize(m_numReels);
+
+	// Loop through each weight to set up the weight tables
 	for (int iReel = 0; iReel < m_numReels; iReel++) 
 	{
 		int reelSize = m_reels.at(iReel).size();
@@ -54,7 +35,9 @@ SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights,
 		int totalWeight = 0;
 		for (int i = 0; i < reelSize; i++) 
 		{
-			if (m_reelWeights.at(iReel).at(i) > 0)
+			int weight = m_reelWeights.at(iReel).at(i);
+			m_weightedReels = m_weightedReels || (weight != 1);
+			if (weight > 0)
 			{
 				totalWeight += m_reelWeights.at(iReel).at(i);
 				m_cumulativeWeights.at(iReel).push_back(totalWeight);
@@ -67,6 +50,8 @@ SlotReels::SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights,
 		}
 		m_totalWeights.push_back(totalWeight);
 	}
+
+	// Set up random device
 	random_device rd;
 	stopRNG.seed(rd());
 	for (int iReel = 0; iReel < m_numReels; iReel++)
@@ -116,10 +101,6 @@ void SlotReels::GenerateRandomStops(vector<int>& stops)
 
 void SlotReels::ConvertStopsToPositions(vector<int>& stops)
 {
-	if (!m_weightedReels)
-	{
-		return;
-	}
 	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
 		int low = 0;
@@ -145,7 +126,7 @@ void SlotReels::ConvertStopsToPositions(vector<int>& stops)
 void SlotReels::GenerateRandomPositions(vector<int>& positions)
 {
 	GenerateRandomStops(positions);
-	ConvertStopsToPositions(positions);
+	if (m_weightedReels) ConvertStopsToPositions(positions);
 }
 
 void SlotReels::FillReel(vector<int>& reel, int reelIndex, int position, int numRows)

@@ -6,8 +6,7 @@ class SlotReels
 {
 public:
 	SlotReels();
-	SlotReels(vector<vector<int>> reels, int maxRows = 25);
-	SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights, int maxRows = 25);
+	SlotReels(vector<vector<int>> reels, vector<vector<int>> reelWeights = {}, int maxRows = 25);
 
 	int GetNumReels();
 	bool IsWeighted();
