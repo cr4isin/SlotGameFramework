@@ -143,6 +143,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="General.h" />
+    <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />

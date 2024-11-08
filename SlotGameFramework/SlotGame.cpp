@@ -358,115 +358,125 @@ void SlotGame::ReadXMLTables(string xmlName)
 		return;
 	}
 
-	// Follow the element path to the first weight table
-	vector<string> elementPath = { "GameMath", "BonusInfo", "WeightedTableList", "WeightedTable" };
-	tinyxml2::XMLElement* currentElement = doc.FirstChildElement(elementPath[0].c_str());
-	for (int i = 1; i < elementPath.size(); i++)
+	// Get GameMath and BonusInfo Elements
+	tinyxml2::XMLElement* GameMath = doc.FirstChildElement("GameMath");
+	tinyxml2::XMLElement* BonusInfo = GameMath->FirstChildElement("BonusInfo");
+
+	// Check for BonusInfo (any weight or value tables stored here)
+	if (BonusInfo)
 	{
-		if (currentElement) {
-			currentElement = currentElement->FirstChildElement(elementPath[i].c_str());
-		}
-		else {
-			cout << "Error reading xml file: Element '" << elementPath[i - 1] << "' not found!" << endl;
-			return;
-		}
-	}
-
-	// Loop through each weight table
-	while (currentElement != nullptr)
-	{
-		string name;
-		vector<long long> weights;
-		vector<double> values;
-
-		// Get the weight table name
-		tinyxml2::XMLElement* Identifier = currentElement->FirstChildElement("Identifier");
-		if (Identifier)
+		// Check for Weight Tables
+		tinyxml2::XMLElement* WeightedTableList = BonusInfo->FirstChildElement("WeightedTableList");
+		if (WeightedTableList)
 		{
-			name = Identifier->GetText();
-		}
-		else
-		{
-			cout << "Error reading xml file: Identifier not found for a weight table!" << endl;
-			return;
-		}
-
-		// Loop through the weights and values
-		tinyxml2::XMLElement* WeightedElementList = currentElement->FirstChildElement("WeightedElementList");
-		if (WeightedElementList)
-		{
-			tinyxml2::XMLElement* WeightedElement = WeightedElementList->FirstChildElement("WeightedElement");
-			while (WeightedElement != nullptr)
+			// Loop through each weight table
+			tinyxml2::XMLElement* WeightedTable = WeightedTableList->FirstChildElement("WeightedTable");
+			while (WeightedTable != nullptr)
 			{
-				tinyxml2::XMLElement* WeightElement = WeightedElement->FirstChildElement("Weight");
-				if (WeightElement)
+				// Get the weight table name
+				string Identifier = WeightedTable->FirstChildElement("Identifier")->GetText();
+
+				// Loop through the weights and values
+				vector<long long> weights;
+				vector<double> values;
+				tinyxml2::XMLElement* WeightedElement = WeightedTable->FirstChildElement("WeightedElementList")->FirstChildElement("WeightedElement");
+				while (WeightedElement != nullptr)
 				{
-					weights.push_back(stoll(WeightElement->GetText()));
+					tinyxml2::XMLElement* Weight = WeightedElement->FirstChildElement("Weight");
+					weights.push_back(stoll(Weight->GetText()));
+					tinyxml2::XMLElement* Value = WeightedElement->FirstChildElement("Value");
+					values.push_back(stod(Value->GetText()));
+					WeightedElement = WeightedElement->NextSiblingElement("WeightedElement");
 				}
-				else
-				{
-					cout << "Error reading xml file: Weight not found for a weight table!" << endl;
-				}
-				tinyxml2::XMLElement* ValueElement = WeightedElement->FirstChildElement("Value");
-				if (ValueElement)
-				{
-					values.push_back(stod(ValueElement->GetText()));
-				}
-				else
-				{
-					cout << "Error reading xml file: Value not found for a weight table!" << endl;
-				}
-				WeightedElement = WeightedElement->NextSiblingElement("WeightedElement");
+
+				// Add to Map
+				weightTables.emplace(Identifier, WeightTable(weights, values));
+				WeightedTable = WeightedTable->NextSiblingElement("WeightedTable");
 			}
 		}
-		weightTables.emplace(name, WeightTable(weights, values));
-		currentElement = currentElement->NextSiblingElement("WeightedTable");
-	}
 
-	// Follow the element path to the first value table
-	elementPath = { "GameMath", "BonusInfo", "ValueTableList", "ValueTable" };
-	currentElement = doc.FirstChildElement(elementPath[0].c_str());
-	for (int i = 1; i < elementPath.size(); i++)
-	{
-		if (currentElement) {
-			currentElement = currentElement->FirstChildElement(elementPath[i].c_str());
-		}
-		else {
-			cout << "Error reading xml file: Element '" << elementPath[i - 1] << "' not found!" << endl;
-			return;
-		}
-	}
-
-	// Loop through each value table
-	while (currentElement != nullptr)
-	{
-		string name;
-		vector<double> values;
-
-		// Get the weight table name
-		tinyxml2::XMLElement* Identifier = currentElement->FirstChildElement("Identifier");
-		if (Identifier)
+		// Check for Value Tables
+		tinyxml2::XMLElement* ValueTableList = BonusInfo->FirstChildElement("ValueTableList");
+		if (ValueTableList)
 		{
-			name = Identifier->GetText();
-		}
-		else
-		{
-			cout << "Error reading xml file: Identifier not found for a value table!" << endl;
-			return;
-		}
-
-		// Loop through the values
-		tinyxml2::XMLElement* ValueList = currentElement->FirstChildElement("ValueList");
-		if (ValueList)
-		{
-			tinyxml2::XMLElement* ValueElement = ValueList->FirstChildElement("Value");
-			while (ValueElement != nullptr)
+			// Loop through each value table
+			tinyxml2::XMLElement* ValueTable = ValueTableList->FirstChildElement("ValueTable");
+			while (ValueTable != nullptr)
 			{
-				values.push_back(stod(ValueElement->GetText()));
-				ValueElement = ValueElement->NextSiblingElement("Value");
+				// Get the Value Table Name
+				string Identifier = ValueTable->FirstChildElement("Identifier")->GetText();
+
+				// Loop through the values
+				vector<double> values;
+				tinyxml2::XMLElement* Value = ValueTable->FirstChildElement("ValueList")->FirstChildElement("Value");
+				while (Value != nullptr)
+				{
+					values.push_back(stod(Value->GetText()));
+					Value = Value->NextSiblingElement("Value");
+				}
+
+				// Add to Map
+				valueTables[Identifier] = values;
+				ValueTable = ValueTable->NextSiblingElement("ValueTable");
 			}
 		}
-		valueTables[name] = values;
-		currentElement = currentElement->NextSiblingElement("ValueTable");
+	}
+
+	// Check for MysteryReplacementInfo
+	tinyxml2::XMLElement* MysteryReplacementInfo = GameMath->FirstChildElement("MysteryReplacementInfo");
+	if (MysteryReplacementInfo)
+	{
+		// Loop through each Repalcement Sequence
+		tinyxml2::XMLElement* ReplacementSequence = MysteryReplacementInfo->FirstChildElement("ReplacementSequenceList")->FirstChildElement("ReplacementSequence");
+		while (ReplacementSequence != nullptr)
+		{
+			// Grab the replacement ID as well as the weights and values IDs
+			string replacementSequenceID = ReplacementSequence->Attribute("replacementSequenceID");
+			string ReplacementInstructionTableID = ReplacementSequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementInstructionTableID")->GetText();
+			string ReplacementWeightTableID = ReplacementSequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementWeightTableID")->GetText();
+
+			vector<long long> weights;
+			vector<double> values;
+
+			// Cycle through ReplacementInstructions to grab the replacement symbols (values)
+			tinyxml2::XMLElement* ReplacementInstructionTable = MysteryReplacementInfo->FirstChildElement("ReplacementInstructionTableList")->FirstChildElement("ReplacementInstructionTable");
+			while (ReplacementInstructionTable != nullptr)
+			{
+				if (ReplacementInstructionTableID == ReplacementInstructionTable->Attribute("replacementInstructionTableID"))
+				{
+					tinyxml2::XMLElement* ReplacementInstruction = ReplacementInstructionTable->FirstChildElement("ReplacementInstruction");
+					while (ReplacementInstruction != nullptr)
+					{
+						string symbol = ReplacementInstruction->FirstChildElement("DoReplace")->Attribute("newSymbol");
+						values.push_back(magic_enum::enum_cast<Symbols>(symbol).value());
+						ReplacementInstruction = ReplacementInstruction->NextSiblingElement("ReplacementInstruction");
+					}
+					break;
+				}
+				ReplacementInstructionTable = ReplacementInstructionTable->NextSiblingElement("ReplacementInstructionTable");
+			}
+
+			// Cycle through ReplacementWeightTables to grab the weights
+			tinyxml2::XMLElement* ReplacementWeightTable = MysteryReplacementInfo->FirstChildElement("ReplacementWeightTableList")->FirstChildElement("ReplacementWeightTable");
+			while (ReplacementWeightTable != nullptr)
+			{
+				if (ReplacementWeightTableID == ReplacementWeightTable->Attribute("replacementWeightTableID"))
+				{
+					tinyxml2::XMLElement* Weight = ReplacementWeightTable->FirstChildElement("Weight");
+					while (Weight != nullptr)
+					{
+						string weight = Weight->GetText();
+						weights.push_back(stoll(weight));
+						Weight = Weight->NextSiblingElement("Weight");
+					}
+					break;
+				}
+				ReplacementWeightTable = ReplacementWeightTable->NextSiblingElement("ReplacementWeightTable");
+			}
+
+			// Add New Weight Table
+			weightTables.emplace(replacementSequenceID, WeightTable(weights, values));
+			ReplacementSequence = ReplacementSequence->NextSiblingElement("ReplacementSequence");
+		}
 	}
 }

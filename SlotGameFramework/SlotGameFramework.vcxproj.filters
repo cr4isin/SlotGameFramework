@@ -46,7 +46,7 @@
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
+      <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -69,7 +69,10 @@
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2.h">
-      <Filter>Source Files\SlotFramework</Filter>
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="magic_enum.hpp">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

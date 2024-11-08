@@ -49,6 +49,7 @@ public:
 	void ReadXMLTables(string xmlName);
 	// ==================== Variables ====================
 	string configName = "";
+	string mathxml = "";
 	int configIndex = 0;
 	int baseBet = 1;
 	int betMult = 1;
@@ -56,6 +57,8 @@ public:
 	bool inFreePlay = false;
 	map<string, WeightTable> weightTables;
 	map<string, vector<double>> valueTables;
+	map<string, SlotReels> reelSets;
+	map<string, SymbolCombos> comboSets;
 	struct Tracker
 	{
 		double value = 0;
