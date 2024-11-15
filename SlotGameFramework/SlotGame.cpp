@@ -11,6 +11,16 @@ SlotGame::SlotGame(string configName, int baseBet, int betMult, int totalBet)
 	SetupWeightTables();
 }
 
+void SlotGame::SetConfig(string configName)
+{
+	this->configName = configName;
+	map<string, string> configMapping =
+	{
+		{"EXAMPLE", "math.xml"}
+	};
+	mathxml = configMapping.at(configName);
+}
+
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 {
 	this->baseBet = baseBet;
@@ -25,19 +35,11 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 	}
 }
 
-void SlotGame::SetConfig(string configName)
-{
-	this->configName = configName;
-	map<string, int> configMapping =
-	{
-		{"EXAMPLE", 0}
-	};
-	configIndex = configMapping.at(configName);
-}
-
 void SlotGame::SetupGrids()
 {
 	//ReadXMLCombos(mathxml);
+	//symbolCombos = comboSets.at("MainPaylineCombos");
+
 	symbolCombos = SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
 
 	baseGrid = SlotGrid(numReels, numRows);
@@ -54,6 +56,8 @@ void SlotGame::SetupGrids()
 void SlotGame::SetupReels()
 {
 	//ReadXMLReels(mathxml);
+	//baseReelSet = reelSets.at("Reels_Main");
+
 	baseReelSet = SlotReels(baseReels);
 	freeReelSet = SlotReels(freeReels);
 }

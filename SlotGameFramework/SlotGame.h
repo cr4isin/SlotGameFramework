@@ -10,6 +10,7 @@ public:
 
 	enum Symbols 
 	{
+		ANY = -1,
 		BLANK, 
 		WILD,
 		S01,
@@ -28,8 +29,8 @@ public:
 	// ==================== Functions ====================
 	// Setup
 	SlotGame(string configName, int baseBet, int betMult, int totalBet = 0);
-	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetConfig(string configName);
+	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	void SetupGrids();
 	void SetupReels();
 	void SetupWeightTables();
@@ -52,7 +53,6 @@ public:
 	// ==================== Variables ====================
 	string configName = "";
 	string mathxml = "";
-	int configIndex = 0;
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
@@ -93,19 +93,20 @@ public:
 	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)
 	static int numReels;
 	static int numRows;
-	static vector<vector<int>> baseReels;
-	static vector<vector<int>> baseReelWeights;
-	static vector<vector<int>> freeReels;
-	static vector<vector<int>> freeReelWeights;
 	static map<int, set<int>> symbolSubstitutions;
 	static map<int, int> symbolMultipliers;
 	static map<int, vector<double>> paytable;
 	static map<int, string> symbolStrings;
 	static map<int, Colors> symbolColors;
 	static vector<vector<int>> lines;
-	static int numFreeGames[6];
 
-	// Weight Tables
+	static vector<vector<int>> baseReels;
+	static vector<vector<int>> baseReelWeights;
+	static vector<vector<int>> freeReels;
+	static vector<vector<int>> freeReelWeights;
+
+	// Weight and Value Tables
 	static vector<long long> freeSpinWildWeights;
 	static vector<double> freeSpinWildValues;
+	static int numFreeGames[6];
 };
