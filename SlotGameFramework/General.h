@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <sstream>
 #include <vector>
 #include <set>
 #include <map>
@@ -74,3 +75,7 @@ int GetMedian(const map<int, int>& hist);
 int RandInt(int total);
 
 set<int> SetIntersect(set<int> seta, set<int> setb);
+
+void WriteHistogramToFile(string filename, map<double, long long> hist); 
+
+void WriteStringToFile(string filename, string text);

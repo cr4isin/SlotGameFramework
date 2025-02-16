@@ -92,7 +92,7 @@ double SlotGame::PlayGame()
 	{
 		score += PlayBonus();
 	}
-
+	AddToHistogram("score", score);
 	return score;
 }
 double SlotGame::PlayBonus()
@@ -170,12 +170,7 @@ void SlotGame::PrintHistograms(string simName)
 	for (auto const& [name, hist] : histograms)
 	{
 		string filename = "Histogram_" + simName + "_" + name + ".txt";
-		ofstream outputFile(filename);
-		for (auto const& [value, count] : hist)
-		{
-			outputFile << FormatDouble(value, 15) << "\t" << count << "\n";
-		}
-		outputFile.close();
+		WriteHistogramToFile(filename, hist);
 	}
 }
 
@@ -196,7 +191,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	}
 	if (numProcesses > 1)
 	{
-		SpawnProcesses(args[0], numProcesses - 1, 2); // Final argument is the delay in seconds between opening processes
+		SpawnProcesses(args[0], numProcesses - 1, 0); // Final argument is the delay in seconds between opening processes
 	}
 
 	// Initializing variables for the sim
@@ -257,20 +252,20 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 	// Write results to a file
 	if (outputHistograms) PrintHistograms(simName);
 	string filename = "SimData_" + simName + ".txt";
-	ofstream outputFile(filename, ios::app);
-	outputFile << FormatDouble(coinOut / coinIn, 15) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
+	ostringstream outputString;
+	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
 	for (auto const& [name, totalTracker] : totalTrackers)
 	{
-		outputFile << "\t" << name;
-		outputFile << "\t" << FormatDouble(totalTracker.value / numGames, 15);
-		outputFile << "\t" << totalTracker.maxValue;
-		outputFile << "\t" << totalTracker.gameHits;
-		outputFile << "\t" << totalTracker.gameWins;
-		outputFile << "\t" << totalTracker.totalHits;
-		outputFile << "\t" << totalTracker.totalWins;
+		outputString << "\t" << name;
+		outputString << "\t" << FormatDouble(totalTracker.value / numGames, 14);
+		outputString << "\t" << totalTracker.maxValue;
+		outputString << "\t" << totalTracker.gameHits;
+		outputString << "\t" << totalTracker.gameWins;
+		outputString << "\t" << totalTracker.totalHits;
+		outputString << "\t" << totalTracker.totalWins;
 	}
-	outputFile << "\n";
-	outputFile.close();
+	outputString << "\n";
+	WriteStringToFile(filename, outputString.str());
 }
 
 void SlotGame::FreePlay(bool clearConsole)
