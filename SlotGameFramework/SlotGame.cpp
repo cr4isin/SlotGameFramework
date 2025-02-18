@@ -563,7 +563,7 @@ void SlotGame::ReadXMLCombos(string xmlName)
 	while (PaylineComboSet != nullptr)
 	{
 		string comboSetName = PaylineComboSet->FirstChildElement("Identifier")->GetText();
-		SymbolCombos combos = SymbolCombos(numReels, numSymbols, symbolSubstitutions); // NOTE: Might have to change the number of reels per combo set if there are different number of reels 
+		SymbolCombos combos = SymbolCombos(numReels, numSymbols, symbolSubstitutions, symbolMultipliers); // NOTE: Might have to change the number of reels per combo set if there are different number of reels 
 
 		// Loop through each combo
 		tinyxml2::XMLElement* PaylineCombo = PaylineComboSet->FirstChildElement("PaylineComboList")->FirstChildElement("PaylineCombo");
@@ -580,7 +580,10 @@ void SlotGame::ReadXMLCombos(string xmlName)
 
 			// Get the Pay and add it to the symbol combos
 			double pay = stod(PaylineCombo->FirstChildElement("Value")->GetText());
-			combos.SetCombo(combo, pay);
+			int bonusCode = 0;
+			tinyxml2::XMLElement* BonusCode = PaylineCombo->FirstChildElement("BonusCode");
+			if (BonusCode != nullptr) bonusCode = stoi(BonusCode->GetText());
+			combos.SetCombo(combo, pay, bonusCode);
 			PaylineCombo = PaylineCombo->NextSiblingElement("PaylineCombo");
 		}
 		comboSets.emplace(comboSetName, combos);

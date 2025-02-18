@@ -6,14 +6,13 @@ SymbolCombos::SymbolCombos()
 	// Empty Default Constructor
 }
 
-SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers, bool bothWays, multiplierType multType)
+SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers)
 {
 	m_numReels = numReels;
 	m_numSymbols = numSymbols;
 	m_paytable = paytable;
 	m_wildMapping = wildMapping;
 	m_symbolMultipliers = symbolMultipliers;
-	m_multType = multType;
 
 	// Give default values to symbols not included
 	for (int symbol = 0; symbol < m_numSymbols; symbol++)
@@ -55,28 +54,14 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, vector<double>
 
 	// Calculate all possible symbol combos
 	EvaluateSymbolCombos();
-	if (bothWays)
-	{
-		vector<double> m_combosCopy = m_combos;
-		for (int iCombo = 0; iCombo < m_combos.size(); iCombo++)
-		{
-			vector<int> combo = ChangeBase(iCombo, m_numSymbols, m_numReels);
-			reverse(combo.begin(), combo.end());
-			size_t symbolKey = 0;
-			for (int iReel = 0; iReel < m_numReels; iReel++)
-			{
-				symbolKey += GetSymbolLocation(iReel, combo[iReel]);
-			}
-			m_combos[iCombo] = max(m_combosCopy[iCombo], m_combosCopy[symbolKey]);
-		}
-	}
 }
 
-SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, set<int>> wildMapping)
+SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, set<int>> wildMapping, map<int, int> symbolMultipliers)
 {
 	m_numReels = numReels;
 	m_numSymbols = numSymbols;
 	m_wildMapping = wildMapping;
+	m_symbolMultipliers = symbolMultipliers;
 
 	// Give default values to symbols not included
 	for (int symbol = 0; symbol < m_numSymbols; symbol++)
@@ -106,20 +91,22 @@ SymbolCombos::SymbolCombos(int numReels, int numSymbols, map<int, set<int>> wild
 
 	// Set up m_combos size and m_combo_location
 	m_combos.resize(pow(m_numSymbols, m_numReels));
-	m_combo_location.resize(numReels);
-	for (int iReel = 0; iReel < numReels; iReel++)
+	m_combo_location.resize(m_numReels);
+	for (int iReel = 0; iReel < m_numReels; iReel++)
 	{
-		m_combo_location.at(iReel).resize(numSymbols);
-		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
+		m_combo_location.at(iReel).resize(m_numSymbols);
+		for (int currentSymbol = 0; currentSymbol < m_numSymbols; currentSymbol++)
 		{
-			m_combo_location[iReel][currentSymbol] = currentSymbol * pow(numSymbols, iReel);
+			m_combo_location[iReel][currentSymbol] = currentSymbol * pow(m_numSymbols, iReel);
 		}
 	}
 }
 
-double SymbolCombos::GetComboInfo(size_t symbolkey)
+void SymbolCombos::GetComboInfo(size_t symbolkey, double& pay, int& bonusCode)
 {
-	return m_combos[symbolkey];
+	Combo& combo = m_combos[symbolkey];
+	pay = combo.totalPay;
+	bonusCode = combo.bonusCode;
 }
 
 size_t SymbolCombos::GetSymbolLocation(const int reel, const int symbol)
@@ -127,7 +114,7 @@ size_t SymbolCombos::GetSymbolLocation(const int reel, const int symbol)
 	return m_combo_location[reel][symbol];
 }
 
-void SymbolCombos::SetCombo(vector<int> combo, double pay)
+void SymbolCombos::SetCombo(vector<int> combo, double pay, int bonusCode, bool overWrite)
 {
 	vector<int> symbolKeys = { 0 };
 	for (int iReel = 0; iReel < combo.size(); iReel++)
@@ -135,7 +122,7 @@ void SymbolCombos::SetCombo(vector<int> combo, double pay)
 		vector<int> newSymbolKeys;
 		int symbol = combo[iReel];
 
-		if (symbol < 0)
+		if (symbol < 0) // ANY
 		{
 			for (int symbolKey : symbolKeys)
 			{
@@ -160,7 +147,21 @@ void SymbolCombos::SetCombo(vector<int> combo, double pay)
 	}
 	for (int symbolKey : symbolKeys)
 	{
-		if (pay > m_combos[symbolKey]) m_combos[symbolKey] = pay;
+		vector<int> currentCombo = ChangeBase(symbolKey, m_numSymbols, m_numReels);
+		int multiplier = 1;
+		for (int symbol : currentCombo)
+		{
+			multiplier *= m_symbolMultipliers[symbol];
+		}
+		Combo& comboInfo = m_combos[symbolKey];
+		if (!comboInfo.set || overWrite)
+		{
+			comboInfo.basePay = pay;
+			comboInfo.multiplier = multiplier;
+			comboInfo.totalPay = comboInfo.basePay * comboInfo.multiplier;
+			comboInfo.bonusCode = bonusCode;
+			comboInfo.set = true;
+		}
 	}
 }
 
@@ -185,14 +186,7 @@ void SymbolCombos::EvaluateSymbolCombos(int reel, double pay, int multiplier, si
 		if (!current_possible_symbols.empty())
 		{
 			// Update Multiplier
-			switch (m_multType) {
-			case PRODUCT:
-				mult *= m_symbolMultipliers[symbol]; break;
-			case SUM:
-				mult += m_symbolMultipliers[symbol] - (mult == 1 || m_symbolMultipliers[symbol] == 1); break;
-			case MAX:
-				mult = max(mult, m_symbolMultipliers[symbol]); break;
-			}
+			mult *= m_symbolMultipliers[symbol];
 			// Update Pay
 			for (int s : current_possible_symbols)
 			{
@@ -209,7 +203,7 @@ void SymbolCombos::EvaluateSymbolCombos(int reel, double pay, int multiplier, si
 		}
 		else
 		{
-			m_combos[current_symbol_key] = max_pay * mult;
+			m_combos[current_symbol_key] = Combo(max_pay, max_pay * mult, mult, 0);
 		}
 	}
 }
