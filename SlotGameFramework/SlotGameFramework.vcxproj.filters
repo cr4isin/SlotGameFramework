@@ -48,6 +48,9 @@
     <ClCompile Include="tinyxml2.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="SymbolSet.cpp">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlotGame.h">
@@ -73,6 +76,9 @@
     </ClInclude>
     <ClInclude Include="magic_enum.hpp">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SymbolSet.h">
+      <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

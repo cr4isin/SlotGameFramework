@@ -138,6 +138,7 @@
     <ClCompile Include="SlotGame.cpp" />
     <ClCompile Include="SlotGrid.cpp" />
     <ClCompile Include="SymbolCombos.cpp" />
+    <ClCompile Include="SymbolSet.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="WeightTable.cpp" />
   </ItemGroup>
@@ -148,6 +149,7 @@
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />
     <ClInclude Include="SymbolCombos.h" />
+    <ClInclude Include="SymbolSet.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="WeightTable.h" />
   </ItemGroup>
