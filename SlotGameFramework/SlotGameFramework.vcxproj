@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MathXML.cpp" />
     <ClCompile Include="SlotGameDefs.cpp" />
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SlotGame.cpp" />
@@ -145,6 +146,7 @@
   <ItemGroup>
     <ClInclude Include="General.h" />
     <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="MathXML.h" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />

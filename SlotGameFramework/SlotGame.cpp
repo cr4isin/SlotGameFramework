@@ -16,7 +16,7 @@ void SlotGame::SetConfig(string configName)
 	this->configName = configName;
 	map<string, string> configMapping =
 	{
-		{"EXAMPLE", "math.xml"}
+		{"GameName", "math.40.937.xml"}
 	};
 	mathxml = configMapping.at(configName);
 }
@@ -37,10 +37,8 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 
 void SlotGame::SetupGrids()
 {
-	//ReadXMLCombos(mathxml);
-	//symbolCombos = comboSets.at("MainPaylineCombos");
-
-	symbolCombos = SymbolCombos(numReels, numSymbols, paytable, symbolSubstitutions, symbolMultipliers);
+	ReadXMLCombos(mathxml);
+	symbolCombos = comboSets.at("MainPaylineCombos");
 
 	baseGrid = SlotGrid(numReels, numRows);
 	baseGrid.SetLines(lines, baseBet);
@@ -49,23 +47,22 @@ void SlotGame::SetupGrids()
 	freeGrid = SlotGrid(numReels, numRows);
 	freeGrid.SetLines(lines, baseBet);
 	freeGrid.SetSymbolPrintInfo(symbolStrings, symbolColors);
-
-	//baseGrid.SetWays(numSymbols, paytable, symbolSubstitutions, symbolMultipliers); // Ways Example
 }
 
 void SlotGame::SetupReels()
 {
-	//ReadXMLReels(mathxml);
-	//baseReelSet = reelSets.at("Reels_Main");
-
-	baseReelSet = SlotReels(baseReels);
-	freeReelSet = SlotReels(freeReels);
+	ReadXMLReels(mathxml);
+	baseReelSet = reelSets.at("Reels_Main");
+	freeReelSet = reelSets.at("Reels_FG");
 }
 
 void SlotGame::SetupWeightTables()
 {
+	MathXML mathXML = MathXML(mathxml);
+
+	mathXML.LoadAllWeightTables(weightTables);
+	mathXML.LoadAllValueTables(valueTables);
 	//ReadXMLTables(mathxml);
-	weightTables.emplace("freeSpinWild", WeightTable(freeSpinWildWeights, freeSpinWildValues));
 }
 
 // ============================== Game Functions ==============================
@@ -99,7 +96,7 @@ double SlotGame::PlayBonus()
 {
 	double score = 0;
 	vector<int> positions(numReels);
-	int spinsRemaining = numFreeGames[numBonus];
+	int spinsRemaining = valueTables["FSNumSpins"][numBonus-3];
 	int spinNumber = 1;
 
 	while (spinsRemaining > 0)
@@ -113,7 +110,7 @@ double SlotGame::PlayBonus()
 		freeGrid.FillGrid(positions, freeReelSet);
 
 		// Determine which 2 reels to fill with WILDs
-		int wildPattern = weightTables["freeSpinWild"].DrawValue();
+		int wildPattern = weightTables["FSWildReels"].DrawValue();
 		vector<int> wildReels = ChangeBase(wildPattern, 2, numReels);
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
@@ -130,7 +127,7 @@ double SlotGame::PlayBonus()
 		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
 		spinScore += totalBet * paytable[BONUS][numBonus];
 		AddToTracker("FreeGame", spinScore);
-		spinsRemaining += numFreeGames[numBonus];
+		if (numBonus >= 3) spinsRemaining += valueTables["FSNumSpins"][numBonus - 3];
 
 		score += spinScore;
 		spinNumber++;
@@ -141,11 +138,6 @@ double SlotGame::PlayBonus()
 }
 
 // ============================== Other Functions ==============================
-void SlotGame::DoSomething()
-{
-	// Blank function for testing
-}
-
 void SlotGame::AddToTracker(string name, double value)
 {
 	Tracker& tracker = trackers[name];
@@ -174,7 +166,7 @@ void SlotGame::PrintHistograms(string simName)
 	}
 }
 
-void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms)
+void SlotGame::RunSims(int numGames, vector<string>& args)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
@@ -250,7 +242,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, bool outputHistograms
 		}
 	}
 	// Write results to a file
-	if (outputHistograms) PrintHistograms(simName);
+	PrintHistograms(simName);
 	string filename = "SimData_" + simName + ".txt";
 	ostringstream outputString;
 	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
@@ -273,7 +265,6 @@ void SlotGame::FreePlay(bool clearConsole)
 	inFreePlay = true;
 	baseGrid.SetInFreePlay(true);
 	freeGrid.SetInFreePlay(true);
-	string input;
 	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\n";
 	cout << "Press Enter to Play!";
 	cin.get();

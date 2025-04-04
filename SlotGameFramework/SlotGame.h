@@ -2,7 +2,7 @@
 
 #include "General.h"
 #include "SlotGrid.h"
-#include "WeightTable.h"
+#include "MathXML.h"
 
 class SlotGame 
 {
@@ -38,12 +38,11 @@ public:
 	double PlayGame();
 	double PlayBonus();
 	// Other Functions
-	void DoSomething();
 	void AddToTracker(string name, double value);
 	void ClearTrackers();
 	void AddToHistogram(string name, double value, long long numHits = 1);
 	void PrintHistograms(string simName);
-	void RunSims(int numGames, vector<string>& args, bool outputHistograms);
+	void RunSims(int numGames, vector<string>& args);
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
@@ -100,13 +99,4 @@ public:
 	static map<int, Colors> symbolColors;
 	static vector<vector<int>> lines;
 
-	static vector<vector<int>> baseReels;
-	static vector<vector<int>> baseReelWeights;
-	static vector<vector<int>> freeReels;
-	static vector<vector<int>> freeReelWeights;
-
-	// Weight and Value Tables
-	static vector<long long> freeSpinWildWeights;
-	static vector<double> freeSpinWildValues;
-	static int numFreeGames[6];
 };

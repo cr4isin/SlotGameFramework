@@ -51,6 +51,9 @@
     <ClCompile Include="SymbolSet.cpp">
       <Filter>Source Files\SlotFramework</Filter>
     </ClCompile>
+    <ClCompile Include="MathXML.cpp">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlotGame.h">
@@ -78,6 +81,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="SymbolSet.h">
+      <Filter>Source Files\SlotFramework</Filter>
+    </ClInclude>
+    <ClInclude Include="MathXML.h">
       <Filter>Source Files\SlotFramework</Filter>
     </ClInclude>
   </ItemGroup>

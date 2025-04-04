@@ -16,7 +16,6 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
-#include "tinyxml2.h"
 #include "magic_enum.hpp"
 
 using namespace std;
