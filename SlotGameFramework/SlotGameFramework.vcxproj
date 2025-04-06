@@ -134,6 +134,7 @@
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathXML.cpp" />
+    <ClCompile Include="PaylineCombo.cpp" />
     <ClCompile Include="SlotGameDefs.cpp" />
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SlotGame.cpp" />
@@ -147,6 +148,7 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="MathXML.h" />
+    <ClInclude Include="PaylineCombo.h" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />

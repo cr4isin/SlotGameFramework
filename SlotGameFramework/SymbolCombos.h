@@ -24,6 +24,7 @@ private:
 		double totalPay = 0;
 		int multiplier = 1;
 		int bonusCode = 0;
+		int progressive = 0;
 		bool set = false;
 	};
 	int m_numReels;

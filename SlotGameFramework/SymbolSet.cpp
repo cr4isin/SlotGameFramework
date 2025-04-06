@@ -1,57 +1,99 @@
 #include "SymbolSet.h"
 
 SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubstitutions, map<string, int> symbolMultipliers, map<string, Colors> symbolColors)
+	: symbols(symbols),
+	numSymbols(symbols.size())
 {
-	// Setting the symbol list and their indexes
-	this->symbols = symbols;
-	numSymbols = symbols.size();
+	// Creating the symbol index map
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		symbolIndex[symbols[iSymbol]] = iSymbol;
 	}
 
-	// Setting the symbol substitution maps
+	// Creating the symbol substitution map
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
-		set<string> substitutions = symbolSubstitutions[symbols[iSymbol]];
-		substitutions.insert(symbols[iSymbol]);
-		this->symbolSubstitutions[symbols[iSymbol]] = substitutions;
-
-		set<int> indexSubstitutions;
-		for (string sub : substitutions)
+		set<int> substitutions;
+		substitutions.insert(iSymbol);
+		for (string symbol : symbolSubstitutions[symbols[iSymbol]])
 		{
-			indexSubstitutions.insert(symbolIndex[sub]);
+			substitutions.insert(symbolIndex[symbol]);
 		}
-		symbolIndexSubstitutions[iSymbol] = indexSubstitutions;
+		this->symbolSubstitutions[iSymbol] = substitutions;
 	}
 
-	// Setting the symbol multiplier maps
+	// Inverting the symbol substitution map
+	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
+	{
+		for (int subSymbol : this->symbolSubstitutions[iSymbol])
+		{
+			inverseSymbolSubstitutions[subSymbol].insert(iSymbol);
+		}
+	}
+
+	// Creating the symbol multiplier map
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		if (symbolMultipliers.contains(symbols[iSymbol]))
 		{
-			this->symbolMultipliers[symbols[iSymbol]] = symbolMultipliers[symbols[iSymbol]];
-			symbolIndexMultipliers[iSymbol] = symbolMultipliers[symbols[iSymbol]];
+			this->symbolMultipliers[iSymbol] = symbolMultipliers[symbols[iSymbol]];
 		}
 		else
 		{
-			this->symbolMultipliers[symbols[iSymbol]] = 1;
-			symbolIndexMultipliers[iSymbol] = 1;
+			this->symbolMultipliers[iSymbol] = 1;
 		}
 	}
 
-	// Setting the symbol color maps
+	// Creating the symbol color map
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		if (symbolColors.contains(symbols[iSymbol]))
 		{
-			this->symbolColors[symbols[iSymbol]] = symbolColors[symbols[iSymbol]];
-			symbolIndexColors[iSymbol] = symbolColors[symbols[iSymbol]];
+			this->symbolColors[iSymbol] = symbolColors[symbols[iSymbol]];
 		}
 		else
 		{
-			this->symbolColors[symbols[iSymbol]] = tWHITE;
-			symbolIndexColors[iSymbol] = tWHITE;
+			this->symbolColors[iSymbol] = tWHITE;
 		}
 	}
+}
+
+int SymbolSet::GetSymbolIndex(const string& symbol) const 
+{
+	return symbolIndex.at(symbol);
+}
+
+std::string SymbolSet::GetSymbolString(int symbol) const 
+{
+	return symbols[symbol];
+}
+
+std::set<int> SymbolSet::GetSubstitutions(int symbol) const 
+{
+	return symbolSubstitutions[symbol];
+}
+
+set<int> SymbolSet::GetInverseSubstitutions(int symbol) const
+{
+	return inverseSymbolSubstitutions[symbol];
+}
+
+int SymbolSet::GetMultiplier(int symbol) const 
+{
+	return symbolMultipliers[symbol];
+}
+
+Colors SymbolSet::GetColor(int symbol) const 
+{
+	return symbolColors[symbol];
+}
+
+int SymbolSet::GetNumSymbols() const 
+{
+	return numSymbols;
+}
+
+const std::vector<std::string>& SymbolSet::GetSymbolList() const 
+{
+	return symbols;
 }

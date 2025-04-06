@@ -16,6 +16,7 @@
 #include <thread>
 #include <chrono>
 #include <iomanip>
+#include <regex>
 #include "magic_enum.hpp"
 
 using namespace std;
