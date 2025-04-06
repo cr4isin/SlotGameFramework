@@ -16,19 +16,17 @@ public:
     };
 
     PaylineCombo(int numReels, const SymbolSet& symbolSet);
-
-    void SetCombo(const std::vector<int>& symbolPattern, double pay, int bonusCode = 0);
-    Combo GetCombo(const std::vector<int>& symbolIndices) const;
+    size_t GetSymbolKey(const vector<int>& combo) const;
+    size_t GetSymbolKey(const int& reel, const int& symbol) const;
+    Combo GetCombo(const vector<int>& combo) const;
+    void SetCombo(const vector<int>& combo, double basePay, int bonusCode, bool overWrite = false);
+    int GetNumSymbols() const;
+    int GetNumReels() const;
 
 private:
-    int numSymbols;
     int numReels;
-    std::vector<Combo> combos;
+    int numSymbols;
     const SymbolSet& symbolSet;
-
-    int ComputeSymbolKey(const std::vector<int>& symbolIndices) const;
-    void SetComboRecursive(std::vector<int>& pattern,
-        int index,
-        double pay,
-        int bonusCode);
+    vector<Combo> combos;
+    vector<vector<size_t>> symbolKeys;
 };

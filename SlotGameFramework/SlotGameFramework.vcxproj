@@ -131,6 +131,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AnywaysCombo.cpp" />
     <ClCompile Include="General.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MathXML.cpp" />
@@ -145,6 +146,7 @@
     <ClCompile Include="WeightTable.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AnywaysCombo.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="magic_enum.hpp" />
     <ClInclude Include="MathXML.h" />
