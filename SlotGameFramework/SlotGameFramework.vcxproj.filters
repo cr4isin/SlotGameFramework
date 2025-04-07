@@ -1,102 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
-    <Filter Include="Source Files\SlotGame">
-      <UniqueIdentifier>{e2c546fa-5227-4661-ae5c-817dc77381ba}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\SlotFramework">
-      <UniqueIdentifier>{08027ad0-dfba-4870-98e8-a95df92725fe}</UniqueIdentifier>
-    </Filter>
+    <ClCompile Include="SlotGameDefs.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="SlotGame.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files\SlotGame</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotGame.cpp">
-      <Filter>Source Files\SlotGame</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotGameDefs.cpp">
-      <Filter>Source Files\SlotGame</Filter>
-    </ClCompile>
-    <ClCompile Include="General.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotGrid.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="SlotReels.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="SymbolCombos.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="WeightTable.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="tinyxml2.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SymbolSet.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="MathXML.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="PaylineCombo.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-    <ClCompile Include="AnywaysCombo.cpp">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="SlotGame.h">
-      <Filter>Source Files\SlotGame</Filter>
-    </ClInclude>
-    <ClInclude Include="General.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="SlotGrid.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="SlotReels.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="SymbolCombos.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="WeightTable.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="tinyxml2.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="magic_enum.hpp">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SymbolSet.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="MathXML.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="PaylineCombo.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
-    <ClInclude Include="AnywaysCombo.h">
-      <Filter>Source Files\SlotFramework</Filter>
-    </ClInclude>
+    <ClInclude Include="SlotGame.h" />
+    <ClInclude Include="magic_enum.hpp" />
   </ItemGroup>
 </Project>

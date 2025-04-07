@@ -1,7 +1,8 @@
 #pragma once
 
 #include "SlotReels.h"
-#include "SymbolCombos.h"
+#include "AnywaysCombo.h"
+#include "PaylineCombo.h"
 
 class SlotGrid 
 {
@@ -24,9 +25,9 @@ public:
 	void SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers);
 	void SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors = {});
 	void SetInFreePlay(bool inFreePlay);
-	double EvaluateLines(SymbolCombos& symbolCombos, int multiplier);
-	double EvaluateLines(SymbolCombos& symbolCombos, int multiplier, int& bonusCount);
-	double EvaluateWays(int multiplier = 1);
+	double EvaluateLines(PaylineCombo& symbolCombos, int multiplier);
+	double EvaluateLines(PaylineCombo& symbolCombos, int multiplier, int& bonusCount);
+	double EvaluateWays(AnywaysCombo& symbolCombos, int multiplier = 1);
 
 	bool IsSymbolOnGrid(int symbol);
 	bool IsSymbolOnReel(int symbol, int reelIndex);

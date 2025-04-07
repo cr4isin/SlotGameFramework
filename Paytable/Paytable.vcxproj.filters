@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Paytable.cpp" />
+    <ClCompile Include="CountScatterCombo.cpp" />
+    <ClCompile Include="ScatterCombo.cpp" />
+    <ClCompile Include="PaylineCombo.cpp" />
+    <ClCompile Include="AnywaysCombo.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Paytable.h" />
+    <ClInclude Include="ScatterCombo.h" />
+    <ClInclude Include="CountScatterCombo.h" />
+    <ClInclude Include="ComboTypes.h" />
+    <ClInclude Include="PaylineCombo.h" />
+    <ClInclude Include="AnywaysCombo.h" />
+  </ItemGroup>
+</Project>

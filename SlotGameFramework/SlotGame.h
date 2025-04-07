@@ -59,7 +59,6 @@ public:
 	map<string, WeightTable> weightTables;
 	map<string, vector<double>> valueTables;
 	map<string, SlotReels> reelSets;
-	map<string, SymbolCombos> comboSets;
 	struct Tracker
 	{
 		double value = 0;
@@ -86,7 +85,6 @@ public:
 	SlotGrid freeGrid;
 	SlotReels baseReelSet;
 	SlotReels freeReelSet;
-	SymbolCombos symbolCombos;
 	int numBonus = 0;
 
 	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)

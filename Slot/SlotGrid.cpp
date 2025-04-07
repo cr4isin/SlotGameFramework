@@ -145,13 +145,13 @@ void SlotGrid::SetInFreePlay(bool inFreePlay)
 	m_inFreePlay = inFreePlay;
 }
 
-double SlotGrid::EvaluateLines(SymbolCombos& symbolCombos, int multiplier)
+double SlotGrid::EvaluateLines(PaylineCombo& symbolCombos, int multiplier)
 {
 	int bonusCode = 0;
 	return EvaluateLines(symbolCombos, multiplier, bonusCode);
 }
 
-double SlotGrid::EvaluateLines(SymbolCombos& symbolCombos, int multiplier, int& bonusCount)
+double SlotGrid::EvaluateLines(PaylineCombo& symbolCombos, int multiplier, int& bonusCount)
 {
 	double score = 0;
 	if (m_inFreePlay)
@@ -164,12 +164,12 @@ double SlotGrid::EvaluateLines(SymbolCombos& symbolCombos, int multiplier, int& 
 		size_t symbolKey = 0;
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			symbolKey += symbolCombos.GetSymbolLocation(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
+			symbolKey += symbolCombos.GetSymbolKey(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
 		}
 		// Grab the combo pay for this Symbol Key
 		double lineScore = 0;
 		int bonusCode = 0;
-		symbolCombos.GetComboInfo(symbolKey, lineScore, bonusCode);
+		symbolCombos.GetCombo(symbolKey);
 		score += lineScore;
 		bonusCount += bonusCode; // Add custom logic for bonus codes here
 		// Print Combos
