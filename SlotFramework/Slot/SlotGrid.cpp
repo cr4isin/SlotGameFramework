@@ -185,7 +185,7 @@ double SlotGrid::EvaluateLines(PaylineCombo& symbolCombos, int multiplier, int& 
 	return score * multiplier;
 }
 
-double SlotGrid::EvaluateWays(int multiplier)
+double SlotGrid::EvaluateWays(AnywaysCombo& symbolCombos, int multiplier)
 {
 	double score = 0;
 	if (m_inFreePlay)

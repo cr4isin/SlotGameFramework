@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{1a336fd3-98f9-4115-9574-e9fd220192ef}</ProjectGuid>
-    <RootNamespace>SlotGameFramework</RootNamespace>
+    <ProjectGuid>{f80ad67f-9aad-465b-a1d7-a5da88cd6d2d}</ProjectGuid>
+    <RootNamespace>Paytable</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -40,13 +40,13 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -70,6 +70,14 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</OutDir>
+    <IntDir>$(SolutionDir)build\$(ProjectName)\$(Configuration)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -104,6 +112,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)SlotFramework\Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
@@ -116,12 +125,11 @@
       <WarningLevel>Level3</WarningLevel>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <SDLCheck>false</SDLCheck>
+      <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(SolutionDir)SlotFramework\Common\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <BufferSecurityCheck>false</BufferSecurityCheck>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -131,23 +139,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="SlotGameDefs.cpp" />
-    <ClCompile Include="SlotGame.cpp" />
+    <ClCompile Include="AnywaysCombo.cpp" />
+    <ClCompile Include="CountScatterCombo.cpp" />
+    <ClCompile Include="PaylineCombo.cpp" />
+    <ClCompile Include="Paytable.cpp" />
+    <ClCompile Include="ScatterCombo.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="magic_enum.hpp" />
-    <ClInclude Include="SlotGame.h" />
+    <ClInclude Include="AnywaysCombo.h" />
+    <ClInclude Include="CountScatterCombo.h" />
+    <ClInclude Include="PaylineCombo.h" />
+    <ClInclude Include="Paytable.h" />
+    <ClInclude Include="ScatterCombo.h" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MathXML\MathXML.vcxproj">
-      <Project>{18a9462e-2da3-444f-a584-e8c37878d837}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Paytable\Paytable.vcxproj">
-      <Project>{f80ad67f-9aad-465b-a1d7-a5da88cd6d2d}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\Slot\Slot.vcxproj">
-      <Project>{16880943-09b5-4293-9fa7-c198c503c781}</Project>
+    <ProjectReference Include="..\Common\Common.vcxproj">
+      <Project>{53a5e7e5-fc67-43a6-94bb-6c38bb19cb7a}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

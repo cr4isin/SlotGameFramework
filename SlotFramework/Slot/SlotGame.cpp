@@ -38,7 +38,7 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 void SlotGame::SetupGrids()
 {
 	ReadXMLCombos(mathxml);
-	symbolCombos = comboSets.at("MainPaylineCombos");
+	//symbolCombos = comboSets.at("MainPaylineCombos");
 
 	baseGrid = SlotGrid(numReels, numRows);
 	baseGrid.SetLines(lines, baseBet);
@@ -77,7 +77,7 @@ double SlotGame::PlayGame()
 	baseGrid.FillGrid(positions, baseReelSet);
 
 	// Evaluate Lines
-	score += baseGrid.EvaluateLines(symbolCombos, betMult);
+	//score += baseGrid.EvaluateLines(symbolCombos, betMult);
 
 	// Evaluate Scatter pays
 	numBonus = baseGrid.CountSymbolOnGrid(BONUS);
@@ -121,7 +121,7 @@ double SlotGame::PlayBonus()
 		}
 
 		// Evaluate Lines/Ways
-		spinScore += freeGrid.EvaluateLines(symbolCombos, betMult);
+		//spinScore += freeGrid.EvaluateLines(symbolCombos, betMult);
 
 		// Evaluate Scatter pays and bonus triggers
 		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
@@ -326,7 +326,8 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 	}
 	else
 	{
-		double score = baseGrid.EvaluateLines(symbolCombos, betMult);
+		double score = 0;
+		//double score = baseGrid.EvaluateLines(symbolCombos, betMult);
 		int combos = 1;
 		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{

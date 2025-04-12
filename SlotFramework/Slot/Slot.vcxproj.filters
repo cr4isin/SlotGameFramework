@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="SlotGrid.cpp" />
+    <ClCompile Include="SlotGame.cpp" />
+    <ClCompile Include="SlotGameDefs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SlotGrid.h" />
+    <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="SlotGame.h" />
+  </ItemGroup>
+</Project>

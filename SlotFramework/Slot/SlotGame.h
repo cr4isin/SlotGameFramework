@@ -3,6 +3,7 @@
 #include "General.h"
 #include "SlotGrid.h"
 #include "MathXML.h"
+#include "magic_enum.hpp"
 
 class SlotGame 
 {
