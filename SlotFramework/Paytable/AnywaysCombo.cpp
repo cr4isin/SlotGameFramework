@@ -24,7 +24,7 @@ AnywaysCombo::AnywaysCombo(int numReels, const SymbolSet& symbolSet)
 	}
 
 	// Setup paytable size
-	paytable.resize(numSymbols, vector<double>(numReels, 0));
+	paytable.resize(numSymbols, vector<Combo>(numReels));
 }
 
 int AnywaysCombo::GetSymbolSubstitutionCount(int symbolForCombo, int symbolOnReel)
@@ -32,14 +32,17 @@ int AnywaysCombo::GetSymbolSubstitutionCount(int symbolForCombo, int symbolOnRee
 	return symbolSubstitutionCount[symbolForCombo][symbolOnReel];
 }
 
-double AnywaysCombo::GetCombo(int symbol, int comboLength)
+Combo AnywaysCombo::GetCombo(int symbol, int comboLength)
 {
 	return paytable[symbol][comboLength];
 }
 
-void AnywaysCombo::SetCombo(int symbol, int comboLength, double pay)
+void AnywaysCombo::SetCombo(int symbol, int comboLength, double pay, int bonusCode, int progressive)
 {
-	paytable[symbol][comboLength] = pay;
+	paytable[symbol][comboLength].pay = pay;
+	paytable[symbol][comboLength].basePay = pay;
+	paytable[symbol][comboLength].bonusCode = bonusCode;
+	paytable[symbol][comboLength].progressive = progressive;
 }
 
 int AnywaysCombo::GetNumSymbols() const
