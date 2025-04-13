@@ -24,7 +24,7 @@ AnywaysCombo::AnywaysCombo(int numReels, const SymbolSet& symbolSet)
 	}
 
 	// Setup paytable size
-	paytable.resize(numSymbols, vector<Combo>(numReels));
+	paytable.resize(numSymbols, vector<Combo>(numReels + 1));
 }
 
 int AnywaysCombo::GetSymbolSubstitutionCount(int symbolForCombo, int symbolOnReel)

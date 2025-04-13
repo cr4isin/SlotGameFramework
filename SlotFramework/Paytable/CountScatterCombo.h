@@ -5,6 +5,7 @@
 class CountScatterCombo
 {
 public:
+    CountScatterCombo() = default;
     CountScatterCombo(int numReels, int numRows, const SymbolSet& symbolSet);
 
     void SetCombo(int count, double pay, int bonusCode = 0, int progressive = 0);
@@ -18,7 +19,7 @@ public:
 private:
     int numReels;
     int numRows;
-    const SymbolSet& symbolSet;
+    SymbolSet symbolSet;
 
     int scatterSymbol = -1;               // symbol to count
     std::vector<Combo> combos;            // indexed by count

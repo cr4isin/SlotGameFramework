@@ -5,7 +5,7 @@
 class AnywaysCombo
 {
 public:
-
+    AnywaysCombo() = default;
     AnywaysCombo(int numReels, const SymbolSet& symbolSet);
     int GetSymbolSubstitutionCount(int symbolForCombo, int symbolOnReel);
     Combo GetCombo(int symbol, int comboLength);
@@ -16,7 +16,7 @@ public:
 private:
     int numReels;
     int numSymbols;
-    const SymbolSet& symbolSet;
+    SymbolSet symbolSet;
     vector<vector<Combo>> paytable;
     vector<vector<int>> symbolSubstitutionCount;
 };

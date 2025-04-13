@@ -11,6 +11,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 	}
 
 	// Creating the symbol substitution map
+	this->symbolSubstitutions.resize(numSymbols);
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		set<int> substitutions;
@@ -23,6 +24,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 	}
 
 	// Inverting the symbol substitution map
+	inverseSymbolSubstitutions.resize(numSymbols);
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		for (int subSymbol : this->symbolSubstitutions[iSymbol])
@@ -32,6 +34,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 	}
 
 	// Creating the symbol multiplier map
+	this->symbolMultipliers.resize(numSymbols);
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		if (symbolMultipliers.contains(symbols[iSymbol]))
@@ -45,6 +48,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 	}
 
 	// Creating the symbol color map
+	this->symbolColors.resize(numSymbols);
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		if (symbolColors.contains(symbols[iSymbol]))

@@ -2,23 +2,12 @@
 #include "SlotGame.h"
 
 // ============================== Setup ==============================
-SlotGame::SlotGame(string configName, int baseBet, int betMult, int totalBet)
+SlotGame::SlotGame(string mathXMLFile, int baseBet, int betMult, int totalBet)
+	:mathXML(MathXML(mathXMLFile))
 {
-	SetConfig(configName);
+	configName = mathXML.GetConfigName();
 	SetBetScheme(baseBet, betMult, totalBet);
-	SetupGrids();
-	SetupReels();
-	SetupWeightTables();
-}
-
-void SlotGame::SetConfig(string configName)
-{
-	this->configName = configName;
-	map<string, string> configMapping =
-	{
-		{"GameName", "math.40.937.xml"}
-	};
-	mathxml = configMapping.at(configName);
+	SetupGame();
 }
 
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
@@ -35,34 +24,26 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 	}
 }
 
-void SlotGame::SetupGrids()
+void SlotGame::SetupGame()
 {
-	ReadXMLCombos(mathxml);
-	//symbolCombos = comboSets.at("MainPaylineCombos");
+	// Symbol Sets
+	symbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
 
-	baseGrid = SlotGrid(numReels, numRows);
-	baseGrid.SetLines(lines, baseBet);
-	baseGrid.SetSymbolPrintInfo(symbolStrings, symbolColors);
+	// Combos
+	MainPaylineCombos = mathXML.GetPaylineComboSet("MainPaylineCombos", symbols, numReels, betMult);
+	BonusScatters = mathXML.GetScatterComboSet("BonusScatters", symbols, numReels, totalBet);
 
-	freeGrid = SlotGrid(numReels, numRows);
-	freeGrid.SetLines(lines, baseBet);
-	freeGrid.SetSymbolPrintInfo(symbolStrings, symbolColors);
-}
+	// Reels
+	Reels_Main = mathXML.GetReelStripSet("Reels_Main", symbols);
+	Reels_FG = mathXML.GetReelStripSet("Reels_FG", symbols);
 
-void SlotGame::SetupReels()
-{
-	ReadXMLReels(mathxml);
-	baseReelSet = reelSets.at("Reels_Main");
-	freeReelSet = reelSets.at("Reels_FG");
-}
+	// Grids
+	grid = SlotGrid(numReels, numRows);
+	grid.SetLines(lines, baseBet);
 
-void SlotGame::SetupWeightTables()
-{
-	MathXML mathXML = MathXML(mathxml);
-
+	// Weight and Value Tables
 	mathXML.LoadAllWeightTables(weightTables);
 	mathXML.LoadAllValueTables(valueTables);
-	//ReadXMLTables(mathxml);
 }
 
 // ============================== Game Functions ==============================
@@ -73,41 +54,44 @@ double SlotGame::PlayGame()
 	vector<int> positions(numReels);
 
 	// Generate positions and fill grid
-	baseReelSet.GenerateRandomPositions(positions);
-	baseGrid.FillGrid(positions, baseReelSet);
+	Reels_Main.GenerateRandomPositions(positions);
+	grid.FillGrid(positions, Reels_Main);
 
 	// Evaluate Lines
-	//score += baseGrid.EvaluateLines(symbolCombos, betMult);
-
+	score += grid.Evaluate(MainPaylineCombos).totalPay;
+	
 	// Evaluate Scatter pays
-	numBonus = baseGrid.CountSymbolOnGrid(BONUS);
-	score += totalBet * paytable[BONUS][numBonus];
+	ComboResults scatterPays = grid.Evaluate(BonusScatters);
+	score += scatterPays.totalPay;
+
 	AddToTracker("BaseGame", score);
 
 	// Trigger free games
-	if (numBonus >= 3)
+	if (scatterPays.bonusCodes.size() > 0)
 	{
-		score += PlayBonus();
+		score += PlayBonus(scatterPays.bonusCodes[0]);
 	}
+
 	AddToHistogram("score", score);
 	return score;
 }
-double SlotGame::PlayBonus()
+double SlotGame::PlayBonus(int bonusCode)
 {
 	double score = 0;
 	vector<int> positions(numReels);
-	int spinsRemaining = valueTables["FSNumSpins"][numBonus-3];
-	int spinNumber = 1;
+	int spinsRemaining = valueTables["FSNumSpins"][bonusCode-1];
+	int spinNumber = 0;
 
 	while (spinsRemaining > 0)
 	{
+		spinNumber++;
 		if (inFreePlay) cout << "=== Free Spin " << spinNumber << " ===\n";
 
 		double spinScore = 0;
 
 		// Generate positions and fill grid
-		freeReelSet.GenerateRandomPositions(positions);
-		freeGrid.FillGrid(positions, freeReelSet);
+		Reels_FG.GenerateRandomPositions(positions);
+		grid.FillGrid(positions, Reels_FG);
 
 		// Determine which 2 reels to fill with WILDs
 		int wildPattern = weightTables["FSWildReels"].DrawValue();
@@ -116,21 +100,24 @@ double SlotGame::PlayBonus()
 		{
 			if (wildReels[iReel] == 1)
 			{
-				freeGrid.FillReelWithSymbol(WILD, iReel);
+				grid.FillReelWithSymbol(symbols.GetSymbolIndex("WILD"), iReel);
 			}
 		}
 
-		// Evaluate Lines/Ways
-		//spinScore += freeGrid.EvaluateLines(symbolCombos, betMult);
+		// Evaluate Lines
+		spinScore += grid.Evaluate(MainPaylineCombos).totalPay;
 
-		// Evaluate Scatter pays and bonus triggers
-		numBonus = freeGrid.CountSymbolOnGrid(BONUS);
-		spinScore += totalBet * paytable[BONUS][numBonus];
+		// Evaluate Scatter pays and retriggers
+		ComboResults scatterPays = grid.Evaluate(BonusScatters);
+		score += scatterPays.totalPay;
+		if (scatterPays.bonusCodes.size() > 0)
+		{
+			score += spinsRemaining += valueTables["FSNumSpins"][scatterPays.bonusCodes[0] - 1];
+		}
+
 		AddToTracker("FreeGame", spinScore);
-		if (numBonus >= 3) spinsRemaining += valueTables["FSNumSpins"][numBonus - 3];
 
 		score += spinScore;
-		spinNumber++;
 		spinsRemaining--;
 	}
 
@@ -263,8 +250,8 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
-	baseGrid.SetInFreePlay(true);
-	freeGrid.SetInFreePlay(true);
+	grid.SetInFreePlay(true);
+	grid.SetInFreePlay(true);
 	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\n";
 	cout << "Press Enter to Play!";
 	cin.get();
@@ -313,25 +300,25 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 	// Might need to edit your grid, reels, and evaluation type being used
 	if (currentReel < positions.size())
 	{
-		for (int i = 0; i < baseReelSet.GetReelSize(currentReel); i++)
+		for (int i = 0; i < Reels_Main.GetReelSize(currentReel); i++)
 		{
 			if (currentReel == 0)
 			{
-				cout << i << " / " << baseReelSet.GetReelSize(currentReel) << "\n";
+				cout << i << " / " << Reels_Main.GetReelSize(currentReel) << "\n";
 			}
 			positions.at(currentReel) = i;
-			baseGrid.FillGridReel(currentReel, positions[currentReel], baseReelSet);
+			grid.FillGridReel(currentReel, positions[currentReel], Reels_Main);
 			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
 		}
 	}
 	else
 	{
 		double score = 0;
-		//double score = baseGrid.EvaluateLines(symbolCombos, betMult);
+		//double score = grid.EvaluateLines(symbolCombos, betMult);
 		int combos = 1;
 		for (int iReel = 0; iReel < positions.size(); iReel++)
 		{
-			combos *= baseReelSet.GetWeight(iReel, positions[iReel]);
+			combos *= Reels_Main.GetWeight(iReel, positions[iReel]);
 		}
 		hist[score] += combos;
 		if (score > maxScore)
@@ -339,246 +326,5 @@ void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& p
 			maxPositions = positions;
 			maxScore = score;
 		}
-	}
-}
-
-void SlotGame::ReadXMLTables(string xmlName)
-{
-	// Open the XML document
-	tinyxml2::XMLDocument doc;
-	if (doc.LoadFile(xmlName.c_str()) != tinyxml2::XML_SUCCESS)
-	{
-		cout << "Error reading xml file: " << doc.ErrorStr() << endl;
-		return;
-	}
-
-	// Get GameMath and BonusInfo Elements
-	tinyxml2::XMLElement* GameMath = doc.FirstChildElement("GameMath");
-	tinyxml2::XMLElement* BonusInfo = GameMath->FirstChildElement("BonusInfo");
-
-	// Check for BonusInfo (any weight or value tables stored here)
-	if (BonusInfo)
-	{
-		// Check for Weight Tables
-		tinyxml2::XMLElement* WeightedTableList = BonusInfo->FirstChildElement("WeightedTableList");
-		if (WeightedTableList)
-		{
-			// Loop through each weight table
-			tinyxml2::XMLElement* WeightedTable = WeightedTableList->FirstChildElement("WeightedTable");
-			while (WeightedTable != nullptr)
-			{
-				// Get the weight table name
-				string Identifier = WeightedTable->FirstChildElement("Identifier")->GetText();
-
-				// Loop through the weights and values
-				vector<long long> weights;
-				vector<double> values;
-				tinyxml2::XMLElement* WeightedElement = WeightedTable->FirstChildElement("WeightedElementList")->FirstChildElement("WeightedElement");
-				while (WeightedElement != nullptr)
-				{
-					tinyxml2::XMLElement* Weight = WeightedElement->FirstChildElement("Weight");
-					weights.push_back(stoll(Weight->GetText()));
-					tinyxml2::XMLElement* Value = WeightedElement->FirstChildElement("Value");
-					values.push_back(stod(Value->GetText()));
-					WeightedElement = WeightedElement->NextSiblingElement("WeightedElement");
-				}
-
-				// Add to Map
-				weightTables.emplace(Identifier, WeightTable(weights, values));
-				WeightedTable = WeightedTable->NextSiblingElement("WeightedTable");
-			}
-		}
-
-		// Check for Value Tables
-		tinyxml2::XMLElement* ValueTableList = BonusInfo->FirstChildElement("ValueTableList");
-		if (ValueTableList)
-		{
-			// Loop through each value table
-			tinyxml2::XMLElement* ValueTable = ValueTableList->FirstChildElement("ValueTable");
-			while (ValueTable != nullptr)
-			{
-				// Get the Value Table Name
-				string Identifier = ValueTable->FirstChildElement("Identifier")->GetText();
-
-				// Loop through the values
-				vector<double> values;
-				tinyxml2::XMLElement* Value = ValueTable->FirstChildElement("ValueList")->FirstChildElement("Value");
-				while (Value != nullptr)
-				{
-					values.push_back(stod(Value->GetText()));
-					Value = Value->NextSiblingElement("Value");
-				}
-
-				// Add to Map
-				valueTables[Identifier] = values;
-				ValueTable = ValueTable->NextSiblingElement("ValueTable");
-			}
-		}
-	}
-
-	// Check for MysteryReplacementInfo
-	tinyxml2::XMLElement* MysteryReplacementInfo = GameMath->FirstChildElement("MysteryReplacementInfo");
-	if (MysteryReplacementInfo)
-	{
-		// Loop through each Repalcement Sequence
-		tinyxml2::XMLElement* ReplacementSequence = MysteryReplacementInfo->FirstChildElement("ReplacementSequenceList")->FirstChildElement("ReplacementSequence");
-		while (ReplacementSequence != nullptr)
-		{
-			// Grab the replacement ID as well as the weights and values IDs
-			string replacementSequenceID = ReplacementSequence->Attribute("replacementSequenceID");
-			string ReplacementInstructionTableID = ReplacementSequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementInstructionTableID")->GetText();
-			string ReplacementWeightTableID = ReplacementSequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementWeightTableID")->GetText();
-
-			vector<long long> weights;
-			vector<double> values;
-
-			// Cycle through ReplacementInstructions to grab the replacement symbols (values)
-			tinyxml2::XMLElement* ReplacementInstructionTable = MysteryReplacementInfo->FirstChildElement("ReplacementInstructionTableList")->FirstChildElement("ReplacementInstructionTable");
-			while (ReplacementInstructionTable != nullptr)
-			{
-				if (ReplacementInstructionTableID == ReplacementInstructionTable->Attribute("replacementInstructionTableID"))
-				{
-					tinyxml2::XMLElement* ReplacementInstruction = ReplacementInstructionTable->FirstChildElement("ReplacementInstruction");
-					while (ReplacementInstruction != nullptr)
-					{
-						string symbol = ReplacementInstruction->FirstChildElement("DoReplace")->Attribute("newSymbol");
-						values.push_back(magic_enum::enum_cast<Symbols>(symbol).value());
-						ReplacementInstruction = ReplacementInstruction->NextSiblingElement("ReplacementInstruction");
-					}
-					break;
-				}
-				ReplacementInstructionTable = ReplacementInstructionTable->NextSiblingElement("ReplacementInstructionTable");
-			}
-
-			// Cycle through ReplacementWeightTables to grab the weights
-			tinyxml2::XMLElement* ReplacementWeightTable = MysteryReplacementInfo->FirstChildElement("ReplacementWeightTableList")->FirstChildElement("ReplacementWeightTable");
-			while (ReplacementWeightTable != nullptr)
-			{
-				if (ReplacementWeightTableID == ReplacementWeightTable->Attribute("replacementWeightTableID"))
-				{
-					tinyxml2::XMLElement* Weight = ReplacementWeightTable->FirstChildElement("Weight");
-					while (Weight != nullptr)
-					{
-						string weight = Weight->GetText();
-						weights.push_back(stoll(weight));
-						Weight = Weight->NextSiblingElement("Weight");
-					}
-					break;
-				}
-				ReplacementWeightTable = ReplacementWeightTable->NextSiblingElement("ReplacementWeightTable");
-			}
-
-			// Add New Weight Table
-			weightTables.emplace(replacementSequenceID, WeightTable(weights, values));
-			ReplacementSequence = ReplacementSequence->NextSiblingElement("ReplacementSequence");
-		}
-	}
-}
-
-void SlotGame::ReadXMLReels(string xmlName)
-{
-	// Open the XML document
-	tinyxml2::XMLDocument doc;
-	if (doc.LoadFile(xmlName.c_str()) != tinyxml2::XML_SUCCESS)
-	{
-		cout << "Error reading xml file: " << doc.ErrorStr() << endl;
-		return;
-	}
-
-	// Loop Through Reel Sets
-	tinyxml2::XMLElement* ReelStripSet = doc.FirstChildElement("GameMath")->FirstChildElement("ReelStripSetList")->FirstChildElement("ReelStripSet");
-	while (ReelStripSet != nullptr)
-	{
-		// Get Name
-		string Identifier = ReelStripSet->FirstChildElement("Identifier")->GetText();
-
-		// Loop Through ReelStripIDs
-		vector<string> reelStripNames;
-		tinyxml2::XMLElement* ReelStripID = ReelStripSet->FirstChildElement("ReelStripIDList")->FirstChildElement("ReelStripID");
-		while (ReelStripID != nullptr)
-		{
-			reelStripNames.push_back(ReelStripID->GetText());
-			ReelStripID = ReelStripID->NextSiblingElement("ReelStripID");
-		}
-
-		// Loop Through Reel Strips Names
-		vector<vector<int>> reelSet;
-		vector<vector<int>> reelSetWeights;
-		for (string reelStripName : reelStripNames)
-		{
-			tinyxml2::XMLElement* ReelStrip = doc.FirstChildElement("GameMath")->FirstChildElement("ReelStripList")->FirstChildElement("ReelStrip");
-
-			// Loop Through XML Reel Strips to Find Matching Name
-			vector<int> reelSymbols;
-			vector<int> reelWeights;
-			while (ReelStrip != nullptr)
-			{
-				if (ReelStrip->FirstChildElement("Identifier")->GetText() == reelStripName)
-				{
-					tinyxml2::XMLElement* WeightedElement = ReelStrip->FirstChildElement("WeightedElementList")->FirstChildElement("WeightedElement");
-
-					// Grab each of the symbols and weights
-					while (WeightedElement != nullptr)
-					{
-						string symbolText = WeightedElement->FirstChildElement("StringValue")->GetText();
-						reelSymbols.push_back(magic_enum::enum_cast<Symbols>(symbolText).value());
-
-						string symbolWeight = WeightedElement->FirstChildElement("Weight")->GetText();
-						reelWeights.push_back(stoi(symbolWeight));
-
-						WeightedElement = WeightedElement->NextSiblingElement("WeightedElement");
-					}
-					break;
-				}
-				ReelStrip = ReelStrip->NextSiblingElement("ReelStrip");
-			}
-			reelSet.push_back(reelSymbols);
-			reelSetWeights.push_back(reelWeights);
-		}
-		reelSets.emplace(Identifier, SlotReels(reelSet, reelSetWeights));
-		ReelStripSet = ReelStripSet->NextSiblingElement("ReelStripSet");
-	}
-}
-
-void SlotGame::ReadXMLCombos(string xmlName)
-{
-	// Open the XML document
-	tinyxml2::XMLDocument doc;
-	if (doc.LoadFile(xmlName.c_str()) != tinyxml2::XML_SUCCESS)
-	{
-		cout << "Error reading xml file: " << doc.ErrorStr() << endl;
-		return;
-	}
-
-	// Loop through each combo set
-	tinyxml2::XMLElement* PaylineComboSet = doc.FirstChildElement("GameMath")->FirstChildElement("ComboSetList")->FirstChildElement("PaylineComboSet");
-	while (PaylineComboSet != nullptr)
-	{
-		string comboSetName = PaylineComboSet->FirstChildElement("Identifier")->GetText();
-		//SymbolCombos combos = SymbolCombos(numReels, numSymbols, symbolSubstitutions, symbolMultipliers); // NOTE: Might have to change the number of reels per combo set if there are different number of reels 
-
-		// Loop through each combo
-		tinyxml2::XMLElement* PaylineCombo = PaylineComboSet->FirstChildElement("PaylineComboList")->FirstChildElement("PaylineCombo");
-		while (PaylineCombo != nullptr)
-		{
-			// Loop through the symbols to construct the combo
-			vector<int> combo;
-			tinyxml2::XMLElement* Symbol = PaylineCombo->FirstChildElement("SymbolList")->FirstChildElement("Symbol");
-			while (Symbol != nullptr)
-			{
-				combo.push_back(magic_enum::enum_cast<Symbols>(Symbol->GetText()).value());
-				Symbol = Symbol->NextSiblingElement("Symbol");
-			}
-
-			// Get the Pay and add it to the symbol combos
-			double pay = stod(PaylineCombo->FirstChildElement("Value")->GetText());
-			int bonusCode = 0;
-			tinyxml2::XMLElement* BonusCode = PaylineCombo->FirstChildElement("BonusCode");
-			if (BonusCode != nullptr) bonusCode = stoi(BonusCode->GetText());
-			//combos.SetCombo(combo, pay, bonusCode);
-			PaylineCombo = PaylineCombo->NextSiblingElement("PaylineCombo");
-		}
-		//comboSets.emplace(comboSetName, combos);
-		PaylineComboSet = PaylineComboSet->NextSiblingElement("PaylineComboSet");
 	}
 }

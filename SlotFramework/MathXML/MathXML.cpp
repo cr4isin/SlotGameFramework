@@ -18,6 +18,18 @@ bool MathXML::LoadFile() {
     return true;
 }
 
+std::string MathXML::GetConfigName() const {
+    auto* root = doc.FirstChildElement("GameMath");
+
+    std::string gameID = root->FirstChildElement("GameId")->GetText();
+    double pct = root->FirstChildElement("GamePct")->DoubleText(0.0);
+
+    // Convert to integer by multiplying by 10, rounding, then truncate
+    int pctInt = static_cast<int>(pct * 10 + 0.5); // Round to nearest whole number
+
+    return gameID + "_" + to_string(pctInt);
+}
+
 WeightTable MathXML::GetWeightTable(const std::string& identifier) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* bonusInfo = root->FirstChildElement("BonusInfo");
@@ -149,13 +161,13 @@ SymbolSet MathXML::GetSymbolSet(const std::string& identifier,
                     wildElem != nullptr;
                     wildElem = wildElem->NextSiblingElement("WildSymbol")) {
 
-                    std::string wildName = wildElem->FirstChildElement("StringValue")->GetText();
+                    std::string wildName = wildElem->FirstChildElement("Identifier")->GetText();
                     std::set<std::string> subs;
 
-                    auto* subsList = wildElem->FirstChildElement("SubstituteList");
-                    for (auto* sub = subsList->FirstChildElement("StringValue");
+                    auto* subsList = wildElem->FirstChildElement("SymbolList");
+                    for (auto* sub = subsList->FirstChildElement("Symbol");
                         sub != nullptr;
-                        sub = sub->NextSiblingElement("StringValue")) {
+                        sub = sub->NextSiblingElement("Symbol")) {
                         subs.insert(sub->GetText());
                     }
 

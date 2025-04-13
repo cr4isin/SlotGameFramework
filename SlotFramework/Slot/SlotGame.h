@@ -3,41 +3,19 @@
 #include "General.h"
 #include "SlotGrid.h"
 #include "MathXML.h"
-#include "magic_enum.hpp"
 
 class SlotGame 
 {
 public:
 
-	enum Symbols 
-	{
-		ANY = -1,
-		BLANK, 
-		WILD,
-		S01,
-		S02,
-		S03,
-		S04,
-		S05,
-		S06,
-		S07,
-		S08,
-		S09,
-		BONUS,
-		numSymbols
-	};
-	
 	// ==================== Functions ====================
 	// Setup
-	SlotGame(string configName, int baseBet, int betMult, int totalBet = 0);
-	void SetConfig(string configName);
+	SlotGame(string mathXML, int baseBet, int betMult, int totalBet = 0);
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
-	void SetupGrids();
-	void SetupReels();
-	void SetupWeightTables();
+	void SetupGame();
 	// Game Functions
 	double PlayGame();
-	double PlayBonus();
+	double PlayBonus(int bonusCode);
 	// Other Functions
 	void AddToTracker(string name, double value);
 	void ClearTrackers();
@@ -47,19 +25,13 @@ public:
 	void FreePlay(bool clearConsole = false);
 	void CyclePositions();
 	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
-	void ReadXMLTables(string xmlName);
-	void ReadXMLReels(string xmlName);
-	void ReadXMLCombos(string xmlName);
-	// ==================== Variables ====================
+	// ==================== General Variables ====================
 	string configName = "";
-	string mathxml = "";
+	MathXML mathXML;
 	int baseBet = 1;
 	int betMult = 1;
 	int totalBet = 1;
 	bool inFreePlay = false;
-	map<string, WeightTable> weightTables;
-	map<string, vector<double>> valueTables;
-	map<string, SlotReels> reelSets;
 	struct Tracker
 	{
 		double value = 0;
@@ -81,21 +53,93 @@ public:
 	map<string, map<double, long long>> histograms;
 
 	// ==================== Game Specific ====================
-	// NON-STATIC VARIABLES
-	SlotGrid baseGrid;
-	SlotGrid freeGrid;
-	SlotReels baseReelSet;
-	SlotReels freeReelSet;
-	int numBonus = 0;
 
-	// STATIC VARIABLES (can be defined in SlotGameDefs.cpp)
-	static int numReels;
-	static int numRows;
-	static map<int, set<int>> symbolSubstitutions;
-	static map<int, int> symbolMultipliers;
-	static map<int, vector<double>> paytable;
-	static map<int, string> symbolStrings;
-	static map<int, Colors> symbolColors;
-	static vector<vector<int>> lines;
+	SymbolSet symbols;
+
+	PaylineCombo MainPaylineCombos;
+	ScatterCombo BonusScatters;
+
+	SlotReels Reels_Main;
+	SlotReels Reels_FG;
+
+	SlotGrid grid;
+
+	map<string, WeightTable> weightTables;
+	map<string, vector<double>> valueTables;
+
+	int numReels = 5;
+	int numRows = 3;
+
+	map<string, set<string>> symbolSubstitutions =
+	{ // Symbols not listed here will be set to only map to themselves: {X, {X}}
+		//{"WILD", {"WILD", "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09"}},
+		// Leave the entire map blank if you want to use the XML wild definitions
+	};
+
+	map<string, int> symbolMultipliers = 
+	{ // Symbols not included will be set to a multiplier of 1: {X, 1}
+
+	};
+
+	map<string, Colors> symbolColors =
+	{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
+	  // Start with a 't' for text color and a 'b' for background color
+		{"BLANK",tGRAY},
+		{"WILD",bRED},
+		{"S01",tCYAN},
+		{"S02",tPINK},
+		{"S03",tLIME},
+		{"S04",tTEAL},
+		{"S05",tORANGE},
+		{"S06",tGREEN},
+		{"S07",tBLUE},
+		{"S08",tLAVENDER},
+		{"S09",tWHITE},
+		{"BONUS",bGOLD},
+	};
+
+	vector<vector<int>> lines =
+	{
+		{1,1,1,1,1},// 1
+		{0,0,0,0,0},// 2
+		{2,2,2,2,2},// 3
+		{0,1,2,1,0},// 4
+		{2,1,0,1,2},// 5
+		{1,0,1,2,1},// 6
+		{1,2,1,0,1},// 7
+		{0,0,1,2,2},// 8
+		{2,2,1,0,0},// 9
+		{0,1,0,1,0},// 10
+		{2,1,2,1,2},// 11
+		{1,0,0,0,1},// 12
+		{1,2,2,2,1},// 13
+		{0,1,1,1,0},// 14
+		{2,1,1,1,2},// 15
+		{1,1,0,1,1},// 16
+		{1,1,2,1,1},// 17
+		{0,2,0,2,0},// 18
+		{2,0,2,0,2},// 19
+		{2,0,1,0,2},// 20
+		{0,2,1,2,0},// 21
+		{0,2,2,2,0},// 22
+		{2,0,0,0,2},// 23
+		{1,0,2,0,1},// 24
+		{1,2,0,2,1},// 25
+		{0,0,2,0,0},// 26
+		{2,2,0,2,2},// 27
+		{1,0,1,0,1},// 28
+		{1,2,1,2,1},// 29
+		{2,2,2,1,0},// 30
+		{0,0,0,1,2},// 31
+		{2,1,0,0,0},// 32
+		{0,1,2,2,2},// 33
+		{1,1,1,0,1},// 34
+		{1,1,1,2,1},// 35
+		{1,0,1,1,1},// 36
+		{1,2,1,1,1},// 37
+		{2,1,1,1,0},// 38
+		{0,1,1,1,2},// 39
+		{1,2,2,1,0},// 40
+	};
 
 };

@@ -64,7 +64,7 @@ void SlotGrid::PrintGrid()
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
 			int symbol = m_grid[iReel][iRow];
-			cout << GetSymbolColor(symbol) << FormatString(GetSymbolString(symbol), m_maxSymbolLength) << "\033[0m\t";
+			//cout << GetSymbolColor(symbol) << FormatString(GetSymbolString(symbol), m_maxSymbolLength) << "\033[0m\t";
 		}
 		cout << "\n";
 	}
@@ -85,114 +85,47 @@ void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 	}
 }
 
-void SlotGrid::SetWays(int numSymbols, map<int, vector<double>> paytable, map<int, set<int>> symbolSubstitutions, map<int, int> symbolMultipliers)
-{
-	m_numSymbols = numSymbols;
-	m_paytable = paytable;
-	m_symbolSubstitutions = symbolSubstitutions;
-	m_symbolMultipliers = symbolMultipliers;
-
-	// Give default values to symbols not included
-	for (int symbol = 0; symbol < m_numSymbols; symbol++)
-	{
-		if (!m_paytable.contains(symbol))
-		{
-			m_paytable[symbol] = vector<double>(m_numReels, 0);
-		}
-		if (!m_symbolSubstitutions.contains(symbol))
-		{
-			m_symbolSubstitutions[symbol] = { symbol };
-		}
-		if (!m_symbolMultipliers.contains(symbol))
-		{
-			m_symbolMultipliers[symbol] = 1;
-		}
-	}
-
-	// Create the symbol substitution count for each symbol
-	m_symbolSubstitutionCount.resize(numSymbols);
-	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
-	{
-		m_symbolSubstitutionCount[iSymbol].resize(numSymbols);
-		for (int currentSymbol = 0; currentSymbol < numSymbols; currentSymbol++)
-		{
-			if (m_symbolSubstitutions[currentSymbol].contains(iSymbol))
-			{
-				m_symbolSubstitutionCount[iSymbol][currentSymbol] = m_symbolMultipliers[currentSymbol];
-			}
-			else
-			{
-				m_symbolSubstitutionCount[iSymbol][currentSymbol] = 0;
-			}
-		}
-	}
-}
-
-void SlotGrid::SetSymbolPrintInfo(map<int, string> symbolStrings, map<int, Colors> symbolColors)
-{
-	m_symbolStrings = symbolStrings;
-	m_symbolColors = symbolColors;
-
-	m_maxSymbolLength = 3;
-	for (auto const& [symbol, name] : symbolStrings)
-	{
-		m_maxSymbolLength = max(m_maxSymbolLength, name.size());
-	}
-}
-
 void SlotGrid::SetInFreePlay(bool inFreePlay)
 {
 	m_inFreePlay = inFreePlay;
 }
 
-double SlotGrid::EvaluateLines(PaylineCombo& symbolCombos, int multiplier)
+ComboResults SlotGrid::Evaluate(PaylineCombo& paylineCombo)
 {
-	int bonusCode = 0;
-	return EvaluateLines(symbolCombos, multiplier, bonusCode);
-}
-
-double SlotGrid::EvaluateLines(PaylineCombo& symbolCombos, int multiplier, int& bonusCount)
-{
-	double score = 0;
-	if (m_inFreePlay)
-	{
-		PrintGrid();
-	}
+	ComboResults results(m_lines.size());
 	for (int iLine = 0; iLine < m_lines.size(); iLine++)
 	{
 		// Calculate the Symbol Key for this line
 		size_t symbolKey = 0;
 		for (int iReel = 0; iReel < m_numReels; iReel++)
 		{
-			symbolKey += symbolCombos.GetSymbolKey(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
+			symbolKey += paylineCombo.GetSymbolKey(iReel, m_grid[iReel][m_lines[iLine][iReel]]);
 		}
 		// Grab the combo pay for this Symbol Key
-		double lineScore = 0;
-		int bonusCode = 0;
-		symbolCombos.GetCombo(symbolKey);
-		score += lineScore;
-		bonusCount += bonusCode; // Add custom logic for bonus codes here
-		// Print Combos
-		if (m_inFreePlay && lineScore > 0)
-		{
-			cout << "Line " << iLine + 1 << " pays " << lineScore * multiplier << "\n";
-		}
+		results.Add(paylineCombo.GetCombo(symbolKey), iLine);
 	}
-	if (m_inFreePlay && score > 0)
-	{
-		cout << "\n";
-	}
-	return score * multiplier;
-}
-
-double SlotGrid::EvaluateWays(AnywaysCombo& symbolCombos, int multiplier)
-{
-	double score = 0;
+	// Print for free play
 	if (m_inFreePlay)
 	{
 		PrintGrid();
+
+		for (int iLine = 0; iLine < m_lines.size(); iLine++)
+		{
+			if (results.combos[iLine].pay > 0)
+			{
+				cout << "Line " << iLine + 1 << " pays " << results.combos[iLine].pay << "\n";
+			}
+		}
+
+		if (results.totalPay > 0) cout << "\n";
 	}
-	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
+	return results;
+}
+
+ComboResults SlotGrid::Evaluate(AnywaysCombo& anywaysCombo)
+{
+	ComboResults results(anywaysCombo.GetNumSymbols());
+	for (int iSymbol = 0; iSymbol < anywaysCombo.GetNumSymbols(); iSymbol++)
 	{
 		int comboLength = 0;
 		int numCombos = 1;
@@ -202,7 +135,7 @@ double SlotGrid::EvaluateWays(AnywaysCombo& symbolCombos, int multiplier)
 			for (int iRow = 0; iRow < m_numRows; iRow++)
 			{
 				int currentSymbol = m_grid[iReel][iRow];
-				symbolCount += m_symbolSubstitutionCount[iSymbol][currentSymbol];
+				symbolCount += anywaysCombo.GetSymbolSubstitutionCount(iSymbol, currentSymbol);
 			}
 			if (symbolCount > 0)
 			{
@@ -216,22 +149,117 @@ double SlotGrid::EvaluateWays(AnywaysCombo& symbolCombos, int multiplier)
 		}
 		if (comboLength > 0)
 		{
-			double symbolScore = numCombos * m_paytable[iSymbol][comboLength-1];
-
-			if (m_inFreePlay && symbolScore > 0)
-			{
-				cout << comboLength << "-" << GetSymbolColor(iSymbol) << GetSymbolString(iSymbol) << "\033[0m x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
-			}
-
-			score += symbolScore;
+			results.Add(anywaysCombo.GetCombo(iSymbol, comboLength), iSymbol);
 		}
 	}
-	if (m_inFreePlay && score > 0)
+	// Print for free play
+	if (m_inFreePlay)
 	{
-		cout << "\n";
+		PrintGrid();
+		for (int iSymbol = 0; iSymbol < anywaysCombo.GetNumSymbols(); iSymbol++)
+		{
+			if (results.combos[iSymbol].pay > 0)
+			{
+				//cout << comboLength << "-" << GetSymbolColor(iSymbol) << GetSymbolString(iSymbol) << "\033[0m x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
+			}
+		}
+		if (results.totalPay > 0) cout << "\n";
 	}
-	return score * multiplier;
+	return results;
 }
+
+ComboResults SlotGrid::Evaluate(ScatterCombo& scatterCombo)
+{
+	ComboResults results(1);
+	std::vector<bool> reelsHit(m_numReels, false);
+
+	const std::vector<int>& scatterSymbols = scatterCombo.GetScatterSymbols();
+
+	for (int iReel = 0; iReel < m_numReels; iReel++)
+	{
+		reelsHit[iReel] = this->IsSymbolOnReel(scatterSymbols[iReel], iReel);
+	}
+
+	int comboKey = scatterCombo.GetComboKey(reelsHit);
+	results.Add(scatterCombo.GetCombo(comboKey), 0);
+
+	// Print for free play
+	if (m_inFreePlay && results.totalPay > 0)
+	{
+		PrintGrid();
+		cout << "Scatter pays " << results.totalPay << "\n\n";
+	}
+
+	return results;
+}
+
+
+ComboResults SlotGrid::Evaluate(CountScatterCombo& countScatterCombo)
+{
+	ComboResults results(1);
+	int symbolToCount = countScatterCombo.GetScatterSymbol();
+	int matchCount = this->CountSymbolOnGrid(symbolToCount);
+
+	results.Add(countScatterCombo.GetCombo(matchCount), 0);
+
+	// Print for free play
+	if (m_inFreePlay && results.totalPay > 0)
+	{
+		PrintGrid();
+		cout << "Count scatter pays " << results.totalPay << " for " << matchCount << " hits\n\n";
+	}
+
+	return results;
+}
+
+
+//double SlotGrid::EvaluateWays(AnywaysCombo& symbolCombos, int multiplier)
+//{
+//	double score = 0;
+//	if (m_inFreePlay)
+//	{
+//		PrintGrid();
+//	}
+//	for (int iSymbol = 0; iSymbol < m_numSymbols; iSymbol++)
+//	{
+//		int comboLength = 0;
+//		int numCombos = 1;
+//		for (int iReel = 0; iReel < m_numReels; iReel++)
+//		{
+//			int symbolCount = 0;
+//			for (int iRow = 0; iRow < m_numRows; iRow++)
+//			{
+//				int currentSymbol = m_grid[iReel][iRow];
+//				symbolCount += m_symbolSubstitutionCount[iSymbol][currentSymbol];
+//			}
+//			if (symbolCount > 0)
+//			{
+//				comboLength++;
+//				numCombos *= symbolCount;
+//			}
+//			else
+//			{
+//				break;
+//			}
+//		}
+//		if (comboLength > 0)
+//		{
+//			double symbolScore = numCombos * m_paytable[iSymbol][comboLength-1];
+//
+//			if (m_inFreePlay && symbolScore > 0)
+//			{
+//				cout << comboLength << "-" << GetSymbolColor(iSymbol) << GetSymbolString(iSymbol) << "\033[0m x " << numCombos << " Ways pays " << symbolScore * multiplier << "\n";
+//			}
+//
+//			score += symbolScore;
+//		}
+//	}
+//	if (m_inFreePlay && score > 0)
+//	{
+//		cout << "\n";
+//	}
+//	return score * multiplier;
+//}
 
 bool SlotGrid::IsSymbolOnGrid(int symbol)
 {
@@ -356,30 +384,5 @@ void SlotGrid::ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex)
 		{
 			m_grid[iReel][rowIndex] = newSymbol;
 		}
-	}
-}
-
-string SlotGrid::GetSymbolString(int symbol)
-{
-	if (m_symbolStrings.contains(symbol))
-	{
-		return m_symbolStrings[symbol];
-	}
-	else
-	{
-		return "S" + FormatInt(symbol, 2, '0');
-	}
-}
-
-string SlotGrid::GetSymbolColor(int symbol)
-{
-	if (m_symbolColors.contains(symbol))
-	{
-		int color = m_symbolColors[symbol];
-		return "\033[" + to_string(38 + 10 * (color / 256)) + ";5;" + to_string(color % 256) + "m";
-	}
-	else
-	{
-		return "\033[0m";
 	}
 }

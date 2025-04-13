@@ -14,6 +14,9 @@ public:
 
     bool LoadFile(); // Loads and parses the XML file
 
+    std::string GetConfigName() const;
+
+
     WeightTable GetWeightTable(const std::string& identifier);
     void LoadAllWeightTables(std::map<std::string, WeightTable>& tableMap,
         const std::string& pattern = "");

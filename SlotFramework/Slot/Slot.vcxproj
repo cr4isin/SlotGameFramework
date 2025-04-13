@@ -19,12 +19,12 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ComboResults.cpp" />
     <ClCompile Include="SlotGame.cpp" />
-    <ClCompile Include="SlotGameDefs.cpp" />
     <ClCompile Include="SlotGrid.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="magic_enum.hpp" />
+    <ClInclude Include="ComboResults.h" />
     <ClInclude Include="SlotGame.h" />
     <ClInclude Include="SlotGrid.h" />
   </ItemGroup>
