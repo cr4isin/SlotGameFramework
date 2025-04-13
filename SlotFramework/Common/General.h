@@ -55,6 +55,16 @@ enum Colors {
 	bBLACK = 256,
 };
 
+struct Combo
+{
+	double pay = 0;
+	double basePay = 0;
+	double multiplier = 1;
+	int bonusCode = 0;
+	int progressive = 0;
+	bool set = false;
+};
+
 void PrintVec(vector<int> input);
 
 vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);

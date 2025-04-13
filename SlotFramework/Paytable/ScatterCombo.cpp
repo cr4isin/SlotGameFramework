@@ -11,19 +11,19 @@ ScatterCombo::ScatterCombo(int numReels, const SymbolSet& symbolSet)
     combos.resize(totalCombos);
 }
 
-void ScatterCombo::SetCombo(const std::vector<bool>& reelsHit, double pay, int bonusCode, int progressive, bool overWrite)
+void ScatterCombo::SetCombo(const std::vector<bool>& reelsHit, double pay, int bonusCode, int progressive)
 {
     int key = GetComboKey(reelsHit);
     Combo& combo = combos[key];
+    combo.basePay = pay;
+    combo.pay = pay;
+    combo.bonusCode = bonusCode;
+    combo.progressive = progressive;
+}
 
-    if (!combo.set || overWrite)
-    {
-        combo.basePay = pay;
-        combo.pay = pay;
-        combo.bonusCode = bonusCode;
-        combo.progressive = progressive;
-        combo.set = true;
-    }
+void ScatterCombo::SetScatterSymbols(const std::vector<int>& symbols)
+{
+    scatterSymbols = symbols;
 }
 
 Combo ScatterCombo::GetCombo(int comboKey) const
@@ -42,4 +42,14 @@ int ScatterCombo::GetComboKey(const std::vector<bool>& reelsHit) const
         }
     }
     return key;
+}
+
+vector<int> ScatterCombo::GetScatterSymbols() const
+{
+    return scatterSymbols;
+}
+
+int ScatterCombo::GetNumReels() const
+{
+    return numReels;
 }

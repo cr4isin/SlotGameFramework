@@ -5,6 +5,7 @@
 #include "WeightTable.h"
 #include "SymbolSet.h"
 #include "SlotReels.h"
+#include "Paytable.h"
 
 class MathXML {
 public:
@@ -47,7 +48,51 @@ public:
         const SymbolSet& symbolSet,
         const std::string& pattern = "");
 
+    PaylineCombo GetPaylineComboSet(const std::string& identifier,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0) const;
 
+    void LoadAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboMap,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0,
+        const std::string& regexStr = "") const;
+
+    AnywaysCombo GetAnywaysComboSet(const std::string& identifier,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0) const;
+
+    void LoadAllAnywaysComboSets(std::map<std::string, AnywaysCombo>& comboMap,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0,
+        const std::string& regexStr = "") const;
+
+    ScatterCombo GetScatterComboSet(const std::string& identifier,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0) const;
+
+    void LoadAllScatterComboSets(std::map<std::string, ScatterCombo>& comboMap,
+        const SymbolSet& symbolSet,
+        int numReels,
+        double payMultiplier = 1.0,
+        const std::string& regexStr = "") const;
+
+    CountScatterCombo GetCountScatterComboSet(const std::string& identifier,
+        const SymbolSet& symbolSet,
+        int numReels,
+        int numRows,
+        double payMultiplier = 1.0) const;
+
+    void LoadAllCountScatterComboSets(std::map<std::string, CountScatterCombo>& comboMap,
+        const SymbolSet& symbolSet,
+        int numReels,
+        int numRows,
+        double payMultiplier = 1.0,
+        const std::string& regexStr = "") const;
 
 private:
     std::string filename;

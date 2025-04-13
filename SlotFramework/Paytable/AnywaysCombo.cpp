@@ -39,10 +39,11 @@ Combo AnywaysCombo::GetCombo(int symbol, int comboLength)
 
 void AnywaysCombo::SetCombo(int symbol, int comboLength, double pay, int bonusCode, int progressive)
 {
-	paytable[symbol][comboLength].pay = pay;
-	paytable[symbol][comboLength].basePay = pay;
-	paytable[symbol][comboLength].bonusCode = bonusCode;
-	paytable[symbol][comboLength].progressive = progressive;
+	Combo& combo = paytable[symbol][comboLength];
+	combo.pay = pay;
+	combo.basePay = pay;
+	combo.bonusCode = bonusCode;
+	combo.progressive = progressive;
 }
 
 int AnywaysCombo::GetNumSymbols() const

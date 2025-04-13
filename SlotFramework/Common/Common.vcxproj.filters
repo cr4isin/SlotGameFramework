@@ -10,7 +10,6 @@
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SymbolSet.h" />
     <ClInclude Include="WeightTable.h" />
-    <ClInclude Include="ComboTypes.h" />
     <ClInclude Include="General.h" />
   </ItemGroup>
 </Project>
