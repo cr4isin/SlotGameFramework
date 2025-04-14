@@ -7,7 +7,6 @@ SlotGame::SlotGame(string mathXMLFile, int baseBet, int betMult, int totalBet)
 {
 	configName = mathXML.GetConfigName();
 	SetBetScheme(baseBet, betMult, totalBet);
-	SetupGame();
 }
 
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
@@ -24,102 +23,16 @@ void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
 	}
 }
 
-void SlotGame::SetupGame()
-{
-	// Symbol Sets
-	symbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
-
-	// Combos
-	MainPaylineCombos = mathXML.GetPaylineComboSet("MainPaylineCombos", symbols, numReels, betMult);
-	BonusScatters = mathXML.GetScatterComboSet("BonusScatters", symbols, numReels, totalBet);
-
-	// Reels
-	Reels_Main = mathXML.GetReelStripSet("Reels_Main", symbols);
-	Reels_FG = mathXML.GetReelStripSet("Reels_FG", symbols);
-
-	// Grids
-	grid = SlotGrid(numReels, numRows);
-	grid.SetLines(lines, baseBet);
-
-	// Weight and Value Tables
-	mathXML.LoadAllWeightTables(weightTables);
-	mathXML.LoadAllValueTables(valueTables);
-}
-
 // ============================== Game Functions ==============================
 double SlotGame::PlayGame()
 {
-	if (inFreePlay) cout << "=== Base Game ===\n";
 	double score = 0;
-	vector<int> positions(numReels);
 
-	// Generate positions and fill grid
-	Reels_Main.GenerateRandomPositions(positions);
-	grid.FillGrid(positions, Reels_Main);
-
-	// Evaluate Lines
-	score += grid.Evaluate(MainPaylineCombos).totalPay;
-	
-	// Evaluate Scatter pays
-	ComboResults scatterPays = grid.Evaluate(BonusScatters);
-	score += scatterPays.totalPay;
-
-	AddToTracker("BaseGame", score);
-
-	// Trigger free games
-	if (scatterPays.bonusCodes.size() > 0)
-	{
-		score += PlayBonus(scatterPays.bonusCodes[0]);
-	}
-
-	AddToHistogram("score", score);
 	return score;
 }
 double SlotGame::PlayBonus(int bonusCode)
 {
 	double score = 0;
-	vector<int> positions(numReels);
-	int spinsRemaining = valueTables["FSNumSpins"][bonusCode-1];
-	int spinNumber = 0;
-
-	while (spinsRemaining > 0)
-	{
-		spinNumber++;
-		if (inFreePlay) cout << "=== Free Spin " << spinNumber << " ===\n";
-
-		double spinScore = 0;
-
-		// Generate positions and fill grid
-		Reels_FG.GenerateRandomPositions(positions);
-		grid.FillGrid(positions, Reels_FG);
-
-		// Determine which 2 reels to fill with WILDs
-		int wildPattern = weightTables["FSWildReels"].DrawValue();
-		vector<int> wildReels = ChangeBase(wildPattern, 2, numReels);
-		for (int iReel = 0; iReel < numReels; iReel++)
-		{
-			if (wildReels[iReel] == 1)
-			{
-				grid.FillReelWithSymbol(symbols.GetSymbolIndex("WILD"), iReel);
-			}
-		}
-
-		// Evaluate Lines
-		spinScore += grid.Evaluate(MainPaylineCombos).totalPay;
-
-		// Evaluate Scatter pays and retriggers
-		ComboResults scatterPays = grid.Evaluate(BonusScatters);
-		score += scatterPays.totalPay;
-		if (scatterPays.bonusCodes.size() > 0)
-		{
-			score += spinsRemaining += valueTables["FSNumSpins"][scatterPays.bonusCodes[0] - 1];
-		}
-
-		AddToTracker("FreeGame", spinScore);
-
-		score += spinScore;
-		spinsRemaining--;
-	}
 
 	return score;
 }
@@ -250,8 +163,6 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
-	grid.SetInFreePlay(true);
-	grid.SetInFreePlay(true);
 	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\n";
 	cout << "Press Enter to Play!";
 	cin.get();
@@ -273,58 +184,58 @@ void SlotGame::FreePlay(bool clearConsole)
 void SlotGame::CyclePositions()
 {
 	// Will cycle through all positions of a reel set and create a histogram of every possible score
-	map<double, size_t> hist;
-	vector<int> positions(numReels, 0);
-	double maxScore = 0;
-	vector<int> maxPositions(numReels, 0);
-	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
+	//map<double, size_t> hist;
+	//vector<int> positions(numReels, 0);
+	//double maxScore = 0;
+	//vector<int> maxPositions(numReels, 0);
+	//CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
 
-	string filename = "CyclePositionsOutput_" + configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
-	ofstream outputFile(filename);
-	outputFile << "Max Pay Positions:\t";
-	for (int iReel = 0; iReel < numReels; iReel++)
-	{
-		outputFile << maxPositions[iReel] << "\t";
-	}
-	outputFile << "\n\n";
-	for (auto const& [score, combo] : hist)
-	{
-		outputFile << score << "\t" << combo << "\n";
-	}
-	outputFile.close();
+	//string filename = "CyclePositionsOutput_" + configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
+	//ofstream outputFile(filename);
+	//outputFile << "Max Pay Positions:\t";
+	//for (int iReel = 0; iReel < numReels; iReel++)
+	//{
+	//	outputFile << maxPositions[iReel] << "\t";
+	//}
+	//outputFile << "\n\n";
+	//for (auto const& [score, combo] : hist)
+	//{
+	//	outputFile << score << "\t" << combo << "\n";
+	//}
+	//outputFile.close();
 }
 
 void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel)
 {
 	// Function used to run CyclePositions()
 	// Might need to edit your grid, reels, and evaluation type being used
-	if (currentReel < positions.size())
-	{
-		for (int i = 0; i < Reels_Main.GetReelSize(currentReel); i++)
-		{
-			if (currentReel == 0)
-			{
-				cout << i << " / " << Reels_Main.GetReelSize(currentReel) << "\n";
-			}
-			positions.at(currentReel) = i;
-			grid.FillGridReel(currentReel, positions[currentReel], Reels_Main);
-			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
-		}
-	}
-	else
-	{
-		double score = 0;
-		//double score = grid.EvaluateLines(symbolCombos, betMult);
-		int combos = 1;
-		for (int iReel = 0; iReel < positions.size(); iReel++)
-		{
-			combos *= Reels_Main.GetWeight(iReel, positions[iReel]);
-		}
-		hist[score] += combos;
-		if (score > maxScore)
-		{
-			maxPositions = positions;
-			maxScore = score;
-		}
-	}
+	//if (currentReel < positions.size())
+	//{
+	//	for (int i = 0; i < Reels_Main.GetReelSize(currentReel); i++)
+	//	{
+	//		if (currentReel == 0)
+	//		{
+	//			cout << i << " / " << Reels_Main.GetReelSize(currentReel) << "\n";
+	//		}
+	//		positions.at(currentReel) = i;
+	//		grid.FillGridReel(currentReel, positions[currentReel], Reels_Main);
+	//		CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
+	//	}
+	//}
+	//else
+	//{
+	//	double score = 0;
+	//	//double score = grid.EvaluateLines(symbolCombos, betMult);
+	//	int combos = 1;
+	//	for (int iReel = 0; iReel < positions.size(); iReel++)
+	//	{
+	//		combos *= Reels_Main.GetWeight(iReel, positions[iReel]);
+	//	}
+	//	hist[score] += combos;
+	//	if (score > maxScore)
+	//	{
+	//		maxPositions = positions;
+	//		maxScore = score;
+	//	}
+	//}
 }
