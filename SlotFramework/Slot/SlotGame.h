@@ -10,7 +10,7 @@ public:
 
 	// ==================== Functions ====================
 	// Setup
-	SlotGame(string mathXML, int baseBet, int betMult, int totalBet = 0);
+	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	// Game Functions
 	virtual double PlayGame();
@@ -22,9 +22,10 @@ public:
 	void PrintHistograms(string simName);
 	void RunSims(int numGames, vector<string>& args);
 	void FreePlay(bool clearConsole = false);
-	void CyclePositions();
-	void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
+	//void CyclePositions();
+	//void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
 	// ==================== General Variables ====================
+	string gameName = "";
 	string configName = "";
 	MathXML mathXML;
 	int baseBet = 1;

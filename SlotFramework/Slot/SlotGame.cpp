@@ -2,8 +2,8 @@
 #include "SlotGame.h"
 
 // ============================== Setup ==============================
-SlotGame::SlotGame(string mathXMLFile, int baseBet, int betMult, int totalBet)
-	:mathXML(MathXML(mathXMLFile))
+SlotGame::SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet)
+	:gameName(gameName), mathXML(MathXML("../Games/" + gameName + "/xml/" + mathXMLFileName))
 {
 	configName = mathXML.GetConfigName();
 	SetBetScheme(baseBet, betMult, totalBet);
@@ -61,7 +61,7 @@ void SlotGame::PrintHistograms(string simName)
 {
 	for (auto const& [name, hist] : histograms)
 	{
-		string filename = "Histogram_" + simName + "_" + name + ".txt";
+		string filename = "../Games/" + gameName + "/results/Histogram_" + simName + "_" + name + ".txt";
 		WriteHistogramToFile(filename, hist);
 	}
 }
@@ -143,7 +143,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 	}
 	// Write results to a file
 	PrintHistograms(simName);
-	string filename = "SimData_" + simName + ".txt";
+	string filename = "../Games/" + gameName + "/results/SimData_" + simName + ".txt";
 	ostringstream outputString;
 	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
 	for (auto const& [name, totalTracker] : totalTrackers)
@@ -181,61 +181,61 @@ void SlotGame::FreePlay(bool clearConsole)
 	}
 }
 
-void SlotGame::CyclePositions()
-{
-	// Will cycle through all positions of a reel set and create a histogram of every possible score
-	//map<double, size_t> hist;
-	//vector<int> positions(numReels, 0);
-	//double maxScore = 0;
-	//vector<int> maxPositions(numReels, 0);
-	//CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
-
-	//string filename = "CyclePositionsOutput_" + configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
-	//ofstream outputFile(filename);
-	//outputFile << "Max Pay Positions:\t";
-	//for (int iReel = 0; iReel < numReels; iReel++)
-	//{
-	//	outputFile << maxPositions[iReel] << "\t";
-	//}
-	//outputFile << "\n\n";
-	//for (auto const& [score, combo] : hist)
-	//{
-	//	outputFile << score << "\t" << combo << "\n";
-	//}
-	//outputFile.close();
-}
-
-void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel)
-{
-	// Function used to run CyclePositions()
-	// Might need to edit your grid, reels, and evaluation type being used
-	//if (currentReel < positions.size())
-	//{
-	//	for (int i = 0; i < Reels_Main.GetReelSize(currentReel); i++)
-	//	{
-	//		if (currentReel == 0)
-	//		{
-	//			cout << i << " / " << Reels_Main.GetReelSize(currentReel) << "\n";
-	//		}
-	//		positions.at(currentReel) = i;
-	//		grid.FillGridReel(currentReel, positions[currentReel], Reels_Main);
-	//		CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
-	//	}
-	//}
-	//else
-	//{
-	//	double score = 0;
-	//	//double score = grid.EvaluateLines(symbolCombos, betMult);
-	//	int combos = 1;
-	//	for (int iReel = 0; iReel < positions.size(); iReel++)
-	//	{
-	//		combos *= Reels_Main.GetWeight(iReel, positions[iReel]);
-	//	}
-	//	hist[score] += combos;
-	//	if (score > maxScore)
-	//	{
-	//		maxPositions = positions;
-	//		maxScore = score;
-	//	}
-	//}
-}
+//void SlotGame::CyclePositions()
+//{
+//	 Will cycle through all positions of a reel set and create a histogram of every possible score
+//	map<double, size_t> hist;
+//	vector<int> positions(numReels, 0);
+//	double maxScore = 0;
+//	vector<int> maxPositions(numReels, 0);
+//	CyclePositionsRecursive(hist, positions, maxScore, maxPositions);
+//
+//	string filename = "CyclePositionsOutput_" + configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x.txt";
+//	ofstream outputFile(filename);
+//	outputFile << "Max Pay Positions:\t";
+//	for (int iReel = 0; iReel < numReels; iReel++)
+//	{
+//		outputFile << maxPositions[iReel] << "\t";
+//	}
+//	outputFile << "\n\n";
+//	for (auto const& [score, combo] : hist)
+//	{
+//		outputFile << score << "\t" << combo << "\n";
+//	}
+//	outputFile.close();
+//}
+//
+//void SlotGame::CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel)
+//{
+//	 Function used to run CyclePositions()
+//	 Might need to edit your grid, reels, and evaluation type being used
+//	if (currentReel < positions.size())
+//	{
+//		for (int i = 0; i < Reels_Main.GetReelSize(currentReel); i++)
+//		{
+//			if (currentReel == 0)
+//			{
+//				cout << i << " / " << Reels_Main.GetReelSize(currentReel) << "\n";
+//			}
+//			positions.at(currentReel) = i;
+//			grid.FillGridReel(currentReel, positions[currentReel], Reels_Main);
+//			CyclePositionsRecursive(hist, positions, maxScore, maxPositions, currentReel + 1);
+//		}
+//	}
+//	else
+//	{
+//		double score = 0;
+//		//double score = grid.EvaluateLines(symbolCombos, betMult);
+//		int combos = 1;
+//		for (int iReel = 0; iReel < positions.size(); iReel++)
+//		{
+//			combos *= Reels_Main.GetWeight(iReel, positions[iReel]);
+//		}
+//		hist[score] += combos;
+//		if (score > maxScore)
+//		{
+//			maxPositions = positions;
+//			maxScore = score;
+//		}
+//	}
+//}

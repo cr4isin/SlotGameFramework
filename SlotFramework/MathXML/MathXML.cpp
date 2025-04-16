@@ -61,7 +61,7 @@ WeightTable MathXML::GetWeightTable(const std::string& identifier) {
     return WeightTable({}, {});
 }
 
-void MathXML::LoadAllWeightTables(std::map<std::string, WeightTable>& tableMap,
+void MathXML::GetAllWeightTables(std::map<std::string, WeightTable>& tableMap,
     const std::string& pattern) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* bonusInfo = root->FirstChildElement("BonusInfo");
@@ -109,7 +109,7 @@ std::vector<double> MathXML::GetValueTable(const std::string& identifier) {
     return {};
 }
 
-void MathXML::LoadAllValueTables(std::map<std::string, std::vector<double>>& tableMap,
+void MathXML::GetAllValueTables(std::map<std::string, std::vector<double>>& tableMap,
     const std::string& pattern) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* bonusInfo = root->FirstChildElement("BonusInfo");
@@ -182,7 +182,7 @@ SymbolSet MathXML::GetSymbolSet(const std::string& identifier,
     throw std::runtime_error("SymbolSet not found: " + identifier);
 }
 
-void MathXML::LoadAllSymbolSets(std::map<std::string, SymbolSet>& symbolSetMap,
+void MathXML::GetAllSymbolSets(std::map<std::string, SymbolSet>& symbolSetMap,
     const std::map<std::string, std::set<std::string>>& wilds,
     const std::map<std::string, int>& multipliers,
     const std::map<std::string, Colors>& colors,
@@ -256,7 +256,7 @@ SlotReels MathXML::GetReelStripSet(const std::string& identifier, const SymbolSe
     throw std::runtime_error("ReelStripSet not found: " + identifier);
 }
 
-void MathXML::LoadAllReelStripSets(std::map<std::string, SlotReels>& reelSetMap,
+void MathXML::GetAllReelStripSets(std::map<std::string, SlotReels>& reelSetMap,
     const SymbolSet& symbolSet,
     const std::string& pattern) {
     auto* root = doc.FirstChildElement("GameMath");
@@ -309,7 +309,7 @@ WeightTable MathXML::GetReelStripAsWeightTable(const std::string& identifier, co
     throw std::runtime_error("ReelStrip not found: " + identifier);
 }
 
-void MathXML::LoadAllReelStripsAsWeightTables(std::map<std::string, WeightTable>& tableMap,
+void MathXML::GetAllReelStripsAsWeightTables(std::map<std::string, WeightTable>& tableMap,
     const SymbolSet& symbolSet,
     const std::string& pattern) {
     auto* root = doc.FirstChildElement("GameMath");
@@ -380,7 +380,7 @@ PaylineCombo MathXML::GetPaylineComboSet(const std::string& identifier,
     return comboSet;
 }
 
-void MathXML::LoadAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboMap,
+void MathXML::GetAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboMap,
     const SymbolSet& symbolSet,
     int numReels,
     double payMultiplier,
@@ -471,7 +471,7 @@ AnywaysCombo MathXML::GetAnywaysComboSet(const std::string& identifier,
     return comboSet;
 }
 
-void MathXML::LoadAllAnywaysComboSets(std::map<std::string, AnywaysCombo>& comboMap,
+void MathXML::GetAllAnywaysComboSets(std::map<std::string, AnywaysCombo>& comboMap,
     const SymbolSet& symbolSet,
     int numReels,
     double payMultiplier,
@@ -564,7 +564,7 @@ ScatterCombo MathXML::GetScatterComboSet(const std::string& identifier,
     return comboSet;
 }
 
-void MathXML::LoadAllScatterComboSets(std::map<std::string, ScatterCombo>& comboMap,
+void MathXML::GetAllScatterComboSets(std::map<std::string, ScatterCombo>& comboMap,
     const SymbolSet& symbolSet,
     int numReels,
     double payMultiplier,
@@ -652,7 +652,7 @@ CountScatterCombo MathXML::GetCountScatterComboSet(const std::string& identifier
     return comboSet;
 }
 
-void MathXML::LoadAllCountScatterComboSets(std::map<std::string, CountScatterCombo>& comboMap,
+void MathXML::GetAllCountScatterComboSets(std::map<std::string, CountScatterCombo>& comboMap,
     const SymbolSet& symbolSet,
     int numReels,
     int numRows,

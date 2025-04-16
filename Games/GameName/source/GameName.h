@@ -5,14 +5,12 @@
 class GameName : public SlotGame 
 {
 public:
-	// From Base Class
-	using SlotGame::SlotGame;
-	void SetupGame();
+	// Functions
+	GameName(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
 
 	// Custom values and functions
-
 	int numReels = 5;
 	int numRows = 3;
 

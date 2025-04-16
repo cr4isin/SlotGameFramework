@@ -1,24 +1,26 @@
 #include "GameName.h"
 
-void GameName::SetupGame() {
-    // Symbol Sets
-    MainSymbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
+GameName::GameName(string mathXMLFileName, int baseBet, int betMult, int totalBet)
+	: SlotGame("GameName", mathXMLFileName, baseBet, betMult, totalBet)
+{
+	// Symbol Sets
+	MainSymbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
 
-    // Combos
-    MainPaylineCombos = mathXML.GetPaylineComboSet("MainPaylineCombos", MainSymbols, numReels, betMult);
-    BonusScatters = mathXML.GetScatterComboSet("BonusScatters", MainSymbols, numReels, totalBet);
+	// Combos
+	MainPaylineCombos = mathXML.GetPaylineComboSet("MainPaylineCombos", MainSymbols, numReels, betMult);
+	BonusScatters = mathXML.GetScatterComboSet("BonusScatters", MainSymbols, numReels, totalBet);
 
-    // Reels
-    Reels_Main = mathXML.GetReelStripSet("Reels_Main", MainSymbols);
-    Reels_FG = mathXML.GetReelStripSet("Reels_FG", MainSymbols);
+	// Reels
+	Reels_Main = mathXML.GetReelStripSet("Reels_Main", MainSymbols);
+	Reels_FG = mathXML.GetReelStripSet("Reels_FG", MainSymbols);
 
-    // Grids
-    grid = SlotGrid(numReels, numRows);
-    grid.SetLines(lines, baseBet);
+	// Grids
+	grid = SlotGrid(numReels, numRows);
+	grid.SetLines(lines, baseBet);
 
-    // Weight and Value Tables
-    mathXML.LoadAllWeightTables(weightTables);
-    mathXML.LoadAllValueTables(valueTables);
+	// Weight and Value Tables
+	mathXML.GetAllWeightTables(weightTables);
+	mathXML.GetAllValueTables(valueTables);
 }
 
 double GameName::PlayGame() {
@@ -30,7 +32,7 @@ double GameName::PlayGame() {
 	Reels_Main.GenerateRandomPositions(positions);
 	grid.FillGrid(positions, Reels_Main);
 
-	// Evaluate Lines
+	// Evaluate Line pays
 	score += grid.Evaluate(MainPaylineCombos).totalPay;
 
 	// Evaluate Scatter pays
