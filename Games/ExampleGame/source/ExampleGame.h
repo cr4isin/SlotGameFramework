@@ -2,7 +2,7 @@
 
 #include "SlotGame.h"
 
-class GameTemplate : public SlotGame 
+class ExampleGame : public SlotGame 
 {
 public:
 	// ======== Functions  ======== 
@@ -45,7 +45,7 @@ public:
 
 	map<string, Colors> symbolColors =
 	{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
-		// Start with a 't' for text color and a 'b' for background color. Default value is tWHITE.
+	  // Start with a 't' for text color and a 'b' for background color. Default value is tWHITE.
 		{"BLANK",tGRAY},
 		{"WILD",bRED},
 		{"S01",tCYAN},

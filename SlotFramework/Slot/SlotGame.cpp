@@ -37,8 +37,12 @@ double SlotGame::PlayBonus(int bonusCode)
 
 	switch (bonusCode)
 	{
-	case 0: break;
-	default: cout << "No such bonus code: " << bonusCode << endl;
+		case 0: break;
+		default:
+		{
+			cout << "No such bonus code: " << bonusCode << endl;
+			throw runtime_error("Unknown Bonus Code used");
+		}
 	}
 
 	return score;
