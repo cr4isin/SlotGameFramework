@@ -8,6 +8,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 	for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 	{
 		symbolIndex[symbols[iSymbol]] = iSymbol;
+		maxSymbolLength = max(maxSymbolLength, symbols[iSymbol].size());
 	}
 
 	// Creating the symbol substitution map
@@ -95,6 +96,11 @@ Colors SymbolSet::GetColor(int symbol) const
 int SymbolSet::GetNumSymbols() const 
 {
 	return numSymbols;
+}
+
+int SymbolSet::GetMaxSymbolLength() const
+{
+	return maxSymbolLength;
 }
 
 const std::vector<std::string>& SymbolSet::GetSymbolList() const 

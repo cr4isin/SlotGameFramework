@@ -15,10 +15,22 @@ public:
     vector<int> GetScatterSymbols() const;
     int GetNumReels() const;
 
+    // For Results
+    void AddResult(const int& comboKey);
+    void ClearResults();
+    void PrintResults();
+
+    Combo combo;
+    double pay = 0;
+    int bonusCode;
+    bool bonusHit = false;
+    int progressive;
+    bool progHit = false;
+
 private:
     int numReels;
     SymbolSet symbolSet;
 
     std::vector<int> scatterSymbols; // size = numReels, -1 by default
-    std::vector<Combo> combos;       // size = 2^numReels
+    std::vector<Combo> scatterCombos;       // size = 2^numReels
 };

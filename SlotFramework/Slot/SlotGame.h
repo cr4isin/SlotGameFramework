@@ -1,6 +1,5 @@
 #pragma once
 
-#include "General.h"
 #include "SlotGrid.h"
 #include "MathXML.h"
 
@@ -19,14 +18,15 @@ public:
 	void AddToTracker(string name, double value);
 	void ClearTrackers();
 	void AddToHistogram(string name, double value, long long numHits = 1);
-	void PrintHistograms(string simName);
-	void RunSims(int numGames, vector<string>& args);
+	void PrintHistograms();
+	void RunSims(int numGames, vector<string>& args, int bonusCode = 0);
 	void FreePlay(bool clearConsole = false);
 	//void CyclePositions();
 	//void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
 	// ==================== General Variables ====================
-	string gameName = "";
+	const string gameName = "";
 	string configName = "";
+	string simName = "";
 	MathXML mathXML;
 	int baseBet = 1;
 	int betMult = 1;

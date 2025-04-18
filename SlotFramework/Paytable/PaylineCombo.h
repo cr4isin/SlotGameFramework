@@ -6,7 +6,7 @@ class PaylineCombo
 {
 public:
     PaylineCombo() = default;
-    PaylineCombo(int numReels, const SymbolSet& symbolSet);
+    PaylineCombo(int numReels, int numLines, const SymbolSet& symbolSet);
     size_t GetSymbolKey(const vector<int>& combo) const;
     size_t GetSymbolKey(const int& reel, const int& symbol) const;
     Combo GetCombo(const vector<int>& combo) const;
@@ -15,10 +15,23 @@ public:
     int GetNumSymbols() const;
     int GetNumReels() const;
 
-private:
-    int numReels;
-    int numSymbols;
-    SymbolSet symbolSet;
+    // For Results
+    void AddResult(const size_t& symbolKey, const int& index);
+    void ClearResults();
+    void PrintResults();
+
     vector<Combo> combos;
+    double pay = 0;
+    vector<int> bonusCodes;
+    bool bonusHit = false;
+    vector<int> progressives;
+    bool progHit = false;
+
+private:
+    int numReels = 0;
+    int numSymbols = 0;
+    int numLines = 0;
+    SymbolSet symbolSet;
+    vector<Combo> paylineCombos;
     vector<vector<size_t>> symbolKeys;
 };

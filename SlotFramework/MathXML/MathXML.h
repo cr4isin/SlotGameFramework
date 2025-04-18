@@ -54,11 +54,13 @@ public:
     PaylineCombo GetPaylineComboSet(const std::string& identifier,
         const SymbolSet& symbolSet,
         int numReels,
+        int numLines,
         double payMultiplier = 1.0) const;
 
     void GetAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboMap,
         const SymbolSet& symbolSet,
         int numReels,
+        int numLines,
         double payMultiplier = 1.0,
         const std::string& regexStr = "") const;
 

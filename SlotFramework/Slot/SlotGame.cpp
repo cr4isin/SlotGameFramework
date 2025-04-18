@@ -7,6 +7,7 @@ SlotGame::SlotGame(string gameName, string mathXMLFileName, int baseBet, int bet
 {
 	configName = mathXML.GetConfigName();
 	SetBetScheme(baseBet, betMult, totalBet);
+	simName = configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x";
 }
 
 void SlotGame::SetBetScheme(int baseBet, int betMult, int totalBet)
@@ -34,6 +35,12 @@ double SlotGame::PlayBonus(int bonusCode)
 {
 	double score = 0;
 
+	switch (bonusCode)
+	{
+	case 0: break;
+	default: cout << "No such bonus code: " << bonusCode << endl;
+	}
+
 	return score;
 }
 
@@ -57,7 +64,7 @@ void SlotGame::AddToHistogram(string name, double value, long long numHits)
 	histograms[name][value] += numHits;
 }
 
-void SlotGame::PrintHistograms(string simName)
+void SlotGame::PrintHistograms()
 {
 	for (auto const& [name, hist] : histograms)
 	{
@@ -66,7 +73,7 @@ void SlotGame::PrintHistograms(string simName)
 	}
 }
 
-void SlotGame::RunSims(int numGames, vector<string>& args)
+void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 {
 	// Opening more processes if necessary
 	int numProcesses = 0;
@@ -87,7 +94,6 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 	}
 
 	// Initializing variables for the sim
-	string simName = configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x";
 	int percentile = numGames / 100;
 	double coinIn = 0;
 	double coinOut = 0;
@@ -103,7 +109,9 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 	for (int iGame = 1; iGame <= numGames; iGame++)
 	{
 		// Play Game
-		double score = PlayGame();
+		double score = 0;
+		if (bonusCode == 0) score += PlayGame();
+		else score += PlayBonus(bonusCode);
 		coinOut += score;
 		coinIn += totalBet;
 		// Update Values
@@ -142,7 +150,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args)
 		}
 	}
 	// Write results to a file
-	PrintHistograms(simName);
+	PrintHistograms();
 	string filename = "../Games/" + gameName + "/results/SimData_" + simName + ".txt";
 	ostringstream outputString;
 	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);

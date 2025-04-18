@@ -13,10 +13,12 @@ public:
 	int GetMultiplier(int symbol) const;
 	Colors GetColor(int symbol) const;
 	int GetNumSymbols() const;
+	int GetMaxSymbolLength() const;
 	const vector<string>& GetSymbolList() const;
 
 private:
 	int numSymbols;
+	int maxSymbolLength = 3;
 	vector<string> symbols;
 	map<string, int> symbolIndex;
 	vector<set<int>> symbolSubstitutions;

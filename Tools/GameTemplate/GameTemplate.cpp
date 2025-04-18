@@ -1,7 +1,7 @@
-#include "GameName.h"
+#include "GameTemplate.h"
 
-GameName::GameName(string mathXMLFileName, int baseBet, int betMult, int totalBet)
-	: SlotGame("GameName", mathXMLFileName, baseBet, betMult, totalBet)
+GameTemplate::GameTemplate(string mathXMLFileName, int baseBet, int betMult, int totalBet)
+	: SlotGame("GameTemplate", mathXMLFileName, baseBet, betMult, totalBet)
 {
 	// Symbol Sets
 	MainSymbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
@@ -23,7 +23,7 @@ GameName::GameName(string mathXMLFileName, int baseBet, int betMult, int totalBe
 	mathXML.GetAllValueTables(valueTables);
 }
 
-double GameName::PlayGame() 
+double GameTemplate::PlayGame() 
 {
 	double score = 0;
 	vector<int> positions(numReels);
@@ -60,7 +60,7 @@ double GameName::PlayGame()
 	return score;
 }
 
-double GameName::PlayBonus(int bonusCode)
+double GameTemplate::PlayBonus(int bonusCode)
 {
 
 	double score = 0;
@@ -80,7 +80,7 @@ double GameName::PlayBonus(int bonusCode)
 	return score;
 }
 
-double GameName::FreeSpins(int bonusCode)
+double GameTemplate::FreeSpins(int bonusCode)
 {
 	double score = 0;
 	vector<int> positions(numReels);

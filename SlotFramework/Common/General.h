@@ -65,7 +65,7 @@ struct Combo
 	bool set = false;
 };
 
-void PrintVec(vector<int> input);
+string GetColorCode(Colors color);
 
 vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);
 

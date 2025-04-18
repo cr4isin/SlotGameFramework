@@ -333,9 +333,10 @@ void MathXML::GetAllReelStripsAsWeightTables(std::map<std::string, WeightTable>&
 PaylineCombo MathXML::GetPaylineComboSet(const std::string& identifier,
     const SymbolSet& symbolSet,
     int numReels,
+    int numLines,
     double payMultiplier) const
 {
-    PaylineCombo comboSet(numReels, symbolSet);
+    PaylineCombo comboSet(numReels, numLines, symbolSet);
 
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
@@ -383,6 +384,7 @@ PaylineCombo MathXML::GetPaylineComboSet(const std::string& identifier,
 void MathXML::GetAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboMap,
     const SymbolSet& symbolSet,
     int numReels,
+    int numLines,
     double payMultiplier,
     const std::string& regexStr) const
 {

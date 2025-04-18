@@ -2,11 +2,11 @@
 
 #include "SlotGame.h"
 
-class GameName : public SlotGame 
+class GameTemplate : public SlotGame 
 {
 public:
 	// Functions
-	GameName(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
+	GameTemplate(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
 

@@ -1,13 +1,9 @@
 
 #include "General.h"
 
-void PrintVec(vector<int> input)
+string GetColorCode(Colors color)
 {
-	for (int i : input)
-	{
-		cout << i << " ";
-	}
-	cout << "\n\n";
+	return "\033[" + to_string(38 + 10 * (color / 256)) + ";5;" + to_string(color % 256) + "m";
 }
 
 vector<int> ChangeBase(int input, int base, int length, bool reversed)

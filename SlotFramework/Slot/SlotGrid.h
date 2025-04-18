@@ -2,30 +2,32 @@
 
 #include "SlotReels.h"
 #include "Paytable.h"
-#include "ComboResults.h"
 
 class SlotGrid 
 {
 public:
-	SlotGrid();
+	// Constructors
+	SlotGrid() = default;
 	SlotGrid(int numReels, int numRows);
-	int GetSymbol(int reelIndex, int rowIndex);
-	void SetSymbol(int symbol, int reelIndex, int rowIndex);
-	vector<vector<int>> GetGrid();
+
+	// Getters & Setters
 	int GetNumReels();
 	int GetNumRows();
+	vector<vector<int>> GetGrid();
+	int GetSymbol(int reelIndex, int rowIndex);
+	void SetSymbol(int symbol, int reelIndex, int rowIndex);
 	
 	// Fill Grid Functions
 	void FillGrid(vector<int> &positions, SlotReels &reels);
 	void FillGridReel(int reelIndex, int position, SlotReels &reels);
+	void PrintGrid(SymbolSet& symbolSet);
 
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);
-	void SetInFreePlay(bool inFreePlay);
-	ComboResults Evaluate(PaylineCombo& paylineCombo);
-	ComboResults Evaluate(AnywaysCombo& anywaysCombo);
-	ComboResults Evaluate(ScatterCombo& scatterCombo);
-	ComboResults Evaluate(CountScatterCombo& countScatterCombo);
+	void Evaluate(PaylineCombo& paylineCombo);
+	void Evaluate(AnywaysCombo& anywaysCombo);
+	void Evaluate(ScatterCombo& scatterCombo);
+	void Evaluate(CountScatterCombo& countScatterCombo);
 
 	// Grid Manipulation
 	bool IsSymbolOnGrid(int symbol);
@@ -40,13 +42,10 @@ public:
 	void ReplaceSymbolOnGrid(int oldSymbol, int newSymbol);
 	void ReplaceSymbolOnReel(int oldSymbol, int newSymbol, int reelIndex);
 	void ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex);
-	void PrintGrid();
 
 private:
-	int m_numReels = 1; // Number of Reels in the Grid
-	int m_numRows = 1; // Number of Rows in the Grid
-	vector<vector<int>> m_grid; // 2D Vector (Reel, Row) that contains the symbols on the grid
-	vector<vector<int>> m_lines; // 2D Vector (Line, Reel) that contains the current active lines
-	int m_maxSymbolLength = 3;
-	bool m_inFreePlay = false; // Determines if combo info will be printed after Grid Evaluation
+	int numReels = 1; // Number of Reels in the Grid
+	int numRows = 1; // Number of Rows in the Grid
+	vector<vector<int>> grid; // 2D Vector (Reel, Row) that contains the symbols on the grid
+	vector<vector<int>> lines; // 2D Vector (Line, Reel) that contains the current active lines
 };
