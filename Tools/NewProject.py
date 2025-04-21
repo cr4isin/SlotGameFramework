@@ -47,7 +47,7 @@ def GenerateProject(game_name):
 
 
 def main():
-    game_name = input("Enter the new game name: ").strip()
+    game_name = input("Enter the new project name: ").strip()
 
     if not game_name:
         print("❌ No game name entered. Exiting.")

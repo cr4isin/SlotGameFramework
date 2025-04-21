@@ -9,7 +9,7 @@ public:
 
 	// ==================== Functions ====================
 	// Setup
-	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
+	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
 	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
 	// Game Functions
 	virtual double PlayGame();
@@ -27,6 +27,8 @@ public:
 	const string gameName = "";
 	string configName = "";
 	string simName = "";
+	string inputDir = "";
+	string outputDir = "";
 	MathXML mathXML;
 	int baseBet = 1;
 	int betMult = 1;

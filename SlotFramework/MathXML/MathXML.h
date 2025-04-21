@@ -9,22 +9,23 @@
 
 class MathXML {
 public:
-    explicit MathXML(const std::string& filename);
+    MathXML() = default;
+    explicit MathXML(const std::string filename);
     ~MathXML();
 
-    bool LoadFile(); // Loads and parses the XML file
+    void LoadFile(const std::string filename);
 
     std::string GetConfigName() const;
 
 
     WeightTable GetWeightTable(const std::string& identifier);
     void GetAllWeightTables(std::map<std::string, WeightTable>& tableMap,
-        const std::string& pattern = "");
+        const std::string& filter = "");
 
 
     std::vector<double> GetValueTable(const std::string& identifier);
     void GetAllValueTables(std::map<std::string, std::vector<double>>& tableMap,
-        const std::string& pattern = "");
+        const std::string& filter = "");
 
 
     SymbolSet GetSymbolSet(const std::string& identifier,
@@ -36,20 +37,20 @@ public:
         const std::map<std::string, std::set<std::string>>& wilds = {},
         const std::map<std::string, int>& multipliers = {},
         const std::map<std::string, Colors>& colors = {},
-        const std::string& pattern = "");
+        const std::string& filter = "");
 
 
     SlotReels GetReelStripSet(const std::string& identifier, const SymbolSet& symbolSet);
 
     void GetAllReelStripSets(std::map<std::string, SlotReels>& reelSetMap,
         const SymbolSet& symbolSet,
-        const std::string& pattern = "");
+        const std::string& filter = "");
 
     WeightTable GetReelStripAsWeightTable(const std::string& identifier, const SymbolSet& symbolSet);
 
     void GetAllReelStripsAsWeightTables(std::map<std::string, WeightTable>& tableMap,
         const SymbolSet& symbolSet,
-        const std::string& pattern = "");
+        const std::string& filter = "");
 
     PaylineCombo GetPaylineComboSet(const std::string& identifier,
         const SymbolSet& symbolSet,
@@ -62,7 +63,7 @@ public:
         int numReels,
         int numLines,
         double payMultiplier = 1.0,
-        const std::string& regexStr = "") const;
+        const std::string& filter = "") const;
 
     AnywaysCombo GetAnywaysComboSet(const std::string& identifier,
         const SymbolSet& symbolSet,
@@ -73,7 +74,7 @@ public:
         const SymbolSet& symbolSet,
         int numReels,
         double payMultiplier = 1.0,
-        const std::string& regexStr = "") const;
+        const std::string& filter = "") const;
 
     ScatterCombo GetScatterComboSet(const std::string& identifier,
         const SymbolSet& symbolSet,
@@ -84,7 +85,7 @@ public:
         const SymbolSet& symbolSet,
         int numReels,
         double payMultiplier = 1.0,
-        const std::string& regexStr = "") const;
+        const std::string& filter = "") const;
 
     CountScatterCombo GetCountScatterComboSet(const std::string& identifier,
         const SymbolSet& symbolSet,
@@ -97,9 +98,9 @@ public:
         int numReels,
         int numRows,
         double payMultiplier = 1.0,
-        const std::string& regexStr = "") const;
+        const std::string& filter = "") const;
 
 private:
-    std::string filename;
+    std::string filename = "";
     tinyxml2::XMLDocument doc;
 };

@@ -1,21 +1,18 @@
 
 #include "MathXML.h"
 
-MathXML::MathXML(const std::string& filename) : filename(filename) {
-    if (!LoadFile()) {
-        std::cerr << "Error: Failed to load XML file: " << filename << std::endl;
-    }
+MathXML::MathXML(const std::string filename) {
+    LoadFile(filename);
 }
 
 MathXML::~MathXML() {}
 
-bool MathXML::LoadFile() {
+void MathXML::LoadFile(const std::string filename) {
+    this->filename = filename;
     tinyxml2::XMLError eResult = doc.LoadFile(filename.c_str());
     if (eResult != tinyxml2::XML_SUCCESS) {
         std::cerr << "Error loading XML file: " << filename << " Error Code: " << eResult << std::endl;
-        return false;
     }
-    return true;
 }
 
 std::string MathXML::GetConfigName() const {
@@ -62,14 +59,14 @@ WeightTable MathXML::GetWeightTable(const std::string& identifier) {
 }
 
 void MathXML::GetAllWeightTables(std::map<std::string, WeightTable>& tableMap,
-    const std::string& pattern) {
+    const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* bonusInfo = root->FirstChildElement("BonusInfo");
     auto* weightedTableList = bonusInfo->FirstChildElement("WeightedTableList");
 
     std::regex reFilter;
-    bool useRegex = !pattern.empty();
-    if (useRegex) reFilter = std::regex(pattern);
+    bool useRegex = !filter.empty();
+    if (useRegex) reFilter = std::regex(filter);
 
     for (auto* table = weightedTableList->FirstChildElement("WeightedTable");
         table != nullptr;
@@ -110,14 +107,14 @@ std::vector<double> MathXML::GetValueTable(const std::string& identifier) {
 }
 
 void MathXML::GetAllValueTables(std::map<std::string, std::vector<double>>& tableMap,
-    const std::string& pattern) {
+    const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* bonusInfo = root->FirstChildElement("BonusInfo");
     auto* valueTableList = bonusInfo->FirstChildElement("ValueTableList");
 
     std::regex reFilter;
-    bool useRegex = !pattern.empty();
-    if (useRegex) reFilter = std::regex(pattern);
+    bool useRegex = !filter.empty();
+    if (useRegex) reFilter = std::regex(filter);
 
     for (auto* table = valueTableList->FirstChildElement("ValueTable");
         table != nullptr;
@@ -186,13 +183,13 @@ void MathXML::GetAllSymbolSets(std::map<std::string, SymbolSet>& symbolSetMap,
     const std::map<std::string, std::set<std::string>>& wilds,
     const std::map<std::string, int>& multipliers,
     const std::map<std::string, Colors>& colors,
-    const std::string& pattern) {
+    const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* symbolSetList = root->FirstChildElement("SymbolSetList");
 
     std::regex reFilter;
-    bool useRegex = !pattern.empty();
-    if (useRegex) reFilter = std::regex(pattern);
+    bool useRegex = !filter.empty();
+    if (useRegex) reFilter = std::regex(filter);
 
     for (auto* set = symbolSetList->FirstChildElement("SymbolSet");
         set != nullptr;
@@ -258,13 +255,13 @@ SlotReels MathXML::GetReelStripSet(const std::string& identifier, const SymbolSe
 
 void MathXML::GetAllReelStripSets(std::map<std::string, SlotReels>& reelSetMap,
     const SymbolSet& symbolSet,
-    const std::string& pattern) {
+    const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* setList = root->FirstChildElement("ReelStripSetList");
 
     std::regex reFilter;
-    bool useRegex = !pattern.empty();
-    if (useRegex) reFilter = std::regex(pattern);
+    bool useRegex = !filter.empty();
+    if (useRegex) reFilter = std::regex(filter);
 
     for (auto* stripSet = setList->FirstChildElement("ReelStripSet");
         stripSet != nullptr;
@@ -311,13 +308,13 @@ WeightTable MathXML::GetReelStripAsWeightTable(const std::string& identifier, co
 
 void MathXML::GetAllReelStripsAsWeightTables(std::map<std::string, WeightTable>& tableMap,
     const SymbolSet& symbolSet,
-    const std::string& pattern) {
+    const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* reelStripList = root->FirstChildElement("ReelStripList");
 
     std::regex reFilter;
-    bool useRegex = !pattern.empty();
-    if (useRegex) reFilter = std::regex(pattern);
+    bool useRegex = !filter.empty();
+    if (useRegex) reFilter = std::regex(filter);
 
     for (auto* strip = reelStripList->FirstChildElement("ReelStrip");
         strip != nullptr;
@@ -386,9 +383,9 @@ void MathXML::GetAllPaylineComboSets(std::map<std::string, PaylineCombo>& comboM
     int numReels,
     int numLines,
     double payMultiplier,
-    const std::string& regexStr) const
+    const std::string& filter) const
 {
-    std::regex idRegex(regexStr);
+    std::regex idRegex(filter);
 
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
@@ -477,9 +474,9 @@ void MathXML::GetAllAnywaysComboSets(std::map<std::string, AnywaysCombo>& comboM
     const SymbolSet& symbolSet,
     int numReels,
     double payMultiplier,
-    const std::string& regexStr) const
+    const std::string& filter) const
 {
-    std::regex idRegex(regexStr);
+    std::regex idRegex(filter);
 
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
@@ -570,9 +567,9 @@ void MathXML::GetAllScatterComboSets(std::map<std::string, ScatterCombo>& comboM
     const SymbolSet& symbolSet,
     int numReels,
     double payMultiplier,
-    const std::string& regexStr) const
+    const std::string& filter) const
 {
-    std::regex idRegex(regexStr);
+    std::regex idRegex(filter);
 
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
@@ -659,9 +656,9 @@ void MathXML::GetAllCountScatterComboSets(std::map<std::string, CountScatterComb
     int numReels,
     int numRows,
     double payMultiplier,
-    const std::string& regexStr) const
+    const std::string& filter) const
 {
-    std::regex idRegex(regexStr);
+    std::regex idRegex(filter);
 
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");

@@ -2,11 +2,17 @@
 #include "SlotGame.h"
 
 // ============================== Setup ==============================
-SlotGame::SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet)
-	:gameName(gameName), mathXML(MathXML("../Games/" + gameName + "/xml/" + mathXMLFileName))
+SlotGame::SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet, bool useCurrentDirectory)
+	:gameName(gameName)
 {
-	configName = mathXML.GetConfigName();
 	SetBetScheme(baseBet, betMult, totalBet);
+	if (!useCurrentDirectory)
+	{
+		inputDir = "../Games/" + gameName + "/xml/";
+		outputDir = "../Games/" + gameName + "/results/";
+	}
+	mathXML.LoadFile(inputDir + mathXMLFileName);
+	configName = mathXML.GetConfigName();
 	simName = configName + "_" + to_string(baseBet) + "cr_" + to_string(betMult) + "x";
 }
 
@@ -72,7 +78,7 @@ void SlotGame::PrintHistograms()
 {
 	for (auto const& [name, hist] : histograms)
 	{
-		string filename = "../Games/" + gameName + "/results/Histogram_" + simName + "_" + name + ".txt";
+		string filename = outputDir + "Histogram_" + simName + "_" + name + ".txt";
 		WriteHistogramToFile(filename, hist);
 	}
 }
@@ -155,7 +161,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 	}
 	// Write results to a file
 	PrintHistograms();
-	string filename = "../Games/" + gameName + "/results/SimData_" + simName + ".txt";
+	string filename = outputDir + "SimData_" + simName + ".txt";
 	ostringstream outputString;
 	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
 	for (auto const& [name, totalTracker] : totalTrackers)
