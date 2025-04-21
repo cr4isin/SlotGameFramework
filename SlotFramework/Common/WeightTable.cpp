@@ -1,11 +1,6 @@
 
 #include "WeightTable.h"
 
-WeightTable::WeightTable()
-{
-	throw runtime_error("Tried to access a weight table that does not exist");
-}
-
 WeightTable::WeightTable(vector<long long> weights, vector<double> values)
 {
 	this->weights = weights;

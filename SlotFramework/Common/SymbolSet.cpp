@@ -107,3 +107,7 @@ const std::vector<std::string>& SymbolSet::GetSymbolList() const
 {
 	return symbols;
 }
+
+int SymbolSet::operator[](const string& symbol) const {
+	return symbolIndex.at(symbol);
+}

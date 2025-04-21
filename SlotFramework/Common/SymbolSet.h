@@ -15,6 +15,7 @@ public:
 	int GetNumSymbols() const;
 	int GetMaxSymbolLength() const;
 	const vector<string>& GetSymbolList() const;
+	int operator[](const std::string& symbol) const;
 
 private:
 	int numSymbols;

@@ -4,7 +4,7 @@
 class WeightTable
 {
 public:
-	WeightTable();
+	WeightTable() = default;
 	WeightTable(vector<long long> weights, vector<double> values = {});
 	// Normal Draws
 	int GetIndexOfWeight(long long weight);

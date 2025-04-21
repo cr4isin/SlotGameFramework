@@ -97,13 +97,13 @@ double ExampleGame::FreeSpins(int bonusCode)
 		grid.FillGrid(positions, Reels_FG);
 
 		// Determine which 2 reels to fill with WILDs
-		int wildPattern = weightTables["FSWildReels"].DrawValue();
+		int wildPattern = weightTables.at("FSWildReels").DrawValue();
 		vector<int> wildReels = ChangeBase(wildPattern, 2, numReels);
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
 			if (wildReels[iReel] == 1)
 			{
-				grid.FillReelWithSymbol(MainSymbols.GetSymbolIndex("WILD"), iReel);
+				grid.FillReelWithSymbol(MainSymbols["WILD"], iReel);
 			}
 		}
 
