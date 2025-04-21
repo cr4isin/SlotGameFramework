@@ -5,15 +5,15 @@
 class GameTemplate : public SlotGame 
 {
 public:
-	// ======== Functions  ======== 
-	ExampleGame(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0);
+	// ======== Functions ======== 
+	ExampleGame(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
 
 	double FreeSpins(int bonusCode);
 
 
-	// ======== Variables  ======== 
+	// ======== Variables ======== 
 	int numReels = 5;
 	int numRows = 3;
 	int numLines = baseBet;
@@ -32,7 +32,7 @@ public:
 	map<string, vector<double>> valueTables;
 
 
-	// ======== Symbol Properties  ======== 
+	// ======== Symbol Properties ======== 
 	map<string, set<string>> symbolSubstitutions =
 	{ // Leave the entire map blank if you want to use the XML wild definitions. Default value is that the symbol only maps to itself.
 		//{"WILD", {"WILD", "S01", "S02", "S03", "S04", "S05", "S06", "S07", "S08", "S09"}},
@@ -61,7 +61,7 @@ public:
 	};
 
 
-	// ======== Lines  ======== 
+	// ======== Lines ======== 
 	vector<vector<int>> lines =
 	{
 		{1,1,1,1,1},// 1

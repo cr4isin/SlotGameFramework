@@ -1,7 +1,7 @@
 #include "GameTemplate.h"
 
-GameTemplate::GameTemplate(string mathXMLFileName, int baseBet, int betMult, int totalBet)
-	: SlotGame("GameTemplate", mathXMLFileName, baseBet, betMult, totalBet)
+GameTemplate::GameTemplate(string mathXMLFileName, int baseBet, int betMult, bool useCurrentDirectory)
+	: SlotGame("GameTemplate", mathXMLFileName, baseBet, betMult, useCurrentDirectory)
 {
 	// Symbol Sets
 	MainSymbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
