@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Games", "Games", "{8872FA6C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SlotFramework", "SlotFramework", "{9CDD66A3-00E2-46C3-BD86-83EC45ECAE95}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathsim", "mathsim\mathsim.vcxproj", "{1A336FD3-98F9-4115-9574-E9FD220192EF}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "SlotFramework\Common\Common.vcxproj", "{53A5E7E5-FC67-43A6-94BB-6C38BB19CB7A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MathXML", "SlotFramework\MathXML\MathXML.vcxproj", "{18A9462E-2DA3-444F-A584-E8C37878D837}"
@@ -14,8 +16,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Paytable", "SlotFramework\Paytable\Paytable.vcxproj", "{F80AD67F-9AAD-465B-A1D7-A5DA88CD6D2D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Slot", "SlotFramework\Slot\Slot.vcxproj", "{16880943-09B5-4293-9FA7-C198C503C781}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mathsim", "mathsim\mathsim.vcxproj", "{1A336FD3-98F9-4115-9574-E9FD220192EF}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleGame", "Games\ExampleGame\source\ExampleGame.vcxproj", "{C66006AD-6BAC-478E-A212-3A3802163A7F}"
 EndProject
