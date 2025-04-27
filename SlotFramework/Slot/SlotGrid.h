@@ -2,6 +2,7 @@
 
 #include "SlotReels.h"
 #include "Paytable.h"
+#include "MysteryReplacement.h"
 
 class SlotGrid 
 {
@@ -42,6 +43,7 @@ public:
 	void ReplaceSymbolOnGrid(int oldSymbol, int newSymbol);
 	void ReplaceSymbolOnReel(int oldSymbol, int newSymbol, int reelIndex);
 	void ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex);
+	void Replace(MysteryReplacement& mysteryReplacement);
 
 private:
 	int numReels = 1; // Number of Reels in the Grid

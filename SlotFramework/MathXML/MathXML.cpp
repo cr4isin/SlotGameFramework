@@ -673,3 +673,142 @@ void MathXML::GetAllCountScatterComboSets(std::map<std::string, CountScatterComb
         comboMap.emplace(id, GetCountScatterComboSet(id, symbolSet, numReels, numRows, payMultiplier));
     }
 }
+
+MysteryReplacement MathXML::GetMysteryReplacement(const std::string& identifier, const SymbolSet& symbolSet) const
+{
+    auto* root = doc.FirstChildElement("GameMath");
+    auto* mysteryInfo = root->FirstChildElement("MysteryReplacementInfo");
+
+    if (!mysteryInfo) {
+        throw std::runtime_error("MysteryReplacementInfo section not found in MathXML.");
+    }
+
+    auto* sequenceList = mysteryInfo->FirstChildElement("ReplacementSequenceList");
+    auto* instructionList = mysteryInfo->FirstChildElement("ReplacementInstructionTableList");
+    auto* weightTableList = mysteryInfo->FirstChildElement("ReplacementWeightTableList");
+
+    if (!sequenceList || !instructionList || !weightTableList) {
+        throw std::runtime_error("Incomplete MysteryReplacementInfo sections in MathXML.");
+    }
+
+    // 1. Find the matching ReplacementSequence
+    std::string instructionTableID, weightTableID;
+    for (auto* sequence = sequenceList->FirstChildElement("ReplacementSequence");
+        sequence != nullptr;
+        sequence = sequence->NextSiblingElement("ReplacementSequence"))
+    {
+        std::string id = sequence->Attribute("replacementSequenceID");
+        if (id == identifier)
+        {
+            instructionTableID = sequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementInstructionTableID")->GetText();
+            weightTableID = sequence->FirstChildElement("ReplacementAction")->FirstChildElement("ReplacementWeightTableID")->GetText();
+            break;
+        }
+    }
+
+    if (instructionTableID.empty() || weightTableID.empty()) {
+        throw std::runtime_error("ReplacementSequence with identifier '" + identifier + "' not found.");
+    }
+
+    // 2. Build the WeightTable from ReplacementWeightTable
+    std::vector<long long> weights;
+    for (auto* replacementWeightTable = weightTableList->FirstChildElement("ReplacementWeightTable");
+        replacementWeightTable != nullptr; 
+        replacementWeightTable = replacementWeightTable->NextSiblingElement("ReplacementWeightTable"))
+    {
+        std::string id = replacementWeightTable->Attribute("replacementWeightTableID");
+        if (id == weightTableID)
+        {
+            for (auto* weightElem = replacementWeightTable->FirstChildElement("Weight");
+                weightElem != nullptr;
+                weightElem = weightElem->NextSiblingElement("Weight"))
+            {
+                weights.push_back(std::stoll(weightElem->GetText()));
+            }
+            break;
+        }
+    }
+
+    if (weights.empty()) {
+        throw std::runtime_error("ReplacementWeightTable '" + weightTableID + "' not found or empty.");
+    }
+
+    WeightTable table(weights);
+
+    // 3. Build the vector<vector<ReplacementInstruction>> from ReplacementInstructionTable
+    std::vector<std::vector<ReplacementInstruction>> instructionSets;
+    for (auto* replacementInstructionTable = instructionList->FirstChildElement("ReplacementInstructionTable");
+        replacementInstructionTable != nullptr;
+        replacementInstructionTable = replacementInstructionTable->NextSiblingElement("ReplacementInstructionTable"))
+    {
+        std::string id = replacementInstructionTable->Attribute("replacementInstructionTableID");
+        if (id == instructionTableID)
+        {
+            for (auto* instructionSet = replacementInstructionTable->FirstChildElement("ReplacementInstruction");
+                instructionSet != nullptr;
+                instructionSet = instructionSet->NextSiblingElement("ReplacementInstruction"))
+            {
+                std::vector<ReplacementInstruction> oneSet;
+                for (auto* replaceElem = instructionSet->FirstChildElement("DoReplace");
+                    replaceElem != nullptr;
+                    replaceElem = replaceElem->NextSiblingElement("DoReplace"))
+                {
+                    std::string originalSymStr = replaceElem->Attribute("originalSymbol");
+                    std::string newSymStr = replaceElem->Attribute("newSymbol");
+
+                    int originalSymbol = symbolSet.GetSymbolIndex(originalSymStr);
+                    int newSymbol = symbolSet.GetSymbolIndex(newSymStr);
+
+                    int reel = -1;
+                    if (replaceElem->Attribute("OnReel")) reel = std::stoi(replaceElem->Attribute("OnReel"));
+
+                    oneSet.push_back({ originalSymbol, newSymbol, reel });
+                }
+                instructionSets.push_back(std::move(oneSet));
+            }
+            break;
+        }
+    }
+
+    if (instructionSets.empty()) {
+        throw std::runtime_error("ReplacementInstructionTable '" + instructionTableID + "' not found or empty.");
+    }
+
+    return MysteryReplacement(table, instructionSets);
+}
+
+void MathXML::GetAllMysteryReplacements(std::map<std::string, MysteryReplacement>& mysteryMap,
+    const SymbolSet& symbolSet,
+    const std::string& filter) const
+{
+    auto* root = doc.FirstChildElement("GameMath");
+    auto* mysteryInfo = root->FirstChildElement("MysteryReplacementInfo");
+    if (!mysteryInfo) {
+        throw std::runtime_error("MysteryReplacementInfo section not found in MathXML.");
+    }
+
+    auto* sequenceList = mysteryInfo->FirstChildElement("ReplacementSequenceList");
+    if (!sequenceList) {
+        throw std::runtime_error("ReplacementSequenceList not found in MathXML.");
+    }
+
+    std::regex idRegex(filter);
+    bool useRegex = !filter.empty();
+
+    for (auto* sequence = sequenceList->FirstChildElement("ReplacementSequence");
+        sequence != nullptr;
+        sequence = sequence->NextSiblingElement("ReplacementSequence"))
+    {
+        const char* idAttr = sequence->Attribute("replacementSequenceID");
+        if (!idAttr)
+            continue;
+
+        std::string id(idAttr);
+
+        if (useRegex && !std::regex_search(id, idRegex))
+            continue;
+
+        // Load the full MysteryReplacement for this ID
+        mysteryMap.emplace(id, GetMysteryReplacement(id, symbolSet));
+    }
+}

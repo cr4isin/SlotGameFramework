@@ -5,11 +5,13 @@
     <ClCompile Include="SymbolSet.cpp" />
     <ClCompile Include="WeightTable.cpp" />
     <ClCompile Include="General.cpp" />
+    <ClCompile Include="MysteryReplacement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SymbolSet.h" />
     <ClInclude Include="WeightTable.h" />
     <ClInclude Include="General.h" />
+    <ClInclude Include="MysteryReplacement.h" />
   </ItemGroup>
 </Project>

@@ -138,12 +138,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="General.cpp" />
+    <ClCompile Include="MysteryReplacement.cpp" />
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SymbolSet.cpp" />
     <ClCompile Include="WeightTable.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="General.h" />
+    <ClInclude Include="MysteryReplacement.h" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SymbolSet.h" />
     <ClInclude Include="WeightTable.h" />

@@ -267,3 +267,18 @@ void SlotGrid::ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex)
 		}
 	}
 }
+
+void SlotGrid::Replace(MysteryReplacement& mysteryReplacement)
+{
+	for (const auto& instruction: mysteryReplacement.GetInstructions())
+	{
+		if (instruction.reel == -1)
+		{
+			ReplaceSymbolOnGrid(instruction.originalSymbol, instruction.newSymbol);
+		}
+		else
+		{
+			ReplaceSymbolOnReel(instruction.originalSymbol, instruction.newSymbol, instruction.reel);
+		}
+	}
+}

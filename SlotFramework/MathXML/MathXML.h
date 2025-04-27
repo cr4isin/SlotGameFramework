@@ -6,6 +6,7 @@
 #include "SymbolSet.h"
 #include "SlotReels.h"
 #include "Paytable.h"
+#include "MysteryReplacement.h"
 
 class MathXML {
 public:
@@ -98,6 +99,12 @@ public:
         int numReels,
         int numRows,
         double payMultiplier = 1.0,
+        const std::string& filter = "") const;
+
+    MysteryReplacement GetMysteryReplacement(const std::string& identifier, const SymbolSet& symbolSet) const;
+
+    void GetAllMysteryReplacements(std::map<std::string, MysteryReplacement>& mysteryMap,
+        const SymbolSet& symbolSet,
         const std::string& filter = "") const;
 
 private:
