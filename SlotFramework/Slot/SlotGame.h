@@ -20,9 +20,7 @@ public:
 	void AddToHistogram(string name, double value, long long numHits = 1);
 	void PrintHistograms();
 	void RunSims(int numGames, vector<string>& args, int bonusCode = 0);
-	void FreePlay(bool clearConsole = false);
-	//void CyclePositions();
-	//void CyclePositionsRecursive(map<double, size_t>& hist, vector<int>& positions, double& maxScore, vector<int>& maxPositions, int currentReel = 0);
+	void FreePlay(int bonusCode = 0, bool clearConsole = false);
 	// ==================== General Variables ====================
 	const string gameName = "";
 	string configName = "";

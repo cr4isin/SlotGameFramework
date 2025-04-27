@@ -6,7 +6,7 @@ class GameTemplate : public SlotGame
 {
 public:
 	// ======== Functions ======== 
-	ExampleGame(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
+	GameTemplate(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
 
