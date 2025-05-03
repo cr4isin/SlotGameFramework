@@ -270,7 +270,7 @@ void SlotGrid::ReplaceSymbolOnRow(int oldSymbol, int newSymbol, int rowIndex)
 
 void SlotGrid::Replace(MysteryReplacement& mysteryReplacement)
 {
-	for (const auto& instruction: mysteryReplacement.GetInstructions())
+	for (const auto& instruction: mysteryReplacement.GetRandomInstructions())
 	{
 		if (instruction.reel == -1)
 		{

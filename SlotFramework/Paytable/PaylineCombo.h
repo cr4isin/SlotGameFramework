@@ -9,6 +9,7 @@ public:
     PaylineCombo(int numReels, int numLines, const SymbolSet& symbolSet);
     size_t GetSymbolKey(const vector<int>& combo) const;
     size_t GetSymbolKey(const int& reel, const int& symbol) const;
+    Combo GetCombo(const vector<string>& combo) const;
     Combo GetCombo(const vector<int>& combo) const;
     Combo GetCombo(const size_t& symbolKey) const;
     void SetCombo(const vector<int>& combo, double pay, int bonusCode = 0, int progressive = 0, bool overWrite = false);

@@ -12,7 +12,10 @@ class MysteryReplacement {
 public:
     MysteryReplacement() = default;
     MysteryReplacement(WeightTable table, vector<vector<ReplacementInstruction>> instructions);
-    const vector<ReplacementInstruction>& GetInstructions();
+    const vector<ReplacementInstruction>& GetRandomInstructions();
+    const vector<vector<ReplacementInstruction>>& GetAllInstructions();
+    const vector<ReplacementInstruction>& GetInstructions(int index);
+    WeightTable& GetWeightTable();
 
 private:
     WeightTable weightTable;

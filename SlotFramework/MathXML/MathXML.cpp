@@ -411,14 +411,14 @@ AnywaysCombo MathXML::GetAnywaysComboSet(const std::string& identifier,
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
 
-    for (auto* anyComboSet = comboSetList->FirstChildElement("AnywaysComboSet");
+    for (auto* anyComboSet = comboSetList->FirstChildElement("ScatterComboSet");
         anyComboSet != nullptr;
-        anyComboSet = anyComboSet->NextSiblingElement("AnywaysComboSet"))
+        anyComboSet = anyComboSet->NextSiblingElement("ScatterComboSet"))
     {
         std::string id = anyComboSet->FirstChildElement("Identifier")->GetText();
         if (id != identifier) continue;
 
-        auto* comboList = anyComboSet->FirstChildElement("AnywaysComboList");
+        auto* comboList = anyComboSet->FirstChildElement("ScatterComboList");
         for (auto* combo = comboList->FirstChildElement("AnywaysCombo");
             combo != nullptr;
             combo = combo->NextSiblingElement("AnywaysCombo"))

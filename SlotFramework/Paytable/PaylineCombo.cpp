@@ -37,6 +37,16 @@ size_t PaylineCombo::GetSymbolKey(const int& reel, const int& symbol) const
     return symbolKeys[reel][symbol];
 }
 
+Combo PaylineCombo::GetCombo(const vector<string>& combo) const {
+	vector<int> comboKey;
+	for (const string& symbol : combo)
+	{
+		comboKey.push_back(symbolSet[symbol]);
+	}
+	size_t symbolKey = GetSymbolKey(comboKey);
+	return paylineCombos[symbolKey];
+}
+
 Combo PaylineCombo::GetCombo(const vector<int>& combo) const {
     size_t symbolKey = GetSymbolKey(combo);
     return paylineCombos[symbolKey];

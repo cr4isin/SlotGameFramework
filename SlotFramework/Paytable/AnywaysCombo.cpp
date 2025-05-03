@@ -12,7 +12,7 @@ AnywaysCombo::AnywaysCombo(int numReels, const SymbolSet& symbolSet)
 		symbolSubstitutionCount[symbolForCombo].resize(numSymbols);
 		for (int symbolOnReel = 0; symbolOnReel < numSymbols; symbolOnReel++)
 		{
-			if (symbolSet.GetSubstitutions(symbolOnReel).contains(symbolOnReel))
+			if (symbolSet.GetSubstitutions(symbolOnReel).contains(symbolForCombo))
 			{
 				symbolSubstitutionCount[symbolForCombo][symbolOnReel] = symbolSet.GetMultiplier(symbolOnReel);
 			}
@@ -25,6 +25,7 @@ AnywaysCombo::AnywaysCombo(int numReels, const SymbolSet& symbolSet)
 
 	// Setup paytable size
 	anywaysCombos.resize(numSymbols, vector<Combo>(numReels + 1));
+	combos.resize(numSymbols);
 }
 
 int AnywaysCombo::GetSymbolSubstitutionCount(const int& symbolForCombo,const int& symbolOnReel)
