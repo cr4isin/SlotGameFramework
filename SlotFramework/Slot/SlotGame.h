@@ -9,8 +9,8 @@ public:
 
 	// ==================== Functions ====================
 	// Setup
-	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
-	void SetBetScheme(int baseBet, int betMult, int totalBet = 0);
+	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult = 1, int totalBet = 0, bool useCurrentDirectory = false);
+	void SetBetScheme(int baseBet, int betMult = 1, int totalBet = 0);
 	// Game Functions
 	virtual double PlayGame();
 	virtual double PlayBonus(int bonusCode);

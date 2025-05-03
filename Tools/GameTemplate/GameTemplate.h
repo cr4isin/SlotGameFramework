@@ -6,30 +6,27 @@ class GameTemplate : public SlotGame
 {
 public:
 	// ======== Functions ======== 
-	GameTemplate(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
+	GameTemplate(string mathXMLFileName, int baseBet, int betMult = 1, int totalBet = 0, bool useCurrentDirectory = false);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
-
-	double FreeSpins(int bonusCode);
-
 
 	// ======== Variables ======== 
 	int numReels = 5;
 	int numRows = 3;
-	int numLines = baseBet;
+	
+	// Grids
+	
 
-	SymbolSet MainSymbols;
+	// Symbol Sets
+	
 
-	PaylineCombo MainPaylineCombos;
-	ScatterCombo BonusScatters;
+	// Combos
 
-	SlotReels Reels_Main;
-	SlotReels Reels_FG;
 
-	SlotGrid grid;
+	// Reels
 
-	map<string, WeightTable> weightTables;
-	map<string, vector<double>> valueTables;
+
+	// Weight and Value Tables
 
 
 	// ======== Symbol Properties ======== 

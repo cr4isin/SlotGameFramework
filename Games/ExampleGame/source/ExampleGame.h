@@ -6,7 +6,7 @@ class ExampleGame : public SlotGame
 {
 public:
 	// ======== Functions ======== 
-	ExampleGame(string mathXMLFileName, int baseBet, int betMult, int totalBet = 0, bool useCurrentDirectory = false);
+	ExampleGame(string mathXMLFileName, int baseBet, int betMult = 1, int totalBet = 0, bool useCurrentDirectory = false);
 	double PlayGame() override;
 	double PlayBonus(int bonusCode) override;
 
