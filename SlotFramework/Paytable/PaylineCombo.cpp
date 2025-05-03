@@ -60,6 +60,7 @@ Combo PaylineCombo::GetCombo(const size_t& symbolKey) const
 void PaylineCombo::SetCombo(const vector<int>& combo, double pay, int bonusCode, int progressive, bool overWrite)
 {
 	vector<size_t> comboSymbolKeys = { 0 };
+	int comboLength = 0;
 	for (int iReel = 0; iReel < numReels; iReel++)
 	{
 		vector<size_t> newComboSymbolKeys;
@@ -77,6 +78,7 @@ void PaylineCombo::SetCombo(const vector<int>& combo, double pay, int bonusCode,
 		}
 		else
 		{
+			comboLength++;
 			for (int symbolKey : comboSymbolKeys)
 			{
 				for (int subSymbol : symbolSet.GetInverseSubstitutions(symbol))
@@ -105,6 +107,7 @@ void PaylineCombo::SetCombo(const vector<int>& combo, double pay, int bonusCode,
 			comboInfo.bonusCode = bonusCode;
 			comboInfo.progressive = progressive;
 			comboInfo.set = true;
+			comboInfo.length = comboLength;
 		}
 	}
 }

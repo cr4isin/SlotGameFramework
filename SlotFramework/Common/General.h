@@ -62,6 +62,7 @@ struct Combo
 	double multiplier = 1;
 	int bonusCode = 0;
 	int progressive = 0;
+	int length = 0;
 	bool set = false;
 };
 

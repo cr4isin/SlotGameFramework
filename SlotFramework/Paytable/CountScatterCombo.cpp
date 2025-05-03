@@ -14,6 +14,7 @@ void CountScatterCombo::SetCombo(int count, double pay, int bonusCode, int progr
     combo.pay = pay;
     combo.bonusCode = bonusCode;
     combo.progressive = progressive;
+	combo.length = count;
 }
 
 Combo CountScatterCombo::GetCombo(int count) const
@@ -73,15 +74,15 @@ void CountScatterCombo::PrintResults()
 	{
 		if (combo.pay > 0)
 		{
-			cout << "Count Scatter pays " << combo.pay << "\n";
+			cout << combo.length << " Count Scatter pays " << combo.pay << "\n";
 		}
 		if (combo.bonusCode > 0)
 		{
-			cout << "Count Scatter hit bonus code " << combo.bonusCode << "\n";
+			cout << combo.length << " Count Scatter hit bonus code " << combo.bonusCode << "\n";
 		}
 		if (combo.progressive > 0)
 		{
-			cout << "Count Scatter awards progressive " << combo.progressive << "\n";
+			cout << combo.length << " Count Scatter awards progressive " << combo.progressive << "\n";
 		}
 		cout << "\n";
 	}

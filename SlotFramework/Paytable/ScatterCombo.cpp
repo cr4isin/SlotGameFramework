@@ -19,6 +19,9 @@ void ScatterCombo::SetCombo(const std::vector<bool>& reelsHit, double pay, int b
     combo.pay = pay;
     combo.bonusCode = bonusCode;
     combo.progressive = progressive;
+	int comboLength = 0;
+	for (const auto& hit : reelsHit) comboLength += hit;
+	combo.length = comboLength;
 }
 
 void ScatterCombo::SetScatterSymbols(const std::vector<int>& symbols)
@@ -86,15 +89,15 @@ void ScatterCombo::PrintResults()
 	{
 		if (combo.pay > 0)
 		{
-			cout << "Scatter pays " << combo.pay << "\n";
+			cout << combo.length << " Scatter pays " << combo.pay << "\n";
 		}
 		if (combo.bonusCode > 0)
 		{
-			cout << "Scatter hit bonus code " << combo.bonusCode << "\n";
+			cout << combo.length << " Scatter hit bonus code " << combo.bonusCode << "\n";
 		}
 		if (combo.progressive > 0)
 		{
-			cout << "Scatter awards progressive " << combo.progressive << "\n";
+			cout << combo.length << " Scatter awards progressive " << combo.progressive << "\n";
 		}
 		cout << "\n";
 	}

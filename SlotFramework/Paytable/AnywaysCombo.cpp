@@ -45,6 +45,7 @@ void AnywaysCombo::SetCombo(int symbol, int comboLength, double pay, int bonusCo
 	combo.basePay = pay;
 	combo.bonusCode = bonusCode;
 	combo.progressive = progressive;
+	combo.length = comboLength;
 }
 
 int AnywaysCombo::GetNumSymbols() const
@@ -92,25 +93,17 @@ void AnywaysCombo::PrintResults()
 	{
 		for (int iSymbol = 0; iSymbol < numSymbols; iSymbol++)
 		{
-			int comboLength = 0;
-			for (int iReel = 1; iReel <= numReels; iReel++) {
-				if (anywaysCombos[iSymbol][iReel].basePay == combos[iSymbol].basePay)
-				{
-					comboLength = iReel;
-					break;
-				}
-			}
 			if (combos[iSymbol].pay > 0)
 			{
-				cout << comboLength << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " Ways pays " << combos[iSymbol].pay << "\n";
+				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " Ways pays " << combos[iSymbol].pay << "\n";
 			}
 			if (combos[iSymbol].bonusCode > 0)
 			{
-				cout << comboLength << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " hit bonus code " << combos[iSymbol].bonusCode << "\n";
+				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " hit bonus code " << combos[iSymbol].bonusCode << "\n";
 			}
 			if (combos[iSymbol].progressive > 0)
 			{
-				cout << comboLength << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " awards progressive " << combos[iSymbol].progressive << "\n";
+				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " awards progressive " << combos[iSymbol].progressive << "\n";
 			}
 		}
 		cout << "\n";
