@@ -1,6 +1,6 @@
 #include "SymbolSet.h"
 
-SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubstitutions, map<string, int> symbolMultipliers, map<string, Colors> symbolColors)
+SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubstitutions, map<string, int> symbolMultipliers, map<string, ColorStyle> symbolColors)
 	: symbols(symbols),
 	numSymbols(symbols.size())
 {
@@ -58,7 +58,7 @@ SymbolSet::SymbolSet(vector<string> symbols, map<string, set<string>> symbolSubs
 		}
 		else
 		{
-			this->symbolColors[iSymbol] = tWHITE;
+			this->symbolColors[iSymbol] = 0;
 		}
 	}
 }
@@ -88,7 +88,7 @@ int SymbolSet::GetMultiplier(int symbol) const
 	return symbolMultipliers[symbol];
 }
 
-Colors SymbolSet::GetColor(int symbol) const 
+ColorStyle SymbolSet::GetColor(int symbol) const
 {
 	return symbolColors[symbol];
 }

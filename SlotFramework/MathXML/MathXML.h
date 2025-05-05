@@ -32,12 +32,12 @@ public:
     SymbolSet GetSymbolSet(const std::string& identifier,
         const std::map<std::string, std::set<std::string>>& wilds = {},
         const std::map<std::string, int>& multipliers = {},
-        const std::map<std::string, Colors>& colors = {});
+        const std::map<std::string, ColorStyle>& colors = {});
 
     void GetAllSymbolSets(std::map<std::string, SymbolSet>& symbolSetMap,
         const std::map<std::string, std::set<std::string>>& wilds = {},
         const std::map<std::string, int>& multipliers = {},
-        const std::map<std::string, Colors>& colors = {},
+        const std::map<std::string, ColorStyle>& colors = {},
         const std::string& filter = "");
 
 

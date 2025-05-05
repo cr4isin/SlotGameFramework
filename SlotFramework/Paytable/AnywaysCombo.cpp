@@ -95,15 +95,15 @@ void AnywaysCombo::PrintResults()
 		{
 			if (combos[iSymbol].pay > 0)
 			{
-				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " Ways pays " << combos[iSymbol].pay << "\n";
+				cout << combos[iSymbol].length << "-" << ANSI::Color(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << ANSI::Reset() << " x " << combos[iSymbol].multiplier << " Ways pays " << combos[iSymbol].pay << "\n";
 			}
 			if (combos[iSymbol].bonusCode > 0)
 			{
-				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " hit bonus code " << combos[iSymbol].bonusCode << "\n";
+				cout << combos[iSymbol].length << "-" << ANSI::Color(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << ANSI::Reset() << " x " << combos[iSymbol].multiplier << " hit bonus code " << combos[iSymbol].bonusCode << "\n";
 			}
 			if (combos[iSymbol].progressive > 0)
 			{
-				cout << combos[iSymbol].length << "-" << GetColorCode(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << "\033[0m x " << combos[iSymbol].multiplier << " awards progressive " << combos[iSymbol].progressive << "\n";
+				cout << combos[iSymbol].length << "-" << ANSI::Color(symbolSet.GetColor(iSymbol)) << symbolSet.GetSymbolString(iSymbol) << ANSI::Reset() << " x " << combos[iSymbol].multiplier << " awards progressive " << combos[iSymbol].progressive << "\n";
 			}
 		}
 		cout << "\n";

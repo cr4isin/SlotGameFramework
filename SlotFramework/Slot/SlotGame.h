@@ -6,7 +6,6 @@
 class SlotGame 
 {
 public:
-
 	// ==================== Functions ====================
 	// Setup
 	SlotGame(string gameName, string mathXMLFileName, int baseBet, int betMult = 1, int totalBet = 0, bool useCurrentDirectory = false);
@@ -21,7 +20,7 @@ public:
 	void PrintHistograms();
 	void RunSims(int numGames, vector<string>& args, int bonusCode = 0);
 	void FreePlay(int bonusCode = 0, bool clearConsole = false);
-	// ==================== General Variables ====================
+	// ==================== Variables ====================
 	const string gameName = "";
 	string configName = "";
 	string simName = "";

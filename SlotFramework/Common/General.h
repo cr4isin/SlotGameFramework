@@ -20,41 +20,6 @@
 
 using namespace std;
 
-enum Colors {
-	tLAVENDER = 141,
-	tPURPLE = 5,
-	tPINK = 198,
-	tRED = 1,
-	tORANGE = 202,
-	tBROWN = 94,
-	tGOLD = 3,
-	tYELLOW = 226,
-	tLIME = 118,
-	tGREEN = 2,
-	tTEAL = 36,
-	tCYAN = 6,
-	tBLUE = 4,
-	tWHITE = 7,
-	tGRAY = 8,
-	tBLACK = 0,
-	bLAVENDER = 397,
-	bPURPLE = 261,
-	bPINK = 454,
-	bRED = 257,
-	bORANGE = 458,
-	bBROWN = 350,
-	bGOLD = 259,
-	bYELLOW = 482,
-	bLIME = 374,
-	bGREEN = 258,
-	bTEAL = 292,
-	bCYAN = 262,
-	bBLUE = 260,
-	bWHITE = 263,
-	bGRAY = 264,
-	bBLACK = 256,
-};
-
 struct Combo
 {
 	double pay = 0;
@@ -65,8 +30,6 @@ struct Combo
 	int length = 0;
 	bool set = false;
 };
-
-string GetColorCode(Colors color);
 
 vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);
 

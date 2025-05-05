@@ -3,6 +3,7 @@
 #include "SlotReels.h"
 #include "Paytable.h"
 #include "MysteryReplacement.h"
+#include "ANSI.h"
 
 class SlotGrid 
 {

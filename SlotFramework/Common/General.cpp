@@ -1,11 +1,6 @@
 
 #include "General.h"
 
-string GetColorCode(Colors color)
-{
-	return "\033[" + to_string(38 + 10 * (color / 256)) + ";5;" + to_string(color % 256) + "m";
-}
-
 vector<int> ChangeBase(int input, int base, int length, bool reversed)
 {
 	int quot = abs(input);

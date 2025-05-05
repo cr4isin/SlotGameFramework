@@ -43,10 +43,10 @@ public:
 		// {"WILD_2X", 2},
 	};
 
-	map<string, Colors> symbolColors =
+	map<string, ColorStyle> symbolColors =
 	{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
-	  // Start with a 't' for text color and a 'b' for background color. Default value is tWHITE.
-		{"BLANK",tGRAY},
+	  // Start with a 't' for text color and a 'b' for background color. Effects are BOLD, DIM, ITALIC, UNDERLINE, BLINK, INVERSE, HIDDEN, STRIKETHROUGH
+		{"BLANK",tGRAY | eHIDDEN},
 		{"WILD",bRED},
 		{"S01",tCYAN},
 		{"S02",tPINK},

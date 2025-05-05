@@ -54,7 +54,7 @@ void SlotGrid::PrintGrid(SymbolSet& symbolSet)
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
 			int symbol = grid[iReel][iRow];
-			cout << GetColorCode(symbolSet.GetColor(symbol)) << FormatString(symbolSet.GetSymbolString(symbol), symbolSet.GetMaxSymbolLength()) << "\033[0m\t";
+			cout << ANSI::Color(symbolSet.GetColor(symbol)) << FormatString(symbolSet.GetSymbolString(symbol), symbolSet.GetMaxSymbolLength()) << ANSI::Reset() << "\t";
 		}
 		cout << "\n";
 	}

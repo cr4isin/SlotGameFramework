@@ -13,5 +13,6 @@
     <ClInclude Include="WeightTable.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="MysteryReplacement.h" />
+    <ClInclude Include="ANSI.h" />
   </ItemGroup>
 </Project>

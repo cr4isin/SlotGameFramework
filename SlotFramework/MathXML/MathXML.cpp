@@ -130,7 +130,7 @@ void MathXML::GetAllValueTables(std::map<std::string, std::vector<double>>& tabl
 SymbolSet MathXML::GetSymbolSet(const std::string& identifier,
     const std::map<std::string, std::set<std::string>>& wilds,
     const std::map<std::string, int>& multipliers,
-    const std::map<std::string, Colors>& colors) {
+    const std::map<std::string, ColorStyle>& colors) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* symbolSetList = root->FirstChildElement("SymbolSetList");
 
@@ -182,7 +182,7 @@ SymbolSet MathXML::GetSymbolSet(const std::string& identifier,
 void MathXML::GetAllSymbolSets(std::map<std::string, SymbolSet>& symbolSetMap,
     const std::map<std::string, std::set<std::string>>& wilds,
     const std::map<std::string, int>& multipliers,
-    const std::map<std::string, Colors>& colors,
+    const std::map<std::string, ColorStyle>& colors,
     const std::string& filter) {
     auto* root = doc.FirstChildElement("GameMath");
     auto* symbolSetList = root->FirstChildElement("SymbolSetList");
