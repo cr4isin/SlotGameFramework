@@ -47,6 +47,7 @@ double ExampleGame::PlayGame()
 	{
 		cout << "=== Base Game ===\n";
 		grid.PrintGrid(MainSymbols);
+		grid.PrintGridTimed(MainSymbols);
 		MainPaylineCombos.PrintResults();
 		BonusScatters.PrintResults();
 	}

@@ -23,6 +23,7 @@ public:
 	void FillGrid(vector<int> &positions, SlotReels &reels);
 	void FillGridReel(int reelIndex, int position, SlotReels &reels);
 	void PrintGrid(SymbolSet& symbolSet);
+	void PrintGridTimed(SymbolSet& symbolSet, int delayInMillis = 250);
 
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);

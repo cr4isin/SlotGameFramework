@@ -61,6 +61,29 @@ void SlotGrid::PrintGrid(SymbolSet& symbolSet)
 	cout << "\n";
 }
 
+void SlotGrid::PrintGridTimed(SymbolSet& symbolSet, int delayInMillis)
+{
+	cout << ANSI::HideCursor();
+	int textWidth = symbolSet.GetMaxSymbolLength();
+	// Create empty space
+	for (int iRow = 0; iRow < numRows + 1; iRow++) cout << "\n";
+	cout << ANSI::MoveCursorUp(numRows + 1);
+
+	// Fill in reel by reel
+	for (int iReel = 0; iReel < numReels; iReel++)
+	{
+		for (int iRow = 0; iRow < numRows; iRow++)
+		{
+			int symbol = grid[iReel][iRow];
+			cout << ANSI::Color(symbolSet.GetColor(symbol)) << FormatString(symbolSet.GetSymbolString(symbol), textWidth)
+				<< ANSI::Reset() << ANSI::MoveCursorDown(1) << ANSI::MoveCursorLeft(textWidth);
+		}
+		cout << ANSI::MoveCursorUp(numRows) << ANSI::MoveCursorRight(textWidth + 3) << flush;
+		this_thread::sleep_for(chrono::milliseconds(delayInMillis));
+	}
+	cout << ANSI::NextLine(numRows+1) << ANSI::ShowCursor();
+}
+
 // ===================== Grid Evaluation ===================== 
 void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 {

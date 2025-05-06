@@ -189,8 +189,8 @@ void SlotGame::FreePlay(int bonusCode, bool clearConsole)
 	double coinOut = 0;
 	while (true)
 	{
-		if (clearConsole) system("cls");
-		cout << "\n";
+		if (clearConsole) cout << ANSI::FullCLear() << "\n";
+		else cout << "\n";
 		double score = 0;
 		if (bonusCode == 0) score += PlayGame();
 		else score += PlayBonus(bonusCode);

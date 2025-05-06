@@ -101,13 +101,13 @@ public:
     static std::string Inverse() { return "\033[7m"; }
     static std::string Hidden() { return "\033[8m"; }
     static std::string Strikethrough() { return "\033[9m"; }
-    static std::string Color(ColorStyle colorCode)
+    static std::string Color(ColorStyle styleCode)
     {
         string ansiCode;
 
-        uint32_t fg = colorCode & 0xFF;
-        uint32_t bg = colorCode & 0xFF00;
-        uint32_t fx = colorCode & 0xFF0000;
+        uint32_t fg = styleCode & 0xFF;
+        uint32_t bg = styleCode & 0xFF00;
+        uint32_t fx = styleCode & 0xFF0000;
 
         if (ColorANSIMap.contains(fg)) ansiCode += ColorANSIMap.at(fg);
         if (ColorANSIMap.contains(bg)) ansiCode += ColorANSIMap.at(bg);
@@ -127,35 +127,52 @@ public:
     // Cursor
     static std::string MoveCursorUp(int n) { return "\033[" + to_string(n) + "A"; }
     static std::string MoveCursorDown(int n) { return "\033[" + to_string(n) + "B"; }
-    static std::string MoveCursorLeft(int n) { return "\033[" + to_string(n) + "D"; }
     static std::string MoveCursorRight(int n) { return "\033[" + to_string(n) + "C"; }
+    static std::string MoveCursorLeft(int n) { return "\033[" + to_string(n) + "D"; }
+    static std::string NextLine(int n) { return "\033[" + to_string(n) + "E"; }
+    static std::string PreviousLine(int n) { return "\033[" + to_string(n) + "F"; }
+
     static std::string SetCursor(int row, int col) { return "\033[" + to_string(row) + ";" + to_string(col) + "H"; }
+    static std::string CursorHome() { return "\033[H"; }
+    static std::string CursorEnd() { return "\033[F"; }
+
     static std::string SaveCursor() { return "\033[s"; }
     static std::string RestoreCursor() { return "\033[u"; }
+
     static std::string HideCursor() { return "\033[?25l"; }
     static std::string ShowCursor() { return "\033[?25h"; }
 
     // Clearing
     static std::string ClearScreen() { return "\033[2J"; }
+    static std::string ClearScreenBeforeCursor() { return "\033[1J"; }
+    static std::string ClearScreenAfterCursor() { return "\033[0J"; }
+    static std::string ClearScrollBack () { return "\033[3J"; }
     static std::string ClearLine() { return "\033[2K"; }
+    static std::string ClearLineBeforeCursor() { return "\033[1K"; }
+    static std::string ClearLineAfterCursor() { return "\033[0K"; }
+    static std::string FullCLear() { return "\033[H\033[2J\033[3J"; }
+
+    // Bell
+    static std::string RingBell() { return "\007"; }
+
 
     // 256-color Text
-    static std::string TCOLOR256(int colorCode) {
-        return "\033[38;5;" + std::to_string(colorCode) + "m";
+    static std::string TCOLOR256(int styleCode) {
+        return "\033[38;5;" + std::to_string(styleCode) + "m";
     }
 
     // 256-color Background
-    static std::string BCOLOR256(int colorCode) {
-        return "\033[48;5;" + std::to_string(colorCode) + "m";
+    static std::string BCOLOR256(int styleCode) {
+        return "\033[48;5;" + std::to_string(styleCode) + "m";
     }
 
     // RGB Truecolor (optional, if needed)
-    static std::string TCOLOR(int r, int g, int b) {
+    static std::string TCOLORRGB(int r, int g, int b) {
         return "\033[38;2;" + std::to_string(r) + ";" +
             std::to_string(g) + ";" + std::to_string(b) + "m";
     }
 
-    static std::string BCOLOR(int r, int g, int b) {
+    static std::string BCOLORRGB(int r, int g, int b) {
         return "\033[48;2;" + std::to_string(r) + ";" +
             std::to_string(g) + ";" + std::to_string(b) + "m";
     }
