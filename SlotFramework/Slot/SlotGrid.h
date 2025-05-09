@@ -3,7 +3,6 @@
 #include "SlotReels.h"
 #include "Paytable.h"
 #include "MysteryReplacement.h"
-#include "ANSI.h"
 
 class SlotGrid 
 {
@@ -24,6 +23,9 @@ public:
 	void FillGridReel(int reelIndex, int position, SlotReels &reels);
 	void PrintGrid(SymbolSet& symbolSet);
 	void PrintGridTimed(SymbolSet& symbolSet, int delayInMillis = 250);
+	void ClearHighlights();
+	void AddHighlights(PaylineCombo& paylineCombo);
+	void SetHighlights(PaylineCombo& paylineCombo);
 
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);
@@ -52,4 +54,5 @@ private:
 	int numRows = 1; // Number of Rows in the Grid
 	vector<vector<int>> grid; // 2D Vector (Reel, Row) that contains the symbols on the grid
 	vector<vector<int>> lines; // 2D Vector (Line, Reel) that contains the current active lines
+	vector<vector<bool>> highlights;
 };

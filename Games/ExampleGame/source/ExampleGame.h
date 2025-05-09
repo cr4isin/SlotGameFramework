@@ -12,11 +12,12 @@ public:
 
 	double FreeSpins(int bonusCode);
 
-
 	// ======== Variables ======== 
 	int numReels = 5;
 	int numRows = 3;
 	int numLines = baseBet;
+
+	SlotGrid grid;
 
 	SymbolSet MainSymbols;
 
@@ -26,11 +27,8 @@ public:
 	SlotReels Reels_Main;
 	SlotReels Reels_FG;
 
-	SlotGrid grid;
-
 	map<string, WeightTable> weightTables;
 	map<string, vector<double>> valueTables;
-
 
 	// ======== Symbol Properties ======== 
 	map<string, set<string>> symbolSubstitutions =
@@ -46,7 +44,6 @@ public:
 	map<string, ColorStyle> symbolColors =
 	{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
 	  // Start with a 't' for text color and a 'b' for background color. Effects are BOLD, DIM, ITALIC, UNDERLINE, BLINK, INVERSE, HIDDEN, STRIKETHROUGH
-		{"BLANK",tGRAY | eHIDDEN},
 		{"WILD",bRED},
 		{"S01",tCYAN},
 		{"S02",tPINK},
@@ -59,7 +56,6 @@ public:
 		{"S09",tWHITE},
 		{"BONUS",bGOLD},
 	};
-
 
 	// ======== Lines ======== 
 	vector<vector<int>> lines =

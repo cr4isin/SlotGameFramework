@@ -15,19 +15,23 @@ public:
 	int numRows = 3;
 	
 	// Grids
-	
+	SlotGrid grid;
 
 	// Symbol Sets
-	
+	SymbolSet MainSymbols;
 
 	// Combos
-
+	PaylineCombo MainPaylineCombos;
 
 	// Reels
-
+	SlotReels Reels_Main;
 
 	// Weight and Value Tables
+	map<string, WeightTable> weightTables;
+	map<string, vector<double>> valueTables;
 
+	// Mystery Replacement
+	MysteryReplacement MysterySequence;
 
 	// ======== Symbol Properties ======== 
 	map<string, set<string>> symbolSubstitutions =
@@ -43,7 +47,7 @@ public:
 	map<string, ColorStyle> symbolColors =
 	{ // Available Colors: LAVENDER, PURPLE, PINK, RED, ORANGE, BROWN, GOLD, YELLOW, LIME, GREEN, TEAL, CYAN, BLUE, WHITE, GRAY, BLACK
 	  // Start with a 't' for text color and a 'b' for background color. Effects are BOLD, DIM, ITALIC, UNDERLINE, BLINK, INVERSE, HIDDEN, STRIKETHROUGH
-		{"BLANK",tGRAY | eHIDDEN},
+		{"BLANK",tGRAY | eDIM},
 		{"WILD",bRED},
 		{"S01",tCYAN},
 		{"S02",tPINK},
@@ -56,7 +60,6 @@ public:
 		{"S09",tWHITE},
 		{"BONUS",bGOLD},
 	};
-
 
 	// ======== Lines ======== 
 	vector<vector<int>> lines =

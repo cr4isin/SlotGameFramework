@@ -17,6 +17,7 @@
 #include <chrono>
 #include <iomanip>
 #include <regex>
+#include "ANSI.h"
 
 using namespace std;
 
@@ -30,6 +31,8 @@ struct Combo
 	int length = 0;
 	bool set = false;
 };
+
+void PrintPauseMessage(string message, bool clearAfter = false);
 
 vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);
 

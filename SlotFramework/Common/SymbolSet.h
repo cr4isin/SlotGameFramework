@@ -1,7 +1,6 @@
 #pragma once
 
 #include "General.h"
-#include "ANSI.h"
 
 class SymbolSet
 {

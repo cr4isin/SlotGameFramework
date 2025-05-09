@@ -3,6 +3,10 @@
 ExampleGame::ExampleGame(string mathXMLFileName, int baseBet, int betMult, int totalBet, bool useCurrentDirectory)
 	: SlotGame("ExampleGame", mathXMLFileName, baseBet, betMult, totalBet, useCurrentDirectory)
 {
+	// Grids
+	grid = SlotGrid(numReels, numRows);
+	grid.SetLines(lines, numLines);
+
 	// Symbol Sets
 	MainSymbols = mathXML.GetSymbolSet("MainSymbols", symbolSubstitutions, symbolMultipliers, symbolColors);
 
@@ -13,10 +17,6 @@ ExampleGame::ExampleGame(string mathXMLFileName, int baseBet, int betMult, int t
 	// Reels
 	Reels_Main = mathXML.GetReelStripSet("Reels_Main", MainSymbols);
 	Reels_FG = mathXML.GetReelStripSet("Reels_FG", MainSymbols);
-
-	// Grids
-	grid = SlotGrid(numReels, numRows);
-	grid.SetLines(lines, numLines);
 
 	// Weight and Value Tables
 	mathXML.GetAllWeightTables(weightTables);
@@ -46,10 +46,10 @@ double ExampleGame::PlayGame()
 	if (inFreePlay)
 	{
 		cout << "=== Base Game ===\n";
-		grid.PrintGrid(MainSymbols);
+		grid.SetHighlights(MainPaylineCombos);
 		grid.PrintGridTimed(MainSymbols);
 		MainPaylineCombos.PrintResults();
-		BonusScatters.PrintResults();
+		if (BonusScatters.bonusHit) PrintPauseMessage("Free Games Triggered! Press Enter to play...");
 	}
 
 	// Trigger free games
@@ -120,18 +120,20 @@ double ExampleGame::FreeSpins(int bonusCode)
 			score += spinsRemaining += valueTables["FSNumSpins"][BonusScatters.bonusCode - 1];
 		}
 
-		if (inFreePlay)
-		{
-			cout << "=== Free Spin " << spinNumber << " ===\n";
-			grid.PrintGrid(MainSymbols);
-			MainPaylineCombos.PrintResults();
-			BonusScatters.PrintResults();
-		}
-
 		AddToTracker("FreeSpin", spinScore);
 
 		score += spinScore;
 		spinsRemaining--;
+
+		if (inFreePlay)
+		{
+			cout << "=== Free Spin " << spinNumber << " ===\n";
+			grid.SetHighlights(MainPaylineCombos);
+			grid.PrintGridTimed(MainSymbols);
+			MainPaylineCombos.PrintResults();
+			if (BonusScatters.bonusHit) cout << BonusScatters.combo.length << " BONUS retriggered Free Games! " << valueTables["FSNumSpins"][BonusScatters.bonusCode - 1] << " Free Games added\n\n";
+			if (spinsRemaining > 0) PrintPauseMessage(to_string(spinsRemaining) + " Spins Remaining...", true);
+		}
 	}
 
 	AddToHistogram("FreeSpinBonus", score);

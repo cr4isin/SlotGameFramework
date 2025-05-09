@@ -7,6 +7,7 @@ SlotGrid::SlotGrid(int numReels, int numRows)
 	numRows(numRows)
 {
 	grid.resize(numReels, vector<int>(numRows));
+	highlights.resize(numReels, vector<bool>(numRows));
 }
 
 int SlotGrid::GetSymbol(int reelIndex, int rowIndex)
@@ -75,13 +76,47 @@ void SlotGrid::PrintGridTimed(SymbolSet& symbolSet, int delayInMillis)
 		for (int iRow = 0; iRow < numRows; iRow++)
 		{
 			int symbol = grid[iReel][iRow];
+			if (highlights[iReel][iRow]) cout << ANSI::Blink();
 			cout << ANSI::Color(symbolSet.GetColor(symbol)) << FormatString(symbolSet.GetSymbolString(symbol), textWidth)
 				<< ANSI::Reset() << ANSI::MoveCursorDown(1) << ANSI::MoveCursorLeft(textWidth);
 		}
 		cout << ANSI::MoveCursorUp(numRows) << ANSI::MoveCursorRight(textWidth + 3) << flush;
-		this_thread::sleep_for(chrono::milliseconds(delayInMillis));
+		if (iReel + 1 < numReels) this_thread::sleep_for(chrono::milliseconds(delayInMillis));
 	}
 	cout << ANSI::NextLine(numRows+1) << ANSI::ShowCursor();
+}
+
+void SlotGrid::ClearHighlights()
+{
+	for (int iReel = 0; iReel < numReels; iReel++)
+	{
+		for (int iRow = 0; iRow < numRows; iRow++)
+		{
+			highlights[iReel][iRow] = false;
+		}
+	}
+}
+
+void SlotGrid::AddHighlights(PaylineCombo& paylineCombo)
+{
+	for (int iLine = 0; iLine < lines.size(); iLine++)
+	{
+		const Combo& combo = paylineCombo.combos[iLine];
+		if (combo.pay > 0 || combo.bonusCode > 0 || combo.progressive > 0)
+		{
+			int length = combo.length;
+			for (int iReel = 0; iReel < length; iReel++)
+			{
+				highlights[iReel][lines[iLine][iReel]] = true;
+			}
+		}
+	}
+}
+
+void SlotGrid::SetHighlights(PaylineCombo& paylineCombo)
+{
+	ClearHighlights();
+	AddHighlights(paylineCombo);
 }
 
 // ===================== Grid Evaluation ===================== 

@@ -1,6 +1,14 @@
 
 #include "General.h"
 
+void PrintPauseMessage(string message, bool clearAfter)
+{
+	string input;
+	cout << message << flush;
+	getline(cin, input);
+	if (clearAfter) cout << ANSI::PreviousLine(1) << ANSI::ClearLine() << flush;
+}
+
 vector<int> ChangeBase(int input, int base, int length, bool reversed)
 {
 	int quot = abs(input);

@@ -178,25 +178,41 @@ void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 	WriteStringToFile(filename, outputString.str());
 }
 
-void SlotGame::FreePlay(int bonusCode, bool clearConsole)
+void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
-	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\n";
-	cout << "Press Enter to Play!";
-	cin.get();
+	string input;
+	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\nPress [Enter] to Play...";
+	getline(cin, input);
 
+	int bonusCode = 0;
 	double coinIn = 0;
 	double coinOut = 0;
 	while (true)
 	{
+		// Clear screen
 		if (clearConsole) cout << ANSI::FullCLear() << "\n";
 		else cout << "\n";
+
+		// Play Game/Bonus
 		double score = 0;
 		if (bonusCode == 0) score += PlayGame();
 		else score += PlayBonus(bonusCode);
+
+		// Track/Print Results
 		coinIn += totalBet;
 		coinOut += score;
-		cout << "Score:\t" << score << "\nBet:\t" << totalBet << "\n\nCoin In:\t" << coinIn << "\nCoin Out:\t" << coinOut << "\n\nPress Enter to Play again... ";
-		cin.get();
+		cout << "Score:\t" << score 
+			<< "\nBet:\t" << totalBet 
+			<< "\n\nCoin In:\t" << coinIn 
+			<< "\nCoin Out:\t" << coinOut 
+			<< "\n\nPress [Enter] to Play again or enter a bonus code: ";
+
+		// Getting input for next game
+		getline(cin, input);
+		if (input.empty()) continue;
+		istringstream iss(input);
+		int newCode = 0;
+		if (iss >> newCode) bonusCode = newCode;
 	}
 }

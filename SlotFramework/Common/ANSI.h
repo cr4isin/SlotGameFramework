@@ -1,6 +1,7 @@
 #pragma once
 
-#include "General.h"
+#include <string>
+#include <map>
 
 using ColorStyle = uint32_t;
 
@@ -103,7 +104,7 @@ public:
     static std::string Strikethrough() { return "\033[9m"; }
     static std::string Color(ColorStyle styleCode)
     {
-        string ansiCode;
+        std::string ansiCode;
 
         uint32_t fg = styleCode & 0xFF;
         uint32_t bg = styleCode & 0xFF00;
@@ -125,14 +126,14 @@ public:
     }
 
     // Cursor
-    static std::string MoveCursorUp(int n) { return "\033[" + to_string(n) + "A"; }
-    static std::string MoveCursorDown(int n) { return "\033[" + to_string(n) + "B"; }
-    static std::string MoveCursorRight(int n) { return "\033[" + to_string(n) + "C"; }
-    static std::string MoveCursorLeft(int n) { return "\033[" + to_string(n) + "D"; }
-    static std::string NextLine(int n) { return "\033[" + to_string(n) + "E"; }
-    static std::string PreviousLine(int n) { return "\033[" + to_string(n) + "F"; }
+    static std::string MoveCursorUp(int n) { return "\033[" + std::to_string(n) + "A"; }
+    static std::string MoveCursorDown(int n) { return "\033[" + std::to_string(n) + "B"; }
+    static std::string MoveCursorRight(int n) { return "\033[" + std::to_string(n) + "C"; }
+    static std::string MoveCursorLeft(int n) { return "\033[" + std::to_string(n) + "D"; }
+    static std::string NextLine(int n) { return "\033[" + std::to_string(n) + "E"; }
+    static std::string PreviousLine(int n) { return "\033[" + std::to_string(n) + "F"; }
 
-    static std::string SetCursor(int row, int col) { return "\033[" + to_string(row) + ";" + to_string(col) + "H"; }
+    static std::string SetCursor(int row, int col) { return "\033[" + std::to_string(row) + ";" + std::to_string(col) + "H"; }
     static std::string CursorHome() { return "\033[H"; }
     static std::string CursorEnd() { return "\033[F"; }
 
@@ -154,7 +155,6 @@ public:
 
     // Bell
     static std::string RingBell() { return "\007"; }
-
 
     // 256-color Text
     static std::string TCOLOR256(int styleCode) {
