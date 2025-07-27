@@ -597,31 +597,31 @@ CountScatterCombo MathXML::GetCountScatterComboSet(const std::string& identifier
     auto* root = doc.FirstChildElement("GameMath");
     auto* comboSetList = root->FirstChildElement("ComboSetList");
 
-    for (auto* countComboSet = comboSetList->FirstChildElement("CountScatterComboSet");
+    for (auto* countComboSet = comboSetList->FirstChildElement("ScatterComboSet");
         countComboSet != nullptr;
-        countComboSet = countComboSet->NextSiblingElement("CountScatterComboSet"))
+        countComboSet = countComboSet->NextSiblingElement("ScatterComboSet"))
     {
         std::string id = countComboSet->FirstChildElement("Identifier")->GetText();
         if (id != identifier) continue;
 
-        auto* comboList = countComboSet->FirstChildElement("CountScatterComboList");
+        auto* comboList = countComboSet->FirstChildElement("ScatterComboList");
         for (auto* combo = comboList->FirstChildElement("CountScatterCombo");
             combo != nullptr;
             combo = combo->NextSiblingElement("CountScatterCombo"))
         {
-            std::string symbolStr = combo->FirstChildElement("Symbol")->GetText();
+            std::string symbolStr = combo->FirstChildElement("SymbolList")->FirstChildElement("Symbol")->GetText();
             int symbol = (symbolStr == "ANY") ? -1 : symbolSet.GetSymbolIndex(symbolStr);
 
             if (symbol != -1) seenSymbols.insert(symbol);
 
             if (seenSymbols.size() > 1)
             {
-                std::cerr << "Error: Multiple different symbols found in CountScatterComboSet '" << id << "'\n";
+                std::cerr << "Error: Multiple different symbols found in ScatterComboSet '" << id << "'\n";
                 continue;
             }
 
-            int minCount = std::stoi(combo->FirstChildElement("Min")->GetText());
-            int maxCount = std::stoi(combo->FirstChildElement("Max")->GetText());
+            int minCount = std::stoi(combo->FirstChildElement("MinNumSymbols")->GetText());
+            int maxCount = std::stoi(combo->FirstChildElement("MaxNumSymbols")->GetText());
 
             double pay = std::stod(combo->FirstChildElement("Value")->GetText()) * payMultiplier;
 

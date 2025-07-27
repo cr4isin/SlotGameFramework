@@ -182,12 +182,19 @@ void SlotGame::FreePlay(bool clearConsole)
 {
 	inFreePlay = true;
 	string input;
-	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\nPress [Enter] to Play...";
-	getline(cin, input);
-
 	int bonusCode = 0;
 	double coinIn = 0;
 	double coinOut = 0;
+
+	cout << "Base Bet: " << baseBet << "   Bet Mult: " << betMult << "   Total Bet: " << totalBet << "\nPress [Enter] to Play or enter a bonus code: ";
+
+	getline(cin, input);
+	if (!input.empty()) {
+		istringstream iss(input);
+		int newCode = 0;
+		if (iss >> newCode) bonusCode = newCode;
+	}
+
 	while (true)
 	{
 		// Clear screen
