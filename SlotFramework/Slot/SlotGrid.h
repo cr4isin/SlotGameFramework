@@ -26,6 +26,8 @@ public:
 	void ClearHighlights();
 	void AddHighlights(PaylineCombo& paylineCombo);
 	void SetHighlights(PaylineCombo& paylineCombo);
+	void AddHighlights(AnywaysCombo& anywaysCombo);
+	void SetHighlights(AnywaysCombo& anywaysCombo);
 
 	// Grid Evaluation
 	void SetLines(vector<vector<int>> lines, int numLines = 0);

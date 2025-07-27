@@ -119,6 +119,34 @@ void SlotGrid::SetHighlights(PaylineCombo& paylineCombo)
 	AddHighlights(paylineCombo);
 }
 
+void SlotGrid::AddHighlights(AnywaysCombo& anywaysCombo)
+{
+	for (int iSymbol = 0; iSymbol < anywaysCombo.GetNumSymbols(); iSymbol++)
+	{
+		const Combo& combo = anywaysCombo.combos[iSymbol];
+		if (combo.pay > 0 || combo.bonusCode > 0 || combo.progressive > 0)
+		{
+			int length = combo.length;
+			for (int iReel = 0; iReel < length; iReel++)
+			{
+				for (int iRow = 0; iRow < numRows; iRow++)
+				{
+					if (anywaysCombo.GetSymbolSubstitutionCount(iSymbol, GetSymbol(iReel, iRow)) > 0)
+					{
+						highlights[iReel][iRow] = true;
+					}
+				}
+			}
+		}
+	}
+}
+
+void SlotGrid::SetHighlights(AnywaysCombo& anywaysCombo)
+{
+	ClearHighlights();
+	AddHighlights(anywaysCombo);
+}
+
 // ===================== Grid Evaluation ===================== 
 void SlotGrid::SetLines(vector<vector<int>> lines, int numLines)
 {
