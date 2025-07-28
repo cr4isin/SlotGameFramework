@@ -99,7 +99,7 @@ double ExampleGame::FreeSpins(int bonusCode)
 
 		// Determine which 2 reels to fill with WILDs
 		int wildPattern = weightTables.at("FSWildReels").DrawValue();
-		vector<int> wildReels = ChangeBase(wildPattern, 2, numReels);
+		vector<int> wildReels = SlotTools::ToBase(wildPattern, 2, numReels);
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
 			if (wildReels[iReel] == 1)

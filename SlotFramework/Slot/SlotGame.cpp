@@ -163,7 +163,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 	PrintHistograms();
 	string filename = outputDir + "SimData_" + simName + ".txt";
 	ostringstream outputString;
-	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << GetMedian(spinsHist);
+	outputString << FormatDouble(coinOut / coinIn, 14) << "\t" << totalBet << "\t" << numGames << "\t" << maxWin << "\t" << hits << "\t" << wins << "\t" << SlotTools::Median(spinsHist);
 	for (auto const& [name, totalTracker] : totalTrackers)
 	{
 		outputString << "\t" << name;

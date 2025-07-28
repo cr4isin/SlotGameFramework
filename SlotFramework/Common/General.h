@@ -18,6 +18,7 @@
 #include <iomanip>
 #include <regex>
 #include "ANSI.h"
+#include "SlotTools.h"
 
 using namespace std;
 
@@ -34,8 +35,6 @@ struct Combo
 
 void PrintPauseMessage(string message, bool clearAfter = false);
 
-vector<int> ChangeBase(int input, int base, int length = 0, bool reversed = false);
-
 void SpawnProcesses(string programName, int numTimes, int delayInSeconds = 0);
 
 string FormatDouble(double value, int precision = -1);
@@ -45,12 +44,6 @@ string FormatInt(int value, int width = 1, char fill = ' ');
 string FormatString(string value, int width = 1, char fill = ' ', bool alignLeft = true);
 
 string FormatTime(long long milliseconds);
-
-int GetMedian(const map<int, int>& hist);
-
-int RandInt(int total);
-
-set<int> SetIntersect(set<int> seta, set<int> setb);
 
 void WriteHistogramToFile(string filename, map<double, long long> hist); 
 

@@ -148,6 +148,7 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="MysteryReplacement.h" />
     <ClInclude Include="SlotReels.h" />
+    <ClInclude Include="SlotTools.h" />
     <ClInclude Include="SymbolSet.h" />
     <ClInclude Include="WeightTable.h" />
   </ItemGroup>

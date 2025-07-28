@@ -92,7 +92,7 @@ void PaylineCombo::SetCombo(const vector<int>& combo, double pay, int bonusCode,
 	}
 	for (int symbolKey : comboSymbolKeys)
 	{
-		vector<int> currentCombo = ChangeBase(symbolKey, numSymbols, numReels);
+		vector<int> currentCombo = SlotTools::ToBase(symbolKey, numSymbols, numReels);
 		int multiplier = 1;
 		for (int symbol : currentCombo)
 		{

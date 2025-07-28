@@ -14,5 +14,6 @@
     <ClInclude Include="General.h" />
     <ClInclude Include="MysteryReplacement.h" />
     <ClInclude Include="ANSI.h" />
+    <ClInclude Include="SlotTools.h" />
   </ItemGroup>
 </Project>

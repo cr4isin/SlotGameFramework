@@ -9,31 +9,6 @@ void PrintPauseMessage(string message, bool clearAfter)
 	if (clearAfter) cout << ANSI::PreviousLine(1) << ANSI::ClearLine() << flush;
 }
 
-vector<int> ChangeBase(int input, int base, int length, bool reversed)
-{
-	int quot = abs(input);
-	int rem = 0;
-	if (length <= 0)
-	{
-		if (quot <= 0)
-		{
-			length = 1;
-		}
-		else
-		{
-			length = 1 + log(quot) / log(base);
-		}
-	}
-	vector<int> baseVector(length);
-	for (int i = 0; i < length; i++)
-	{
-		rem = quot % base;
-		quot /= base;
-		baseVector[reversed ? length-1-i : i] = rem;
-	}
-	return baseVector;
-}
-
 void SpawnProcesses(string programName, int numTimes, int delayInSeconds)
 {
 	// Convert the executable name to a wide string and create the full command line
@@ -110,44 +85,6 @@ std::string FormatTime(long long milliseconds) {
 	ostringstream oss;
 	oss << setfill('0') << setw(2) << hours << ":" << setw(2) << minutes << ":" << setw(2) << seconds;
 	return oss.str();
-}
-
-int GetMedian(const map<int, int>& hist)
-{
-	int total = 0;
-	for (auto const& [value, count] : hist)
-	{
-		total += count;
-	}
-
-	int medianIndex = (total + 1) / 2;
-	total = 0;
-	for (auto const& [value, count] : hist)
-	{
-		total += count;
-		if (total >= medianIndex) return value;
-	}
-
-	return -1;
-}
-
-int RandInt(int total)
-{
-	if (total <= 0)
-	{
-		throw runtime_error("RandInt requires a positive integer");
-	}
-	random_device rd;
-	mt19937 rng(rd());
-	uniform_int_distribution<> dist(0, total - 1);
-	return dist(rng);
-}
-
-set<int> SetIntersect(set<int> setA, set<int> setB)
-{
-	set<int> intersection;
-	set_intersection(setA.begin(), setA.end(), setB.begin(), setB.end(), inserter(intersection, intersection.begin()));
-	return intersection;
 }
 
 // This function aggregates the in-memory histogram with any existing data in the file.
