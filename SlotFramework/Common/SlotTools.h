@@ -119,6 +119,18 @@ public:
         return std::accumulate(vec.begin(), vec.end(), T{ 1 }, std::multiplies<T>());
     }
 
+    // Returns the minimum value in the vector.
+    template <typename T>
+    static T Min(const std::vector<T>& vec) {
+        return *std::min_element(vec.begin(), vec.end());
+    }
+
+    // Returns the maximum value in the vector.
+    template <typename T>
+    static T Max(const std::vector<T>& vec) {
+        return *std::max_element(vec.begin(), vec.end());
+    }
+
     // Clamps value between minVal and maxVal.
     template <typename T>
     static T Clamp(const T& value, const T& minVal, const T& maxVal) {
