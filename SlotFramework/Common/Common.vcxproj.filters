@@ -4,7 +4,6 @@
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SymbolSet.cpp" />
     <ClCompile Include="WeightTable.cpp" />
-    <ClCompile Include="General.cpp" />
     <ClCompile Include="MysteryReplacement.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -15,5 +14,6 @@
     <ClInclude Include="MysteryReplacement.h" />
     <ClInclude Include="ANSI.h" />
     <ClInclude Include="SlotTools.h" />
+    <ClInclude Include="PrintTools.h" />
   </ItemGroup>
 </Project>

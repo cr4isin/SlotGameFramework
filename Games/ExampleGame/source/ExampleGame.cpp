@@ -49,7 +49,7 @@ double ExampleGame::PlayGame()
 		grid.SetHighlights(MainPaylineCombos);
 		grid.PrintGridTimed(MainSymbols);
 		MainPaylineCombos.PrintResults();
-		if (BonusScatters.bonusHit) PrintPauseMessage("Free Games Triggered! Press Enter to play...");
+		if (BonusScatters.bonusHit) PrintTools::PauseMessage("Free Games Triggered! Press Enter to play...");
 	}
 
 	// Trigger free games
@@ -84,7 +84,7 @@ double ExampleGame::FreeSpins(int bonusCode)
 {
 	double score = 0;
 	vector<int> positions(numReels);
-	int spinsRemaining = valueTables["FSNumSpins"][bonusCode - 1];
+	int spinsRemaining = valueTables.at("FSNumSpins")[bonusCode - 1];
 	int spinNumber = 0;
 
 	while (spinsRemaining > 0)
@@ -117,7 +117,7 @@ double ExampleGame::FreeSpins(int bonusCode)
 		score += BonusScatters.pay;
 		if (BonusScatters.bonusHit)
 		{
-			score += spinsRemaining += valueTables["FSNumSpins"][BonusScatters.bonusCode - 1];
+			score += spinsRemaining += valueTables.at("FSNumSpins")[BonusScatters.bonusCode - 1];
 		}
 
 		AddToTracker("FreeSpin", spinScore);
@@ -131,8 +131,8 @@ double ExampleGame::FreeSpins(int bonusCode)
 			grid.SetHighlights(MainPaylineCombos);
 			grid.PrintGridTimed(MainSymbols);
 			MainPaylineCombos.PrintResults();
-			if (BonusScatters.bonusHit) cout << BonusScatters.combo.length << " BONUS retriggered Free Games! " << valueTables["FSNumSpins"][BonusScatters.bonusCode - 1] << " Free Games added\n\n";
-			if (spinsRemaining > 0) PrintPauseMessage(to_string(spinsRemaining) + " Spins Remaining...", true);
+			if (BonusScatters.bonusHit) cout << BonusScatters.combo.length << " BONUS retriggered Free Games! " << valueTables.at("FSNumSpins")[BonusScatters.bonusCode - 1] << " Free Games added\n\n";
+			if (spinsRemaining > 0) PrintTools::PauseMessage(to_string(spinsRemaining) + " Spins Remaining...", true);
 		}
 	}
 

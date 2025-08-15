@@ -137,7 +137,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="General.cpp" />
     <ClCompile Include="MysteryReplacement.cpp" />
     <ClCompile Include="SlotReels.cpp" />
     <ClCompile Include="SymbolSet.cpp" />
@@ -147,6 +146,7 @@
     <ClInclude Include="ANSI.h" />
     <ClInclude Include="General.h" />
     <ClInclude Include="MysteryReplacement.h" />
+    <ClInclude Include="PrintTools.h" />
     <ClInclude Include="SlotReels.h" />
     <ClInclude Include="SlotTools.h" />
     <ClInclude Include="SymbolSet.h" />
