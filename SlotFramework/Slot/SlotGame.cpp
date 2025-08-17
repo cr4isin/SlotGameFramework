@@ -74,13 +74,9 @@ void SlotGame::AddToHistogram(string name, double value, long long numHits)
 	histograms[name][value] += numHits;
 }
 
-void SlotGame::PrintHistograms()
+void SlotGame::ClearHistograms()
 {
-	for (auto const& [name, hist] : histograms)
-	{
-		string filename = outputDir + "Histogram_" + simName + "_" + name + ".txt";
-		PrintTools::WriteHistogramToFile(filename, hist);
-	}
+	histograms.clear();
 }
 
 void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
@@ -160,16 +156,17 @@ void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 		}
 	}
 	// Write results to a file
-	PrintHistograms();
 	string filename = outputDir + "SimData_" + simName + ".txt";
-	ostringstream outputString;
-	outputString << F("{:0.14f}\t{}\t{}\t{}\t{}\t{}\t{}", coinOut / coinIn, totalBet, numGames, maxWin, hits, wins, SlotTools::Median(spinsHist));
+	string outputString = F("{:0.14f}\t{}\t{}\t{}\t{}\t{}\t{}", coinOut / coinIn, totalBet, numGames, maxWin, hits, wins, SlotTools::Median(spinsHist));
 	for (auto const& [name, totalTracker] : totalTrackers)
 	{
-		outputString << F("\t{}\t{:0.14f}\t{}\t{}\t{}\t{}\t{}", name, totalTracker.value / numGames, totalTracker.maxValue, totalTracker.gameHits, totalTracker.gameWins, totalTracker.totalHits, totalTracker.totalWins);
+		outputString += F("\t{}\t{:0.14f}\t{}\t{}\t{}\t{}\t{}", name, totalTracker.value / numGames, totalTracker.maxValue, totalTracker.gameHits, totalTracker.gameWins, totalTracker.totalHits, totalTracker.totalWins);
 	}
-	outputString << "\n";
-	PrintTools::WriteStringToFile(filename, outputString.str());
+	outputString += "\n";
+	PrintTools::WriteStringToFile(filename, outputString);
+	// Write histograms to a file
+	filename = outputDir + "Histogram_" + simName + ".txt";
+	PrintTools::WriteAllHistogramsToFile(filename, histograms);
 }
 
 void SlotGame::FreePlay(bool clearConsole)

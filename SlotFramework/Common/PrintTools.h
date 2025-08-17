@@ -185,8 +185,10 @@ public:
         CloseHandle(hFile);
     }
 
-    // Aggregates and updates histogram data in a file using file-locking to ensure safe multi-process access.
-    static void WriteHistogramToFile(std::string filename, std::map<double, long long> hist) {
+    // Writes all histograms to a single file (merging with existing data).
+    // Each histogram is written in blocks of 3 lines: name, values (tab-separated), counts (tab-separated)
+    static void WriteAllHistogramsToFile(const std::string& filename, const std::map<std::string, std::map<double, long long>>& histograms) {
+        // Step 1: Lock the file
         HANDLE hFile = CreateFileA(
             filename.c_str(),
             GENERIC_READ | GENERIC_WRITE,
@@ -203,75 +205,72 @@ public:
         }
 
         OVERLAPPED ol = { 0 };
-
         if (!LockFileEx(hFile, LOCKFILE_EXCLUSIVE_LOCK, 0, MAXDWORD, MAXDWORD, &ol)) {
             std::cerr << "Error locking file: " << GetLastError() << std::endl;
             CloseHandle(hFile);
             return;
         }
 
+        // Step 2: Read existing content into memory
         LARGE_INTEGER fileSize;
-        if (!GetFileSizeEx(hFile, &fileSize)) {
-            std::cerr << "Error getting file size: " << GetLastError() << std::endl;
-            UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol);
-            CloseHandle(hFile);
-            return;
-        }
+        std::map<std::string, std::map<double, long long>> fileHistograms;
 
-        std::string fileContent;
-        if (fileSize.QuadPart > 0) {
-            fileContent.resize(fileSize.QuadPart);
+        if (GetFileSizeEx(hFile, &fileSize) && fileSize.QuadPart > 0) {
+            std::string fileContent(fileSize.QuadPart, '\0');
             DWORD bytesRead = 0;
             SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
-            if (!ReadFile(hFile, &fileContent[0], fileSize.QuadPart, &bytesRead, NULL)) {
-                std::cerr << "Error reading file: " << GetLastError() << std::endl;
-                UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol);
-                CloseHandle(hFile);
-                return;
+            if (ReadFile(hFile, &fileContent[0], fileSize.QuadPart, &bytesRead, NULL)) {
+                std::istringstream iss(fileContent);
+                std::string line;
+                while (std::getline(iss, line)) {
+                    std::string histName = line;
+
+                    std::getline(iss, line);
+                    std::istringstream valStream(line);
+                    std::vector<double> values;
+                    double v;
+                    while (valStream >> v) values.push_back(v);
+
+                    std::getline(iss, line);
+                    std::istringstream countStream(line);
+                    std::vector<long long> counts;
+                    long long c;
+                    while (countStream >> c) counts.push_back(c);
+
+                    for (size_t i = 0; i < values.size() && i < counts.size(); ++i) {
+                        fileHistograms[histName][values[i]] += counts[i];
+                    }
+                }
             }
         }
 
-        std::map<double, long long> fileHistogram;
-        std::istringstream iss(fileContent);
-        std::string line;
-        while (std::getline(iss, line)) {
-            std::istringstream lineStream(line);
-            double key;
-            long long value;
-            if (lineStream >> key >> value)
-                fileHistogram[key] += value;
+        // Step 3: Merge in-memory histograms
+        for (const auto& [name, hist] : histograms) {
+            for (const auto& [value, count] : hist) {
+                fileHistograms[name][value] += count;
+            }
         }
 
-        for (const auto& pair : fileHistogram) {
-            hist[pair.first] += pair.second;
-        }
-
+        // Step 4: Write updated content back
         std::ostringstream oss;
-        for (const auto& pair : hist) {
-            oss << pair.first << "	" << pair.second << "\n";
-        }
-        std::string newContent = oss.str();
+        for (const auto& [name, hist] : fileHistograms) {
+            oss << name << "\n";
 
+            for (const auto& [val, _] : hist) oss << val << "\t";
+            oss << "\n";
+            for (const auto& [_, cnt] : hist) oss << cnt << "\t";
+            oss << "\n";
+        }
+
+        std::string finalContent = oss.str();
         SetFilePointer(hFile, 0, NULL, FILE_BEGIN);
         DWORD bytesWritten = 0;
-        if (!WriteFile(hFile, newContent.c_str(), static_cast<DWORD>(newContent.size()), &bytesWritten, NULL)) {
-            std::cerr << "Error writing file: " << GetLastError() << std::endl;
-            UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol);
-            CloseHandle(hFile);
-            return;
-        }
+        WriteFile(hFile, finalContent.c_str(), static_cast<DWORD>(finalContent.size()), &bytesWritten, NULL);
+        SetEndOfFile(hFile);
 
-        if (!SetEndOfFile(hFile)) {
-            std::cerr << "Error truncating file: " << GetLastError() << std::endl;
-            UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol);
-            CloseHandle(hFile);
-            return;
-        }
-
-        if (!UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol)) {
-            std::cerr << "Error unlocking file: " << GetLastError() << std::endl;
-        }
-
+        // Step 5: Unlock and close
+        UnlockFileEx(hFile, 0, MAXDWORD, MAXDWORD, &ol);
         CloseHandle(hFile);
     }
+
 };

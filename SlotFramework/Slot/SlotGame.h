@@ -17,7 +17,7 @@ public:
 	void AddToTracker(string name, double value);
 	void ClearTrackers();
 	void AddToHistogram(string name, double value, long long numHits = 1);
-	void PrintHistograms();
+	void ClearHistograms();
 	void RunSims(int numGames, vector<string>& args, int bonusCode = 0);
 	void FreePlay(bool clearConsole = true);
 	// ==================== Variables ====================
