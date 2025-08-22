@@ -21,7 +21,7 @@
 // Python-style format shortcut: F("Value = {}", val)
 template <typename... Args>
 inline auto F(std::string_view fmt, Args&&... args) {
-    return std::vformat(fmt, std::make_format_args(std::forward<Args>(args)...));
+    return std::vformat(fmt, std::make_format_args(args...));
 }
 
 // Fast format for high-performance use (e.g., map keys in tight loops)
