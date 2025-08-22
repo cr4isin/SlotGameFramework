@@ -55,7 +55,7 @@ void SlotGrid::PrintGrid(SymbolSet& symbolSet)
 		for (int iReel = 0; iReel < numReels; iReel++)
 		{
 			int symbol = grid[iReel][iRow];
-			cout << ANSI::Color(symbolSet.GetColor(symbol)) << F("{:{}}", symbolSet.GetSymbolString(symbol), symbolSet.GetMaxSymbolLength()) << ANSI::Reset() << "\t";
+			cout << ANSI::Color(symbolSet.GetColor(symbol)) << F("{:^{}}", symbolSet.GetSymbolString(symbol), symbolSet.GetMaxSymbolLength()) << ANSI::Reset() << "\t";
 		}
 		cout << "\n";
 	}
@@ -77,7 +77,7 @@ void SlotGrid::PrintGridTimed(SymbolSet& symbolSet, int delayInMillis)
 		{
 			int symbol = grid[iReel][iRow];
 			if (highlights[iReel][iRow]) cout << ANSI::Blink();
-			cout << ANSI::Color(symbolSet.GetColor(symbol)) << F("{:{}}", symbolSet.GetSymbolString(symbol), textWidth)
+			cout << ANSI::Color(symbolSet.GetColor(symbol)) << F("{:^{}}", symbolSet.GetSymbolString(symbol), textWidth)
 				<< ANSI::Reset() << ANSI::MoveCursorDown(1) << ANSI::MoveCursorLeft(textWidth);
 		}
 		cout << ANSI::MoveCursorUp(numRows) << ANSI::MoveCursorRight(textWidth + 3) << flush;
