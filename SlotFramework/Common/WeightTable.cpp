@@ -173,3 +173,13 @@ void WeightTable::ZeroIndex(int index)
 	weightsWithoutReplacement[index] = 0;
 	weightGenerator = uniform_int_distribution<long long>(0, totalWeightWithoutReplacement - 1);
 }
+
+vector<long long> WeightTable::GetWeights()
+{
+	return weights;
+}
+
+vector<double> WeightTable::GetValues()
+{
+	return values;
+}

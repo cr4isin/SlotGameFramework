@@ -166,7 +166,7 @@ void SlotGame::RunSims(int numGames, vector<string>& args, int bonusCode)
 	PrintTools::WriteStringToFile(filename, outputString);
 	// Write histograms to a file
 	filename = outputDir + "Histogram_" + simName + ".txt";
-	PrintTools::WriteAllHistogramsToFile(filename, histograms);
+	if (histograms.size() > 0) PrintTools::WriteAllHistogramsToFile(filename, histograms);
 }
 
 void SlotGame::FreePlay(bool clearConsole)

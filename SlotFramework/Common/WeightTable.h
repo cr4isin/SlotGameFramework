@@ -22,6 +22,9 @@ public:
 	void ResetTable();
 	void ResetIndex(int index);
 	void ZeroIndex(int index);
+	// Get weight and value vectors
+	vector<long long> GetWeights();
+	vector<double> GetValues();
 private:
 	vector<long long> weights;
 	vector<double> values;
